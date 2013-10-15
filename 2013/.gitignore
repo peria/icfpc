@@ -1,0 +1,4 @@
+*.o
+solver
+*_test
+*.pyc
