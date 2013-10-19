@@ -42,13 +42,14 @@ class Rna2Fuun:
 
     
   def build(self, rnas, isTest):
-    print 'Number of RNA is %d' % len(rnas)
     rnaSize = len(rnas)
+    print 'Number of RNA is %d' % rnaSize
+
     i = 0
     percent = 10
     for rna in rnas:
       i += 1
-      if len(rnas) * percent / 100 == i:
+      if rnaSize * percent / 100 == i:
         print '%d%% (%d/%d) is Done' % (percent, i, len(rnas))
         percent += 10
 
@@ -94,7 +95,7 @@ class Rna2Fuun:
         self.addBitmap(TransparentBitmap)
       elif rna == 'PFFPCCP':
         self.compose()
-      elif rna == 'PFFICCP':
+      elif rna == 'PFFICCF':
         self.clip()
 
     if not isTest:
@@ -224,7 +225,7 @@ class Rna2Fuun:
       self.bitmaps.append(bitmap1)
 
 
-  def clip():
+  def clip(self):
     if len(self.bitmaps) >= 2:
       bitmap0 = self.bitmaps.pop()
       bitmap1 = self.bitmaps.pop()
