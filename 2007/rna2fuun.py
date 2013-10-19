@@ -7,7 +7,7 @@ import Image
 OUTPUT_FILE = 'fuun.png'
 
 # Constants
-WIDTH = 600
+WIDTH  = 600
 HEIGHT = 600
 # RGB colors
 BLACK   = ((  0,   0,   0), None)
@@ -22,27 +22,36 @@ WHITE   = ((255, 255, 255), None)
 TRANSPARENT = (None,   0)
 OPAQUE      = (None, 255)
 
-# Clockwise = +1, Counter-Clockwise = +3
-EAST = 0
+# Clockwise = +1, Counter-Clockwise = -1
+EAST  = 0
 SOUTH = 1
-WEST = 2
+WEST  = 2
 NORTH = 3
 
-class Fuun:
+TransparentBitmap = [[((0, 0, 0), 0) for _ in xrange(WIDTH)]
+                     for _ in xrange(HEIGHT)]
+
+class Rna2Fuun:
   def __init__(self):
-    # member values
     self.bucket = []
     self.currentCache = None
     self.position = (0, 0)
     self.mark = (0, 0)
     self.dir = EAST
-    self.bitmaps = []
-    self.addBitmap()
+    self.bitmaps = [TransparentBitmap]
 
+    
   def build(self, rnas, isTest):
-    print >>sys.stderr, 'Number of RNA is %d' % len(rnas)
+    print 'Number of RNA is %d' % len(rnas)
     rnaSize = len(rnas)
+    i = 0
+    percent = 10
     for rna in rnas:
+      i += 1
+      if len(rnas) * percent / 100 == i:
+        print '%d%% (%d/%d) is Done' % (percent, i, len(rnas))
+        percent += 10
+
       if   rna == 'PIPIIIC':
         self.addColor(BLACK)
       elif rna == 'PIPIIIP':
@@ -82,7 +91,7 @@ class Fuun:
         self.tryfill()
 
       elif rna == 'PCCPFFP':
-        self.addBitmap()
+        self.addBitmap(TransparentBitmap)
       elif rna == 'PFFPCCP':
         self.compose()
       elif rna == 'PFFICCP':
@@ -183,23 +192,20 @@ class Fuun:
     stack = [pos]
     while len(stack) > 0:
       p = stack.pop()
-      if self.getPixel(p) == initial:
-        self.setPixel(p)
-        x, y = p
-        if x > 0:
-          stack.append((x - 1, y))
-        if x < WIDTH - 1:
-          stack.append((x + 1, y))
-        if y > 0:
-          stack.append((x, y - 1))
-        if y < HEIGHT - 1:
-          stack.append((x, y + 1))
+      self.setPixel(p)
+      x, y = p
+      if x > 0 and self.getPixel((x - 1, y)) == initial:
+        stack.append((x - 1, y))
+      if x < WIDTH - 1 and self.getPixel((x + 1, y)) == initial:
+        stack.append((x + 1, y))
+      if y > 0 and self.getPixel((x, y - 1)) == initial:
+        stack.append((x, y - 1))
+      if y < HEIGHT - 1 and self.getPixel((x, y + 1)) == initial:
+        stack.append((x, y + 1))
 
 
-  def addBitmap(self):
+  def addBitmap(self, bitmap):
     if len(self.bitmaps) < 10:
-      bitmap = [[((0, 0, 0), 255) for _ in xrange(WIDTH)]
-                for _ in xrange(HEIGHT)]
       self.bitmaps.append(bitmap)
 
 
@@ -214,7 +220,7 @@ class Fuun:
           bitmap1[y][x] = ((r0 + r1 * (255 - a0) / 255,
                             g0 + g1 * (255 - a0) / 255,
                             b0 + b1 * (255 - a0) / 255),
-                            a0 + a1 * (255 - a0) / 255)
+                           a0 + a1 * (255 - a0) / 255)
       self.bitmaps.append(bitmap1)
 
 
@@ -224,7 +230,7 @@ class Fuun:
       bitmap1 = self.bitmaps.pop()
       for y in xrange(HEIGHT):
         for x in xrange(WIDTH):
-          (r0, g0, b0), a0 = bitmap0[y][x]
+          _, a0 = bitmap0[y][x]
           (r1, g1, b1), a1 = bitmap1[y][x]
           bitmap1[y][x] = ((r1 * a0 / 255,
                             g1 * a0 / 255,
@@ -236,10 +242,10 @@ class Fuun:
   # Parses computed array and draw it in a PNG file.
   def draw(self, bitmap, filename):
     img = Image.new('RGB', (WIDTH, HEIGHT))
-    for row in xrange(HEIGHT):
-      for col in xrange(WIDTH):
-        color, _ = bitmap[row][col]
-        img.putpixel((col, row), color)
+    for y in xrange(HEIGHT):
+      for x in xrange(WIDTH):
+        color, _ = bitmap[y][x]
+        img.putpixel((x, y), color)
     img.save(filename)
     print 'output %s' % filename
 
@@ -249,7 +255,7 @@ def performance(n):
   for rna in sys.stdin:
     rna = rna.rstrip()  # Remove new line code
     rnas.append(rna)
-  fuun = Fuun()
+  fuun = Rna2Fuun()
   rnas = rnas[0:n]
   print 'len(rnas) = %d' % len(rnas)
   fuun.build(rnas, True)
@@ -265,7 +271,7 @@ def main():
     for rna in sys.stdin:
       rna = rna.rstrip()  # Remove new line code
       rnas.append(rna)
-    fuun = Fuun()
+    fuun = Rna2Fuun()
     fuun.build(rnas, False)
 
   

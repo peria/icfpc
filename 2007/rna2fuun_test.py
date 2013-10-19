@@ -5,7 +5,7 @@ import rna2fuun
 
 class Rna2FuunTest(unittest.TestCase):
   def setUp(self):
-    self.fuun = rna2fuun.Fuun()
+    self.fuun = rna2fuun.Rna2Fuun()
 
   def test_currentPixel_1(self):
     self.fuun.addColor(rna2fuun.TRANSPARENT)
