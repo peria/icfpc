@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <map>
 #include <vector>
 
@@ -13,12 +14,13 @@ class UM {
   ~UM();
 
   void Run();
-  void Step(const Platter& operation);
+  bool Step(const Platter& operation);
 
  private:
-  Program zero_array_;
   Platter* program_;
+
   int pc_;  // Program counter;
   Platter registers_[8];  // General purpose
   std::map<Platter, std::unique_ptr<Platter> > memory_;
+  Platter memory_base_ = 1;
 };

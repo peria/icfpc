@@ -1,6 +1,7 @@
 #include "um.h"
 
 #include <cstdint>
+#include <memory>
 
 namespace {
 
@@ -19,13 +20,16 @@ struct Operator {
   static const Platter kOutput = 0xAU << 28;
   static const Platter kInput = 0xBU << 28;
   static const Platter kLoad = 0xCU << 28;
-  static const Platter kImmidiate = 0xDU << 28;
+  static const Platter kImmediate = 0xDU << 28;
 };
 
 }  // namespace
 
 UM::UM(Program program)
-  : zero_array_(std::move(program)), pc_(0) {}
+  : pc_(0), memory_base_(1) {
+  memory_[0] = std::move(program);
+  program_ = memory_[0].get();
+}
 
 UM::~UM() {}
 
@@ -35,9 +39,9 @@ void UM::Run() {
 }
 
 bool UM::Step(const Platter& operation) {
-  Platter* reg_a = &register_[(operation >> 6) & 7];
-  Platter* reg_b = &register_[(operation >> 3) & 7];
-  Platter* reg_c = &register_[(operation >> 0) & 7];
+  Platter* reg_a = &registers_[(operation >> 6) & 7];
+  Platter* reg_b = &registers_[(operation >> 3) & 7];
+  Platter* reg_c = &registers_[(operation >> 0) & 7];
   switch (operation & Operator::kMask) {
   case Operator::kMove: {
     if (*reg_c)
@@ -45,11 +49,13 @@ bool UM::Step(const Platter& operation) {
     break;
   }
   case Operator::kIndex: {
-    *reg_a = memory_[*reg_b][*reg_c];
+    Platter* array = memory_[*reg_b].get();
+    *reg_a = array[*reg_c];
     break;
   }
   case Operator::kAmend: {
-    memory_[*reg_b][*reg_c] = *reg_a;
+    Platter* array = memory_[*reg_b].get();
+    array[*reg_c] = *reg_a;
     break;
   }
   case Operator::kAdd: {
@@ -77,13 +83,13 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kAband:
     break;
-  case Operator::kOputput:
+  case Operator::kOutput:
     break;
   case Operator::kInput:
     break;
   case Operator::kLoad:
     break;
-  case Operator::kImmidate:
+  case Operator::kImmediate:
     break;
   }
   return true;
