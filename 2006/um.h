@@ -17,10 +17,9 @@ class UM {
   bool Step(const Platter& operation);
 
  private:
-  Platter* program_;
-
   int pc_;  // Program counter;
   Platter registers_[8] {};  // General purpose
   std::map<Platter, Program> memory_;
+  std::map<Platter, size_t> sizes_;
   Platter memory_base_;
 };

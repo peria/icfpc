@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <memory>
 
 namespace {
@@ -27,17 +28,15 @@ struct Operator {
 
 }  // namespace
 
-UM::UM(Program program)
-  : pc_(0), memory_base_(1) {
+UM::UM(Program program) : pc_(0), memory_base_(1) {
   memory_[0] = std::move(program);
-  program_ = memory_[0].get();
 }
 
 UM::~UM() {}
 
 void UM::Run() {
   while (true) {
-    const Platter& operation = program_[pc_];
+    const Platter operation = memory_[0].get()[pc_];
     ++pc_;
     if (!Step(operation))
       break;
@@ -89,12 +88,12 @@ bool UM::Step(const Platter& operation) {
     return false;
   }
   case Operator::kAlloc: {
-    const int size = *reg_c;
+    const size_t size = *reg_c;
     std::unique_ptr<Platter> array(new Platter[size]);
-    for (int i = 0; i < size; ++i)
-      array.get()[i] = 0;
+    std::memset(array.get(), 0, size * sizeof(Platter));
 
     memory_[memory_base_] = std::move(array);
+    sizes_[memory_base_] = size;
     *reg_b = memory_base_;
 
     ++memory_base_;
@@ -102,6 +101,7 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kFree: {
     memory_.erase(*reg_c);
+    sizes_.erase(*reg_c);
     break;
   }
   case Operator::kOutput: {
@@ -116,7 +116,13 @@ bool UM::Step(const Platter& operation) {
     break;
   }
   case Operator::kLoad: {
-    program_ = memory_[*reg_b].get();
+    if (*reg_b) {
+      size_t size = sizes_[*reg_b];
+      memory_[0].reset(new Platter[size]);
+      Platter* src = memory_[*reg_b].get();
+      Platter* dst = memory_[0].get();
+      std::memcpy(dst, src, size * sizeof(Platter));
+    }
     pc_ = *reg_c;
     break;
   }
