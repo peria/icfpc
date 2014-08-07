@@ -20,7 +20,7 @@ class UM {
   Platter* program_;
 
   int pc_;  // Program counter;
-  Platter registers_[8];  // General purpose
-  std::map<Platter, std::unique_ptr<Platter> > memory_;
-  Platter memory_base_ = 1;
+  Platter registers_[8] {};  // General purpose
+  std::map<Platter, Program> memory_;
+  Platter memory_base_;
 };
