@@ -36,7 +36,7 @@ UM::~UM() {}
 
 void UM::Run() {
   while (true) {
-    const Platter operation = memory_[0].get()[pc_];
+    const Platter& operation = memory_[0][pc_];
     ++pc_;
     if (!Step(operation))
       break;
@@ -59,13 +59,11 @@ bool UM::Step(const Platter& operation) {
     break;
   }
   case Operator::kIndex: {
-    Platter* array = memory_[*reg_b].get();
-    *reg_a = array[*reg_c];
+    *reg_a = memory_[*reg_b][*reg_c];
     break;
   }
   case Operator::kAmend: {
-    Platter* array = memory_[*reg_a].get();
-    array[*reg_b] = *reg_c;
+    memory_[*reg_a][*reg_b] = *reg_c;
     break;
   }
   case Operator::kAdd: {
@@ -89,7 +87,7 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kAlloc: {
     const size_t size = *reg_c;
-    std::unique_ptr<Platter> array(new Platter[size]);
+    std::unique_ptr<Platter[]> array(new Platter[size]);
     std::memset(array.get(), 0, size * sizeof(Platter));
 
     memory_[memory_base_] = std::move(array);

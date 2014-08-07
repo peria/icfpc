@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 
   // Endian change
   for (int i = 0; i < size; ++i) {
-    program.get()[i] = Endian(program.get()[i]);
+    program[i] = Endian(program[i]);
   }
 
   UM um(std::move(program));

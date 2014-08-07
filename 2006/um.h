@@ -6,7 +6,7 @@
 #include <vector>
 
 typedef uint32_t Platter;
-typedef std::unique_ptr<Platter> Program;
+typedef std::unique_ptr<Platter[]> Program;
 
 class UM {
  public:
