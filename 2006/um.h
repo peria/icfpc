@@ -19,6 +19,6 @@ class UM {
  private:
   int pc_;  // Program counter;
   Platter registers_[8] {};  // General purpose
-  std::map<Platter, Program> memory_;
+  std::vector<Program> memory_;
   Platter memory_base_;
 };

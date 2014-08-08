@@ -29,6 +29,7 @@ struct Operator {
 }  // namespace
 
 UM::UM(Program program) : pc_(0), memory_base_(1) {
+  memory_.resize(100);
   memory_[0] = std::move(program);
 }
 
@@ -95,10 +96,12 @@ bool UM::Step(const Platter& operation) {
     *reg_b = memory_base_;
 
     ++memory_base_;
+    if (memory_base_ >= memory_.size())
+      memory_.resize(memory_base_ * 2);
     break;
   }
   case Operator::kFree: {
-    memory_.erase(*reg_c);
+    memory_[*reg_c].reset();
     break;
   }
   case Operator::kOutput: {
