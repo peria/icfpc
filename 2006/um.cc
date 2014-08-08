@@ -36,7 +36,7 @@ UM::~UM() {}
 
 void UM::Run() {
   while (true) {
-    const Platter& operation = memory_[0][pc_];
+    const Platter& operation = memory_[0][pc_ + 1];
     ++pc_;
     if (!Step(operation))
       break;
@@ -59,11 +59,11 @@ bool UM::Step(const Platter& operation) {
     break;
   }
   case Operator::kIndex: {
-    *reg_a = memory_[*reg_b][*reg_c];
+    *reg_a = memory_[*reg_b][*reg_c + 1];
     break;
   }
   case Operator::kAmend: {
-    memory_[*reg_a][*reg_b] = *reg_c;
+    memory_[*reg_a][*reg_b + 1] = *reg_c;
     break;
   }
   case Operator::kAdd: {
@@ -87,11 +87,11 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kAlloc: {
     const size_t size = *reg_c;
-    std::unique_ptr<Platter[]> array(new Platter[size]);
-    std::memset(array.get(), 0, size * sizeof(Platter));
-
+    std::unique_ptr<Platter[]> array(new Platter[size + 1]);
+    std::memset(array.get(), 0, (size + 1) * sizeof(Platter));
+    array[0] = size;
+    
     memory_[memory_base_] = std::move(array);
-    sizes_[memory_base_] = size;
     *reg_b = memory_base_;
 
     ++memory_base_;
@@ -99,7 +99,6 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kFree: {
     memory_.erase(*reg_c);
-    sizes_.erase(*reg_c);
     break;
   }
   case Operator::kOutput: {
@@ -115,11 +114,11 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kLoad: {
     if (*reg_b) {
-      size_t size = sizes_[*reg_b];
-      memory_[0].reset(new Platter[size]);
+      size_t size = memory_[*reg_b][0];
+      memory_[0].reset(new Platter[size + 1]);
       Platter* src = memory_[*reg_b].get();
       Platter* dst = memory_[0].get();
-      std::memcpy(dst, src, size * sizeof(Platter));
+      std::memcpy(dst, src, (size + 1) * sizeof(Platter));
     }
     pc_ = *reg_c;
     break;
