@@ -28,16 +28,17 @@ struct Operator {
 
 }  // namespace
 
-UM::UM(Program program) : pc_(0), memory_base_(1) {
+UM::UM(Array program, size_t size) : pc_(0), memory_base_(1) {
   memory_.resize(100);
-  memory_[0] = std::move(program);
+  memory_[0].array = std::move(program);
+  memory_[0].size = size;
 }
 
 UM::~UM() {}
 
 void UM::Run() {
   while (true) {
-    const Platter& operation = memory_[0][pc_ + 1];
+    const Platter& operation = memory_[0].array[pc_];
     ++pc_;
     if (!Step(operation))
       break;
@@ -60,11 +61,11 @@ bool UM::Step(const Platter& operation) {
     break;
   }
   case Operator::kIndex: {
-    *reg_a = memory_[*reg_b][*reg_c + 1];
+    *reg_a = memory_[*reg_b].array[*reg_c];
     break;
   }
   case Operator::kAmend: {
-    memory_[*reg_a][*reg_b + 1] = *reg_c;
+    memory_[*reg_a].array[*reg_b] = *reg_c;
     break;
   }
   case Operator::kAdd: {
@@ -89,10 +90,10 @@ bool UM::Step(const Platter& operation) {
   case Operator::kAlloc: {
     const size_t size = *reg_c;
     std::unique_ptr<Platter[]> array(new Platter[size + 1]);
-    std::memset(array.get(), 0, (size + 1) * sizeof(Platter));
-    array[0] = size;
+    std::memset(array.get(), 0, size * sizeof(Platter));
     
-    memory_[memory_base_] = std::move(array);
+    memory_[memory_base_].array = std::move(array);
+    memory_[memory_base_].size = size;
     *reg_b = memory_base_;
 
     ++memory_base_;
@@ -101,7 +102,8 @@ bool UM::Step(const Platter& operation) {
     break;
   }
   case Operator::kFree: {
-    memory_[*reg_c].reset();
+    memory_[*reg_c].array.reset();
+    memory_[*reg_c].size = 0;
     break;
   }
   case Operator::kOutput: {
@@ -117,11 +119,13 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kLoad: {
     if (*reg_b) {
-      size_t size = memory_[*reg_b][0];
-      memory_[0].reset(new Platter[size + 1]);
-      Platter* src = memory_[*reg_b].get();
-      Platter* dst = memory_[0].get();
-      std::memcpy(dst, src, (size + 1) * sizeof(Platter));
+      size_t size = memory_[*reg_b].size;
+      memory_[0].array.reset(new Platter[size]);
+      memory_[0].size = size;
+
+      Platter* src = memory_[*reg_b].array.get();
+      Platter* dst = memory_[0].array.get();
+      std::memcpy(dst, src, size * sizeof(Platter));
     }
     pc_ = *reg_c;
     break;

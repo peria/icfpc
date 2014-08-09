@@ -6,11 +6,15 @@
 #include <vector>
 
 typedef uint32_t Platter;
-typedef std::unique_ptr<Platter[]> Program;
+typedef std::unique_ptr<Platter[]> Array;
+struct Memory {
+  size_t size;
+  Array array;
+};
 
 class UM {
  public:
-  UM(Program program);
+  UM(Array program, size_t size);
   ~UM();
 
   void Run();
@@ -19,6 +23,6 @@ class UM {
  private:
   int pc_;  // Program counter;
   Platter registers_[8] {};  // General purpose
-  std::vector<Program> memory_;
+  std::vector<Memory> memory_;
   Platter memory_base_;
 };

@@ -37,16 +37,15 @@ int main(int argc, char* argv[]) {
 
   size /= sizeof(Platter);
   std::cerr << "FileSize: " << size << " platters\n";
-  Program program(new Platter[size + 1]);
-  ifs.read(reinterpret_cast<char*>(program.get() + 1), size * sizeof(Platter));
+  Array program(new Platter[size * 2]);
+  ifs.read(reinterpret_cast<char*>(program.get()), size * sizeof(Platter));
   ifs.close();
-  program[0] = size;
   
   // Endian change
-  for (int i = 1; i <= size; ++i)
+  for (int i = 0; i < size; ++i)
     program[i] = Endian(program[i]);
 
-  UM um(std::move(program));
+  UM um(std::move(program), size);
   um.Run();
 
   return 0;
