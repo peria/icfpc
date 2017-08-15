@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "core/map.h"
+#include "core/protocol.h"
 #include "core/settings.h"
 #include "core/game.h"
 #include "server/server.h"

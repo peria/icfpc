@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "core/json.h"
-#include "core/map.h"
+#include "core/protocol.h"
 #include "core/punter.h"
 #include "core/settings.h"
 

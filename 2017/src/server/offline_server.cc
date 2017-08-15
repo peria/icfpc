@@ -5,7 +5,7 @@
 #include <string>
 
 #include "core/json.h"
-#include "core/map.h"
+#include "core/protocol.h"
 #include "core/settings.h"
 #include "core/game.h"
 #include "server/client.h"
