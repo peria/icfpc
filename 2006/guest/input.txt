@@ -1,0 +1,6 @@
+guest
+mail
+mail
+1
+q
+exit
