@@ -1,10 +1,17 @@
 CXX=clang++
 CXXFLAGS=-O2 -std=c++14 -Wall
 
+TMP_FILE=/tmp/command.txt
+
 all: um
 
 um: um.cc um_main.cc um.h
 	$(CXX) $(CXXFLAGS) -o $@ $(filter %.cc, $^)
+
+dump: um codex.umz description.key
+	cp description.key $(TMP_FILE)
+	echo "p" >> $(TMP_FILE)
+	./um codex.umz < $(TMP_FILE) | tail -c +198 > um.um
 
 # unbuildable on recent x64 machines.
 um32: um32.cc
@@ -12,4 +19,4 @@ um32: um32.cc
 
 .PHONY: clean
 clean:
-	$(RM) um um32 *.o *~
+	$(RM) -f um um32 *.o *~ *.um
