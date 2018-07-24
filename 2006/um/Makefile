@@ -1,13 +1,15 @@
 CXX=clang++
-CXXFLAGS=-O3 -std=c++11 -Wall -Wextra
+CXXFLAGS=-O2 -std=c++14 -Wall
 
-all: um fast_um
+all: um
 
-um: um.o um_main.o
-	$(CXX) $(CXXFLAGS) -o $@ $^
+um: um.cc um_main.cc um.h
+	$(CXX) $(CXXFLAGS) -o $@ $(filter %.cc, $^)
 
-fast_um: fast_um.cc
+# unbuildable on recent x64 machines.
+um32: um32.cc
 	$(CXX) $(CXXFLAGS) -m32 -o $@ $^
 
-.cc.o: um.h
-	$(CXX) $(CXXFLAGS) -c $<
+.PHONY: clean
+clean:
+	$(RM) um um32 *.o *~
