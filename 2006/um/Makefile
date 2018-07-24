@@ -11,7 +11,7 @@ um: um.cc um_main.cc um.h
 dump: um codex.umz description.key
 	cp description.key $(TMP_FILE)
 	echo "p" >> $(TMP_FILE)
-	./um codex.umz < $(TMP_FILE) | tail -c +198 > um.um
+	./um codex.umz < $(TMP_FILE) | tail -c +196 > um.um
 
 # unbuildable on recent x64 machines.
 um32: um32.cc
