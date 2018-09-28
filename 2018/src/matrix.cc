@@ -3,8 +3,7 @@
 #include <fstream>
 #include <vector>
 
-Matrix::Matrix(const std::string& filename)
-  : R(0) {
+Matrix::Matrix(const std::string& filename) : R(0) {
   if (filename.empty()) {
     // No specified.
     return;
@@ -39,7 +38,12 @@ Matrix::Matrix(const std::string& filename)
   }
 }
 
-bool Matrix::isGrounded(const Coordinate& c) const {
+bool Matrix::isGrounded(int /*x*/, int /*y*/, int /*z*/) const {
+  NOT_IMPLEMENTED();
+  return false;
+}
+
+bool Matrix::isAllGrounded() const {
   NOT_IMPLEMENTED();
   return false;
 }

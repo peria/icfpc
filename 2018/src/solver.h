@@ -6,5 +6,8 @@
 struct Solver {
   static Solver* GetSolver(const std::string& name);
 
-  Trace solve(const Matrix& src, const Matrix& target);
+  virtual ~Solver() {}
+
+  virtual Trace solve(const Matrix& src, const Matrix& dst) = 0;
+  virtual const char* name() = 0;
 };
