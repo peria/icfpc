@@ -7,9 +7,6 @@
 [submodule "2017/src/third_party/glog"]
 	path = 2017/src/third_party/glog
 	url = https://github.com/google/glog.git
-[submodule "2018/src/third_party/elog"]
-	path = 2018/src/third_party/elog
-	url = https://github.com/beam2d/elog.git
 [submodule "2018/src/third_party/cmdline"]
 	path = 2018/src/third_party/cmdline
 	url = https://github.com/tanakh/cmdline.git

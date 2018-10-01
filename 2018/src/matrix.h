@@ -37,9 +37,7 @@ struct Matrix {
       return false;
     return true;
   }
-  bool isInRange(const Coordinate& c) const {
-    return isInRange(c.x, c.y, c.z);
-  }
+  bool isInRange(const Coordinate& c) const { return isInRange(c.x, c.y, c.z); }
   bool isAllGrounded() const;
 
   int R;
