@@ -2,23 +2,35 @@
 
 #include "coordinate.h"
 
+#define REPEAT_COMMANDS(X) \
+  X(Halt)                  \
+  X(Wait)                  \
+  X(Flip)                  \
+  X(SMove)                 \
+  X(LMove)                 \
+  X(Fission)               \
+  X(Fill)                  \
+  X(Void)                  \
+  X(FusionP)               \
+  X(FusionS)               \
+  X(GFill)                 \
+  X(GVoid)                 \
+  X(Sync)
+
+#define FORWARD_DECLARE(A) struct A##Command;
+REPEAT_COMMANDS(FORWARD_DECLARE)
+#undef FORAED_DECLARE
+
 struct Command {
   enum Type {
-    kHalt,
-    kWait,
-    kFlip,
-    kSMove,
-    kLMove,
-    kFission,
-    kFill,
-    kVoid,
-    kFusionP,
-    kFusionS,
-    kGFill,
-    kGVoid,
-    // Original command
-    kSync,
+#define ENUMERATE(A) k##A,
+    REPEAT_COMMANDS(ENUMERATE)
+#undef ENUMERATE
   };
+
+#define CAST(A) inline const A##Command* to##A() const;
+  REPEAT_COMMANDS(CAST)
+#undef CAST
 
   virtual ~Command();
   virtual Type type() const = 0;
@@ -131,3 +143,10 @@ struct SyncCommand : public Command {
   ~SyncCommand() override {}
   Type type() const override { return kSync; }
 };
+
+#define CAST_IMPL(A)                             \
+  const A##Command* Command::to##A() const {     \
+    return static_cast<const A##Command*>(this); \
+  }
+REPEAT_COMMANDS(CAST_IMPL)
+#undef CAST_IMPL
