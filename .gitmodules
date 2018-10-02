@@ -10,3 +10,6 @@
 [submodule "2018/src/third_party/cmdline"]
 	path = 2018/src/third_party/cmdline
 	url = https://github.com/tanakh/cmdline.git
+[submodule "2018/src/third_party/googletest"]
+	path = 2018/src/third_party/googletest
+	url = https://github.com/google/googletest.git

@@ -5,6 +5,7 @@
 #include "base.h"
 
 struct Coordinate {
+  Coordinate(int x, int y, int z) : x(x), y(y), z(z) {}
   Coordinate(const Coordinate&) = default;
 
   int mLen() const { return std::abs(x) + std::abs(y) + std::abs(z); }
@@ -15,11 +16,10 @@ struct Coordinate {
   bool isLinear() const {
     return ((x | y) == 0 || (y | z) == 0 || (z | x) == 0) && (x | y | z);
   }
-  bool isSLD() const { return isLinear() && cLen() <= 5; }
-  bool isLLD() const { return isLinear() && cLen() <= 15; }
-
-  bool isNCD() const { return 0 < mLen() && mLen() <= 2 && cLen() == 1; }
-  bool isFCD() const { return 0 < cLen() && cLen() <= 30; }
+  virtual bool isSLD() const { return isLinear() && cLen() <= 5; }
+  virtual bool isLLD() const { return isLinear() && cLen() <= 15; }
+  virtual bool isND() const { return 0 < mLen() && mLen() <= 2 && cLen() == 1; }
+  virtual bool isFD() const { return 0 < cLen() && cLen() <= 30; }
 
   int hash() const { return (((x << 8) + y) << 8) + z; }
 
@@ -46,11 +46,51 @@ struct Coordinate {
     return 0;
   }
   uint8 nd() const {
-    DCHECK(isNCD());
+    DCHECK(isND());
     return (x + 1) * 9 + (y + 1) * 3 + (z + 1);
   }
 
   int x = 0;
   int y = 0;
   int z = 0;
+};
+
+struct SLD : public Coordinate {
+  SLD(int x, int y, int z) : Coordinate(x, y, z) {
+    DCHECK(Coordinate::isSLD());
+  }
+  bool isSLD() const override { return true; }
+  bool isLLD() const override { return false; }
+  bool isND() const override { return false; }
+  bool isFD() const override { return false; }
+};
+
+struct LLD : public Coordinate {
+  LLD(int x, int y, int z) : Coordinate(x, y, z) {
+    DCHECK(Coordinate::isLLD());
+  }
+  bool isSLD() const override { return false; }
+  bool isLLD() const override { return true; }
+  bool isND() const override { return false; }
+  bool isFD() const override { return false; }
+};
+
+struct ND : public Coordinate {
+  ND(int x, int y, int z) : Coordinate(x, y, z) {
+    DCHECK(Coordinate::isND());
+  }
+  bool isSLD() const override { return false; }
+  bool isLLD() const override { return false; }
+  bool isND() const override { return true; }
+  bool isFD() const override { return false; }
+};
+
+struct FD : public Coordinate {
+  FD(int x, int y, int z) : Coordinate(x, y, z) {
+    DCHECK(Coordinate::isFD());
+  }
+  bool isSLD() const override { return false; }
+  bool isLLD() const override { return false; }
+  bool isND() const override { return false; }
+  bool isFD() const override { return true; }
 };

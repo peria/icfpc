@@ -17,7 +17,7 @@
   X(GVoid)                 \
   X(Sync)
 
-#define FORWARD_DECLARE(A) struct A##Command;
+#define FORWARD_DECLARE(A) struct A;
 REPEAT_COMMANDS(FORWARD_DECLARE)
 #undef FORAED_DECLARE
 
@@ -28,125 +28,114 @@ struct Command {
 #undef ENUMERATE
   };
 
-#define CAST(A) inline const A##Command* to##A() const;
+#define CAST(A) inline const A* to##A() const;
   REPEAT_COMMANDS(CAST)
 #undef CAST
 
-  virtual ~Command();
+  virtual ~Command() {}
   virtual Type type() const = 0;
 };
 
-struct HaltCommand : public Command {
-  ~HaltCommand() override {}
+struct Halt : public Command {
+  ~Halt() override {}
   Type type() const override { return kHalt; }
 };
 
-struct WaitCommand : public Command {
-  ~WaitCommand() override {}
+struct Wait : public Command {
+  ~Wait() override {}
   Type type() const override { return kWait; }
 };
 
-struct FlipCommand : public Command {
-  ~FlipCommand() override {}
+struct Flip : public Command {
+  ~Flip() override {}
   Type type() const override { return kFlip; }
 };
 
-struct SMoveCommand : public Command {
-  SMoveCommand(const Coordinate& c) : lld(c) { DCHECK(lld.isLLD()); }
-  ~SMoveCommand() override {}
+struct SMove : public Command {
+  SMove(const LLD& c) : lld(c) {}
+  ~SMove() override {}
   Type type() const override { return kSMove; }
 
-  const Coordinate lld;
+  const LLD lld;
 };
 
-struct LMoveCommand : public Command {
-  LMoveCommand(const Coordinate& c1, const Coordinate& c2)
-      : sld1(c1), sld2(c2) {
-    DCHECK(sld1.isSLD());
-    DCHECK(sld2.isSLD());
-  }
-  ~LMoveCommand() override {}
+struct LMove : public Command {
+  LMove(const SLD& c1, const SLD& c2)
+      : sld1(c1), sld2(c2) {}
+  ~LMove() override {}
   Type type() const override { return kLMove; }
 
-  const Coordinate sld1;
-  const Coordinate sld2;
+  const SLD sld1;
+  const SLD sld2;
 };
 
-struct FissionCommand : public Command {
-  FissionCommand(const Coordinate& nd_, int m_) : nd(nd_), m(m_) {
-    DCHECK(nd.isNCD());
-  }
-  ~FissionCommand() override {}
+struct Fission : public Command {
+  Fission(const ND& nd_, int m_) : nd(nd_), m(m_) {}
+  ~Fission() override {}
   Type type() const override { return kFission; }
 
-  const Coordinate nd;
+  const ND nd;
   const int m;
 };
 
-struct FillCommand : public Command {
-  FillCommand(const Coordinate& nd_) : nd(nd_) { DCHECK(nd.isNCD()); }
-  ~FillCommand() override {}
+struct Fill : public Command {
+  Fill(const ND& nd_) : nd(nd_) {}
+  ~Fill() override {}
   Type type() const override { return kFill; }
 
-  const Coordinate nd;
+  const ND nd;
 };
 
-struct VoidCommand : public Command {
-  VoidCommand(const Coordinate& nd_) : nd(nd_) { DCHECK(nd.isNCD()); }
-  ~VoidCommand() override {}
+struct Void : public Command {
+  Void(const ND& nd_) : nd(nd_) {}
+  ~Void() override {}
   Type type() const override { return kVoid; }
 
-  const Coordinate nd;
+  const ND nd;
 };
 
-struct FusionPCommand : public Command {
-  FusionPCommand(const Coordinate& nd_) : nd(nd_) { DCHECK(nd.isNCD()); }
-  ~FusionPCommand() override {}
+struct FusionP : public Command {
+  FusionP(const ND& nd_) : nd(nd_) {}
+  ~FusionP() override {}
   Type type() const override { return kFusionP; }
 
-  const Coordinate nd;
+  const ND nd;
 };
 
-struct FusionSCommand : public Command {
-  FusionSCommand(const Coordinate& nd_) : nd(nd_) { DCHECK(nd.isNCD()); }
-  ~FusionSCommand() override {}
+struct FusionS : public Command {
+  FusionS(const ND& nd_) : nd(nd_) {}
+  ~FusionS() override {}
   Type type() const override { return kFusionS; }
 
-  const Coordinate nd;
+  const ND nd;
 };
 
-struct GFillCommand : public Command {
-  GFillCommand(const Coordinate& n, const Coordinate& f) : nd(n), fd(f) {
-    DCHECK(nd.isNCD());
-    DCHECK(fd.isFCD());
-  }
-  ~GFillCommand() override {}
+struct GFill : public Command {
+  GFill(const ND& nd, const FD& fd) : nd(nd), fd(fd) {}
+  ~GFill() override {}
   Type type() const override { return kGFill; }
 
-  const Coordinate nd;
-  const Coordinate fd;
+  const ND nd;
+  const FD fd;
 };
 
-struct GVoidCommand : public Command {
-  GVoidCommand(const Coordinate& n, const Coordinate& f) : nd(n), fd(f) {
-    DCHECK(nd.isNCD());
-    DCHECK(fd.isFCD());
-  }
-  ~GVoidCommand() override {}
+struct GVoid : public Command {
+  GVoid(const ND& nd, const FD& fd) : nd(nd), fd(fd) {}
+  ~GVoid() override {}
   Type type() const override { return kGVoid; }
 
-  const Coordinate nd;
-  const Coordinate fd;
+  const ND nd;
+  const FD fd;
 };
 
-struct SyncCommand : public Command {
-  ~SyncCommand() override {}
+struct Sync : public Command {
+  ~Sync() override {}
   Type type() const override { return kSync; }
 };
 
-#define CAST_IMPL(A)                             \
-  const A##Command* Command::to##A() const {     \
-    return static_cast<const A##Command*>(this); \
+#define CAST_IMPL(A)                      \
+  const A* Command::to##A() const {       \
+    return static_cast<const A*>(this);   \
   }
 REPEAT_COMMANDS(CAST_IMPL)
 #undef CAST_IMPL
