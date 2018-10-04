@@ -12,42 +12,16 @@ struct Coordinate {
   int cLen() const {
     return std::max(std::abs(x), std::max(std::abs(y), std::abs(z)));
   }
-
   bool isLinear() const {
     return ((x | y) == 0 || (y | z) == 0 || (z | x) == 0) && (x | y | z);
   }
-  virtual bool isSLD() const { return isLinear() && cLen() <= 5; }
-  virtual bool isLLD() const { return isLinear() && cLen() <= 15; }
-  virtual bool isND() const { return 0 < mLen() && mLen() <= 2 && cLen() == 1; }
-  virtual bool isFD() const { return 0 < cLen() && cLen() <= 30; }
 
   int hash() const { return (((x << 8) + y) << 8) + z; }
-
-  // Bit encode
-  uint8 a() const {
-    DCHECK(isSLD() || isLLD());
-    if (x)
-      return 0b01;
-    if (y)
-      return 0b10;
-    if (z)
-      return 0b11;
-
-    NOT_IMPLEMENTED();
-    return 0;
-  }
-  uint8 i() const {
-    if (isSLD())
-      return x + y + z + 5;
-    if (isLLD())
-      return x + y + z + 15;
-
-    NOT_IMPLEMENTED();
-    return 0;
-  }
-  uint8 nd() const {
-    DCHECK(isND());
-    return (x + 1) * 9 + (y + 1) * 3 + (z + 1);
+  Coordinate& operator+=(const Coordinate& other) {
+    x += other.x;
+    y += other.y;
+    z += other.z;
+    return *this;
   }
 
   int x = 0;
@@ -57,40 +31,57 @@ struct Coordinate {
 
 struct SLD : public Coordinate {
   SLD(int x, int y, int z) : Coordinate(x, y, z) {
-    DCHECK(Coordinate::isSLD());
+    DCHECK(isLinear());
+    DCHECK_LE(cLen(), 5);
   }
-  bool isSLD() const override { return true; }
-  bool isLLD() const override { return false; }
-  bool isND() const override { return false; }
-  bool isFD() const override { return false; }
+
+  // Bit encode
+  uint8 a() const {
+    if (x)
+      return 0b01;
+    if (y)
+      return 0b10;
+    if (z)
+      return 0b11;
+    NOT_IMPLEMENTED();
+    return 0;
+  }
+  uint8 i() const { return x + y + z + 5; }
 };
 
 struct LLD : public Coordinate {
   LLD(int x, int y, int z) : Coordinate(x, y, z) {
-    DCHECK(Coordinate::isLLD());
+    DCHECK(isLinear());
+    DCHECK_LE(cLen(), 15);
   }
-  bool isSLD() const override { return false; }
-  bool isLLD() const override { return true; }
-  bool isND() const override { return false; }
-  bool isFD() const override { return false; }
+
+  // Bit encode
+  uint8 a() const {
+    if (x)
+      return 0b01;
+    if (y)
+      return 0b10;
+    if (z)
+      return 0b11;
+    NOT_IMPLEMENTED();
+    return 0;
+  }
+  uint8 i() const { return x + y + z + 15; }
 };
 
 struct ND : public Coordinate {
   ND(int x, int y, int z) : Coordinate(x, y, z) {
-    DCHECK(Coordinate::isND());
+    DCHECK_GT(mLen(), 0);
+    DCHECK_LE(mLen(), 2);
+    DCHECK_EQ(1, cLen());
   }
-  bool isSLD() const override { return false; }
-  bool isLLD() const override { return false; }
-  bool isND() const override { return true; }
-  bool isFD() const override { return false; }
+
+  uint8 nd() const { return (x + 1) * 9 + (y + 1) * 3 + (z + 1); }
 };
 
 struct FD : public Coordinate {
   FD(int x, int y, int z) : Coordinate(x, y, z) {
-    DCHECK(Coordinate::isFD());
+    DCHECK_GT(cLen(), 0);
+    DCHECK_LE(cLen(), 30);
   }
-  bool isSLD() const override { return false; }
-  bool isLLD() const override { return false; }
-  bool isND() const override { return false; }
-  bool isFD() const override { return true; }
 };

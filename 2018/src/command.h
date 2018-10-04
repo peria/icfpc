@@ -60,8 +60,7 @@ struct SMove : public Command {
 };
 
 struct LMove : public Command {
-  LMove(const SLD& c1, const SLD& c2)
-      : sld1(c1), sld2(c2) {}
+  LMove(const SLD& c1, const SLD& c2) : sld1(c1), sld2(c2) {}
   ~LMove() override {}
   Type type() const override { return kLMove; }
 
@@ -133,9 +132,7 @@ struct Sync : public Command {
   Type type() const override { return kSync; }
 };
 
-#define CAST_IMPL(A)                      \
-  const A* Command::to##A() const {       \
-    return static_cast<const A*>(this);   \
-  }
+#define CAST_IMPL(A) \
+  const A* Command::to##A() const { return static_cast<const A*>(this); }
 REPEAT_COMMANDS(CAST_IMPL)
 #undef CAST_IMPL
