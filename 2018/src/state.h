@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <vector>
 
 #include "matrix.h"
@@ -9,11 +10,20 @@
 struct State {
   enum class Harmonics { kHigh, kLow };
 
+  struct Collaboration {
+    Nanobot& bot;
+    Command* command;
+  };
+
   bool isWellFormed() const;
 
   // Returns total energy to run a trace.
   int execute();
-  int step(Nanobot& bot, Command* command);
+  int step(Nanobot& bot,
+           Command* command,
+           std::vector<Collaboration>& collaborations);
+
+  Nanobot& findBot(int bid);
 
   int64 energy = 0;
   Harmonics harmonics;

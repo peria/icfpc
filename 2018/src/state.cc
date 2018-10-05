@@ -1,5 +1,7 @@
 #include "state.h"
 
+#include <algorithm>
+#include <vector>
 #include <unordered_set>
 
 #include "coordinate.h"
@@ -35,16 +37,27 @@ int State::execute() {
     energy += coef * matrix.R * matrix.R * matrix.R;
     energy += 20 * n;
 
+    std::vector<Collaboration> collaborations;
     if ((*cmd)->type() == Command::kHalt) {
-      step(bots[0], cmd->get());
+      step(bots[0], cmd->get(), collaborations);
       ++cmd;
       break;
     }
 
     for (int i = 0; i < n; ++i) {
-      energy += step(bots[i], cmd->get());
+      energy += step(bots[i], cmd->get(), collaborations);
       ++cmd;
     }
+
+    // Process collaborations
+
+    // Re-sort bots.
+    // TODO: Sort only if Fission or Fusion are addressed.
+    std::sort(bots.begin(), bots.end(), [](const Nanobot& a, const Nanobot& b) {
+      if (a.is_active == b.is_active)
+        return a.bid < b.bid;
+      return a.is_active;
+    });
     ++time;
   }
   DCHECK(cmd == trace.end());
@@ -52,12 +65,18 @@ int State::execute() {
   return energy;
 }
 
-int State::step(Nanobot& bot, Command* command) {
+int State::step(Nanobot& bot,
+                Command* command,
+                std::vector<Collaboration>& collaborations) {
   switch (command->type()) {
     case Command::kHalt: {
       CHECK_EQ(0, bot.position.hash());
       CHECK_EQ(1u, num_active_bots);
       CHECK_EQ(Harmonics::kLow, harmonics);
+      CHECK_EQ(1, bot.bid);
+      bot.is_active = false;
+      --num_active_bots;
+
       return 0;
     }
     case Command::kWait: {
@@ -84,35 +103,53 @@ int State::step(Nanobot& bot, Command* command) {
     case Command::kFission: {
       const ND& nd = command->toFission()->nd;
       const int m = command->toFission()->m;
+      DCHECK(bot.seeds);
 
-      Nanobot& nbot = bots[num_active_bots++];
-      nbot.position = bot.position;
-      nbot.position += nd;
-      NOT_IMPLEMENTED();
+      int bid = bot.takeSeed1();
+      Nanobot& nbot = findBot(bid);
+      DCHECK(!nbot.is_active);
+      nbot.is_active = true;
+      nbot.position = bot.position + nd;
+      nbot.seeds = bot.takeSeeds(m);
+
       return 24;
     }
     case Command::kFill: {
-      NOT_IMPLEMENTED();
+      const ND& nd = command->toFill()->nd;
+
+      Coordinate c = bot.position + nd;
+      if (matrix(c) == Voxel::kVoid) {
+        matrix(c) = Voxel::kFull;
+        return 12;
+      }
+      DCHECK_EQ(Voxel::kFull, matrix(c));
       return 0;
     }
     case Command::kVoid: {
-      NOT_IMPLEMENTED();
-      return 0;
+      const ND& nd = command->toVoid()->nd;
+
+      Coordinate c = bot.position + nd;
+      if (matrix(c) == Voxel::kFull) {
+        matrix(c) = Voxel::kVoid;
+        return -12;
+      }
+      DCHECK_EQ(Voxel::kVoid, matrix(c));
+      return 3;
     }
     case Command::kFusionP: {
-      NOT_IMPLEMENTED();
+      collaborations.emplace_back(Collaboration{bot, command});
       return 0;
     }
     case Command::kFusionS: {
-      NOT_IMPLEMENTED();
+      collaborations.emplace_back(Collaboration{bot, command});
       return -24;
     }
     case Command::kGFill: {
-      NOT_IMPLEMENTED();
+      collaborations.emplace_back(Collaboration{bot, command});
       return 0;
     }
     case Command::kGVoid: {
-      NOT_IMPLEMENTED();
+      collaborations.emplace_back(Collaboration{bot, command});
       return 0;
     }
     case Command::kSync: {
@@ -123,4 +160,9 @@ int State::step(Nanobot& bot, Command* command) {
 
   NOT_IMPLEMENTED();
   return 0;
+}
+
+Nanobot& State::findBot(int bid) {
+  return *find_if(bots.begin(), bots.end(),
+                  [bid](const Nanobot& b) { return bid == b.bid; });
 }

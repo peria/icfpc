@@ -16,3 +16,5 @@ using uint16 = std::uint16_t;
 using uint8 = std::uint8_t;
 
 #define NOT_IMPLEMENTED() CHECK(false) << "Not implemented."
+
+int PopCnt(uint64);

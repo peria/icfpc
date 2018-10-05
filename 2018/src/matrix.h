@@ -6,7 +6,7 @@
 #include "base.h"
 #include "coordinate.h"
 
-enum class Voxel : uint8 { kFull, kEmpty };
+enum class Voxel : uint8 { kVoid, kFull, kBot };
 
 struct Matrix {
   Matrix(int r) : R(r), voxels_(r * r * r) {}
@@ -45,3 +45,18 @@ struct Matrix {
  private:
   std::vector<Voxel> voxels_;
 };
+
+inline std::ostream& operator<<(std::ostream& ost, const Voxel& v) {
+  switch (v) {
+    case Voxel::kVoid:
+      ost << "Void";
+      break;
+    case Voxel::kFull:
+      ost << "Full";
+      break;
+    case Voxel::kBot:
+      ost << "Bot";
+      break;
+  }
+  return ost;
+}

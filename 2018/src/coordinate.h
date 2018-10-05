@@ -23,6 +23,9 @@ struct Coordinate {
     z += other.z;
     return *this;
   }
+  Coordinate operator+(const Coordinate& other) {
+    return Coordinate(x + other.x, y + other.y, z + other.z);
+  }
 
   int x = 0;
   int y = 0;
