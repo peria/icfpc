@@ -32,6 +32,7 @@ struct Command {
   REPEAT_COMMANDS(CAST)
 #undef CAST
 
+  virtual bool needSort() const { return false; }
   virtual ~Command() {}
   virtual Type type() const = 0;
 };
@@ -72,6 +73,7 @@ struct Fission : public Command {
   Fission(const ND& nd_, int m_) : nd(nd_), m(m_) {}
   ~Fission() override {}
   Type type() const override { return kFission; }
+  bool needSort() const override { return true; }
 
   const ND nd;
   const int m;
@@ -97,6 +99,7 @@ struct FusionP : public Command {
   FusionP(const ND& nd_) : nd(nd_) {}
   ~FusionP() override {}
   Type type() const override { return kFusionP; }
+  bool needSort() const override { return true; }
 
   const ND nd;
 };
@@ -105,6 +108,7 @@ struct FusionS : public Command {
   FusionS(const ND& nd_) : nd(nd_) {}
   ~FusionS() override {}
   Type type() const override { return kFusionS; }
+  bool needSort() const override { return true; }
 
   const ND nd;
 };

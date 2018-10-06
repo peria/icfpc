@@ -34,9 +34,12 @@ struct State {
   // Running state
   int time;
   int num_active_bots;
+
+ private:
+  void ProcessFusion(std::vector<Collaboration>& collaboration);
 };
 
-std::ostream& operator<<(std::ostream& ost, const State::Harmonics h) {
+inline std::ostream& operator<<(std::ostream& ost, const State::Harmonics h) {
   switch (h) {
     case State::Harmonics::kHigh:
       ost << "High";

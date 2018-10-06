@@ -5,6 +5,7 @@
 struct Nanobot {
   int takeSeed1();
   uint64 takeSeeds(int m);
+  void fuse(Nanobot& s);
 
   int bid;
   Coordinate position;

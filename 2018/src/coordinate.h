@@ -23,14 +23,19 @@ struct Coordinate {
     z += other.z;
     return *this;
   }
-  Coordinate operator+(const Coordinate& other) {
+  Coordinate operator+(const Coordinate& other) const {
     return Coordinate(x + other.x, y + other.y, z + other.z);
+  }
+  bool operator==(const Coordinate& other) const {
+    return hash() == other.hash();
   }
 
   int x = 0;
   int y = 0;
   int z = 0;
 };
+
+std::ostream& operator<<(std::ostream& ost, const Coordinate& c);
 
 struct SLD : public Coordinate {
   SLD(int x, int y, int z) : Coordinate(x, y, z) {

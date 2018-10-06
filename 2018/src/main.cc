@@ -4,12 +4,12 @@
 #include <memory>
 
 #include "matrix.h"
-#include "state.h"
 #include "solver.h"
+#include "state.h"
 // 3rd party
 #include "cmdline.h"
 
-cmdline::parser ParseOption(int, char* []);
+cmdline::parser ParseOption(int, char*[]);
 
 int main(int argc, char* argv[]) {
   cmdline::parser options = ParseOption(argc, argv);

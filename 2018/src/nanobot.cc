@@ -17,3 +17,9 @@ uint64 Nanobot::takeSeeds(int m) {
   }
   return ret;
 }
+
+void Nanobot::fuse(Nanobot& s) {
+  DCHECK(s.is_active);
+  seeds |= (s.seeds | (1ull << (s.bid - 1)));
+  s.is_active = false;
+}

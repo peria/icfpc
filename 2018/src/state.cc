@@ -1,8 +1,8 @@
 #include "state.h"
 
 #include <algorithm>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 #include "coordinate.h"
 
@@ -32,32 +32,38 @@ int State::execute() {
   auto cmd = trace.begin();
   while (true) {
     // run a time step
+    Command* command = cmd->get();
     const int n = num_active_bots;
     const int coef = (harmonics == Harmonics::kHigh) ? 30 : 3;
     energy += coef * matrix.R * matrix.R * matrix.R;
     energy += 20 * n;
 
     std::vector<Collaboration> collaborations;
-    if ((*cmd)->type() == Command::kHalt) {
-      step(bots[0], cmd->get(), collaborations);
+    if (command->type() == Command::kHalt) {
+      step(bots[0], command, collaborations);
       ++cmd;
       break;
     }
 
+    bool need_sort = false;
     for (int i = 0; i < n; ++i) {
-      energy += step(bots[i], cmd->get(), collaborations);
+      energy += step(bots[i], command, collaborations);
+      need_sort = (need_sort || command->needSort());
       ++cmd;
     }
 
     // Process collaborations
+    ProcessFusion(collaborations);
 
     // Re-sort bots.
-    // TODO: Sort only if Fission or Fusion are addressed.
-    std::sort(bots.begin(), bots.end(), [](const Nanobot& a, const Nanobot& b) {
-      if (a.is_active == b.is_active)
-        return a.bid < b.bid;
-      return a.is_active;
-    });
+    if (need_sort) {
+      std::sort(bots.begin(), bots.end(),
+                [](const Nanobot& a, const Nanobot& b) {
+                  if (a.is_active == b.is_active)
+                    return a.bid < b.bid;
+                  return a.is_active;
+                });
+    }
     ++time;
   }
   DCHECK(cmd == trace.end());
@@ -165,4 +171,26 @@ int State::step(Nanobot& bot,
 Nanobot& State::findBot(int bid) {
   return *find_if(bots.begin(), bots.end(),
                   [bid](const Nanobot& b) { return bid == b.bid; });
+}
+
+void State::ProcessFusion(std::vector<Collaboration>& collaborations) {
+  for (auto collab : collaborations) {
+    if (collab.command->type() != Command::kFusionP)
+      continue;
+    Coordinate dst = collab.bot.position + collab.command->toFusionP()->nd;
+    auto sec = find_if(collaborations.begin(), collaborations.end(),
+                       [dst](const Collaboration& col) {
+                         return col.command->type() == Command::kFusionS &&
+                                col.bot.position.hash() == dst.hash();
+                       });
+    if (sec == collaborations.end()) {
+      LOG(ERROR) << "Cannot find opposite bot to fusion with bot["
+                 << collab.bot.bid << "]";
+      exit(1);
+    }
+    DCHECK_EQ(collab.bot.position,
+              sec->bot.position + sec->command->toFusionS()->nd);
+    collab.bot.fuse(sec->bot);
+    --num_active_bots;
+  }
 }
