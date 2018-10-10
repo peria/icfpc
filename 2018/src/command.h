@@ -33,7 +33,7 @@ struct Command {
 #undef CAST
 
   virtual bool needSort() const { return false; }
-  virtual ~Command() {}
+  virtual ~Command() = default;
   virtual Type type() const = 0;
 };
 

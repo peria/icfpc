@@ -8,8 +8,8 @@
 
 TEST(TraceTest, SMove) {
   Trace trace;
-  trace.emplace_back(new SMove(LLD(12, 0, 0)));
-  trace.emplace_back(new SMove(LLD(0, 0, -4)));
+  trace.emplace_back(std::make_unique<SMove>(LLD(12, 0, 0)));
+  trace.emplace_back(std::make_unique<SMove>(LLD(0, 0, -4)));
 
   auto dump = trace.toString();
   EXPECT_EQ(4u, dump.size());
@@ -21,8 +21,8 @@ TEST(TraceTest, SMove) {
 
 TEST(TraceTest, LMove) {
   Trace trace;
-  trace.emplace_back(new LMove(SLD(3, 0, 0), SLD(0, -5, 0)));
-  trace.emplace_back(new LMove(SLD(0, -2, 0), SLD(0, 0, 2)));
+  trace.emplace_back(std::make_unique<LMove>(SLD(3, 0, 0), SLD(0, -5, 0)));
+  trace.emplace_back(std::make_unique<LMove>(SLD(0, -2, 0), SLD(0, 0, 2)));
 
   auto dump = trace.toString();
   EXPECT_EQ(4u, dump.size());
@@ -34,8 +34,8 @@ TEST(TraceTest, LMove) {
 
 TEST(TraceTest, Fusion) {
   Trace trace;
-  trace.emplace_back(new FusionP(ND(-1, 1, 0)));
-  trace.emplace_back(new FusionS(ND(1, -1, 0)));
+  trace.emplace_back(std::make_unique<FusionP>(ND(-1, 1, 0)));
+  trace.emplace_back(std::make_unique<FusionS>(ND(1, -1, 0)));
 
   auto dump = trace.toString();
   EXPECT_EQ(2u, dump.size());
@@ -45,7 +45,7 @@ TEST(TraceTest, Fusion) {
 
 TEST(TraceTest, Fission) {
   Trace trace;
-  trace.emplace_back(new Fission(ND(0, 0, 1), 5));
+  trace.emplace_back(std::make_unique<Fission>(ND(0, 0, 1), 5));
 
   auto dump = trace.toString();
   EXPECT_EQ(2u, dump.size());
@@ -55,8 +55,8 @@ TEST(TraceTest, Fission) {
 
 TEST(TraceTest, FillVoid) {
   Trace trace;
-  trace.emplace_back(new Fill(ND(0, -1, 0)));
-  trace.emplace_back(new Void(ND(1, 0, 1)));
+  trace.emplace_back(std::make_unique<Fill>(ND(0, -1, 0)));
+  trace.emplace_back(std::make_unique<Void>(ND(1, 0, 1)));
 
   auto dump = trace.toString();
   EXPECT_EQ(2u, dump.size());
@@ -66,7 +66,7 @@ TEST(TraceTest, FillVoid) {
 
 TEST(TraceTest, GFill) {
   Trace trace;
-  trace.emplace_back(new GFill(ND(0, -1, 0), FD(10, -15, 20)));
+  trace.emplace_back(std::make_unique<GFill>(ND(0, -1, 0), FD(10, -15, 20)));
 
   auto dump = trace.toString();
   EXPECT_EQ(4u, dump.size());
@@ -78,7 +78,7 @@ TEST(TraceTest, GFill) {
 
 TEST(TraceTest, GVoid) {
   Trace trace;
-  trace.emplace_back(new GVoid(ND(1, 0, 0), FD(5, 5, -5)));
+  trace.emplace_back(std::make_unique<GVoid>(ND(1, 0, 0), FD(5, 5, -5)));
 
   auto dump = trace.toString();
   EXPECT_EQ(4u, dump.size());

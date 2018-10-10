@@ -8,6 +8,8 @@
 #include "trace.h"
 
 struct State {
+  State(const Matrix& matrix);
+
   enum class Harmonics { kHigh, kLow };
 
   struct Collaboration {
@@ -26,9 +28,9 @@ struct State {
   Nanobot& findBot(int bid);
 
   int64 energy = 0;
-  Harmonics harmonics;
+  Harmonics harmonics = Harmonics::kLow;
   Matrix matrix;
-  std::vector<Nanobot> bots;
+  std::vector<Nanobot> bots;  // [20] for lightning, [40] for full.
   Trace trace;
 
   // Running state

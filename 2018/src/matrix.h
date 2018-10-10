@@ -11,6 +11,7 @@ enum class Voxel : uint8 { kVoid, kFull, kBot };
 struct Matrix {
   Matrix(int r) : R(r), voxels_(r * r * r) {}
   Matrix(const std::string& filename);
+  Matrix(const Matrix& m) : R(m.R), voxels_(m.voxels_) {}
 
   Voxel& operator()(int x, int y, int z) {
     return voxels_[(x * R + y) * R + z];

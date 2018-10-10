@@ -6,6 +6,21 @@
 
 #include "coordinate.h"
 
+namespace {
+
+const int kNumNanobots = 20;  // Lightning
+// const int kNumNanobots = 40;  // Full contest
+
+}  // namespace
+
+State::State(const Matrix& matrix) : matrix(matrix), bots(kNumNanobots) {
+  // Initialize bots
+  for (int i = 0; i < kNumNanobots; ++i)
+    bots[i].bid = i + 1;
+  bots[0].seeds = (1ull << kNumNanobots) - 2;
+  bots[0].is_active = true;
+}
+
 bool State::isWellFormed() const {
   if (harmonics != Harmonics::kLow)
     return false;
