@@ -5,8 +5,15 @@
 #include "base.h"
 
 struct Coordinate {
+  struct Hash {
+    int operator()(const Coordinate& c) const {
+      return (((c.x << 8) + c.y) << 8) + c.z;
+    }
+  };
+
   Coordinate(int x, int y, int z) : x(x), y(y), z(z) {}
   Coordinate(const Coordinate&) = default;
+  Coordinate(int h) : Coordinate(h >> 16, (h >> 8) & 0xff, h & 0xff) {}
 
   int mLen() const { return std::abs(x) + std::abs(y) + std::abs(z); }
   int cLen() const {
@@ -16,7 +23,6 @@ struct Coordinate {
     return ((x | y) == 0 || (y | z) == 0 || (z | x) == 0) && (x | y | z);
   }
 
-  int hash() const { return (((x << 8) + y) << 8) + z; }
   Coordinate& operator+=(const Coordinate& other) {
     x += other.x;
     y += other.y;
@@ -26,8 +32,11 @@ struct Coordinate {
   Coordinate operator+(const Coordinate& other) const {
     return Coordinate(x + other.x, y + other.y, z + other.z);
   }
+  Coordinate operator-(const Coordinate& other) const {
+    return Coordinate(x - other.x, y - other.y, z - other.z);
+  }
   bool operator==(const Coordinate& other) const {
-    return hash() == other.hash();
+    return x == other.x && y == other.y && z == other.z;
   }
 
   int x = 0;

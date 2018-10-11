@@ -27,13 +27,13 @@ bool State::isWellFormed() const {
   if (!matrix.isAllGrounded())
     return false;
 
-  std::unordered_set<int> actives;
+  std::unordered_set<Coordinate, Coordinate::Hash> actives;
   for (auto& bot : bots) {
     const Coordinate& c = bot.position;
     if (!matrix.isInRange(c))
       return false;
     // Check dup
-    if (!actives.insert(c.hash()).second)
+    if (!actives.insert(c).second)
       return false;
   }
   return true;
@@ -91,7 +91,7 @@ int State::step(Nanobot& bot,
                 std::vector<Collaboration>& collaborations) {
   switch (command->type()) {
     case Command::kHalt: {
-      CHECK_EQ(0, bot.position.hash());
+      CHECK_EQ(Coordinate(0, 0, 0), bot.position);
       CHECK_EQ(1u, num_active_bots);
       CHECK_EQ(Harmonics::kLow, harmonics);
       CHECK_EQ(1, bot.bid);
@@ -196,7 +196,7 @@ void State::ProcessFusion(std::vector<Collaboration>& collaborations) {
     auto sec = find_if(collaborations.begin(), collaborations.end(),
                        [dst](const Collaboration& col) {
                          return col.command->type() == Command::kFusionS &&
-                                col.bot.position.hash() == dst.hash();
+                                col.bot.position == dst;
                        });
     if (sec == collaborations.end()) {
       LOG(ERROR) << "Cannot find opposite bot to fusion with bot["
