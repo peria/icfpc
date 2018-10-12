@@ -5,6 +5,7 @@
 
 #include "base.h"
 #include "coordinate.h"
+#include "trace.h"
 
 enum class Voxel : uint8 { kVoid, kFull, kBot };
 
@@ -40,6 +41,8 @@ struct Matrix {
   }
   bool isInRange(const Coordinate& c) const { return isInRange(c.x, c.y, c.z); }
   bool isAllGrounded() const;
+
+  Trace findPath(const Coordinate& from, const Coordinate& to);
 
   int R;
 

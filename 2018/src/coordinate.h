@@ -32,6 +32,12 @@ struct Coordinate {
   Coordinate operator+(const Coordinate& other) const {
     return Coordinate(x + other.x, y + other.y, z + other.z);
   }
+  Coordinate& operator-=(const Coordinate& other) {
+    x -= other.x;
+    y -= other.y;
+    z -= other.z;
+    return *this;
+  }
   Coordinate operator-(const Coordinate& other) const {
     return Coordinate(x - other.x, y - other.y, z - other.z);
   }
