@@ -109,21 +109,21 @@ int State::step(Nanobot& bot,
       return 0;
     }
     case Command::kSMove: {
-      const LLD& lld = command->toSMove()->lld;
+      const LLD& lld = command->To<SMove>()->lld;
       bot.position += lld;
       return 2 * lld.mLen();
     }
     case Command::kLMove: {
-      const SLD& sld1 = command->toLMove()->sld1;
-      const SLD& sld2 = command->toLMove()->sld2;
+      const SLD& sld1 = command->To<LMove>()->sld1;
+      const SLD& sld2 = command->To<LMove>()->sld2;
 
       bot.position += sld1;
       bot.position += sld2;
       return 2 * (sld1.mLen() + 2 + sld2.mLen());
     }
     case Command::kFission: {
-      const ND& nd = command->toFission()->nd;
-      const int m = command->toFission()->m;
+      const ND& nd = command->To<Fission>()->nd;
+      const int m = command->To<Fission>()->m;
       DCHECK(bot.seeds);
 
       int bid = bot.takeSeed1();
@@ -136,7 +136,7 @@ int State::step(Nanobot& bot,
       return 24;
     }
     case Command::kFill: {
-      const ND& nd = command->toFill()->nd;
+      const ND& nd = command->To<Fill>()->nd;
 
       Coordinate c = bot.position + nd;
       if (matrix(c) == Voxel::kVoid) {
@@ -147,7 +147,7 @@ int State::step(Nanobot& bot,
       return 0;
     }
     case Command::kVoid: {
-      const ND& nd = command->toVoid()->nd;
+      const ND& nd = command->To<Void>()->nd;
 
       Coordinate c = bot.position + nd;
       if (matrix(c) == Voxel::kFull) {
@@ -192,7 +192,7 @@ void State::ProcessFusion(std::vector<Collaboration>& collaborations) {
   for (auto collab : collaborations) {
     if (collab.command->type() != Command::kFusionP)
       continue;
-    Coordinate dst = collab.bot.position + collab.command->toFusionP()->nd;
+    Coordinate dst = collab.bot.position + collab.command->To<FusionP>()->nd;
     auto sec = find_if(collaborations.begin(), collaborations.end(),
                        [dst](const Collaboration& col) {
                          return col.command->type() == Command::kFusionS &&
@@ -204,7 +204,7 @@ void State::ProcessFusion(std::vector<Collaboration>& collaborations) {
       exit(1);
     }
     DCHECK_EQ(collab.bot.position,
-              sec->bot.position + sec->command->toFusionS()->nd);
+              sec->bot.position + sec->command->To<FusionS>()->nd);
     collab.bot.fuse(sec->bot);
     --num_active_bots;
   }

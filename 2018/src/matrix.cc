@@ -133,7 +133,7 @@ Trace Matrix::findPath(const Coordinate& from, const Coordinate& to) {
   Coordinate c(to);
   while (steps[c].command) {
     trace.push_back(std::move(steps[c].command));
-    c -= trace.back()->toSMove()->lld;
+    c -= trace.back()->To<SMove>()->lld;
   }
   std::reverse(trace.begin(), trace.end());
   return std::move(trace);
