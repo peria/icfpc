@@ -42,10 +42,13 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
     std::unordered_map<Coordinate, int, Coordinate::Hash> fillables;
     for (auto& c : to_fills) {
       for (auto& nd : kNDs) {
+        if (nd.y < 0)
+          continue;
+
         Coordinate d(c + nd);
         if (!src.isInRange(d) || state.matrix(d) != Voxel::kVoid)
           continue;
-        fillables[d] = fillables[d] + 1;
+        fillables[d] = fillables[d] + 1 + nd.y;
       }
     }
 
@@ -54,7 +57,7 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
     for (const auto& fill : fillables) {
       Coordinate c(fill.first);
       int dist = (c - from).mLen();
-      int value = dist * 20 - fill.second;
+      int value = dist * 50 + c.y * 10 - fill.second;
       if (value < best_value) {
         ret = c;
         best_value = value;
@@ -65,29 +68,50 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
   };
 
   Nanobot& bot = state.bots[0];
+  int no_move_count = 0;
   while (to_fills.size()) {
+    LOG(INFO) << bot.position << " " << to_fills.size();
     Coordinate to_go(computeToGo(bot.position));
+    if (!dst.isInRange(to_go)) {
+      LOG(INFO) << "nowhere to go";
+      break;
+    }
+
     {
       Trace route(state.matrix.findPath(bot.position, to_go));
+      if (route.size() == 0) {
+        if (++no_move_count > 18) {
+          LOG(INFO) << "no move";
+          break;
+        }
+      } else {
+        no_move_count = 0;
+      }
       for (auto& cmd : route) {
         state.trace.push_back(std::move(cmd));
       }
     }
     bot.position = to_go;
 
+    std::vector<Coordinate> filleds;
     for (const ND& nd : kNDs) {
+      if (nd.y > 0)
+        continue;
       Coordinate c(to_go + nd);
       auto itr = to_fills.find(c);
       if (itr != to_fills.end()) {
         state.trace.emplace_back(std::make_unique<Fill>(nd));
         state.matrix(c) = Voxel::kFull;
         to_fills.erase(itr);
-        for (const ND& dd : kDDs) {
-          Coordinate g(c + dd);
-          if (dst.isInRange(g) && dst(g) == Voxel::kFull &&
-              state.matrix(g) == Voxel::kVoid) {
-            to_fills.insert(g);
-          }
+        filleds.push_back(c);
+      }
+    }
+    for (const Coordinate& c : filleds) {
+      for (const ND& dd : kDDs) {
+        Coordinate g(c + dd);
+        if (dst.isInRange(g) && dst(g) == Voxel::kFull &&
+            state.matrix(g) == Voxel::kVoid) {
+          to_fills.insert(g);
         }
       }
     }

@@ -97,7 +97,7 @@ Trace Matrix::findPath(const Coordinate& from, const Coordinate& to) {
   std::deque<Coordinate> Q;
   Compare cmp(to, steps);
   Q.push_back(from);
-  while (steps.find(to) == steps.end()) {
+  while (Q.size() && steps.find(to) == steps.end()) {
     std::sort(Q.begin(), Q.end(), cmp);
     Coordinate c = Q.front();
     Q.pop_front();
