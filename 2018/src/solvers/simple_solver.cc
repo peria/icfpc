@@ -1,5 +1,7 @@
 #include "simple_solver.h"
 
+#include <glog/logging.h>
+
 #include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
@@ -42,9 +44,6 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
     std::unordered_map<Coordinate, int, Coordinate::Hash> fillables;
     for (auto& c : to_fills) {
       for (auto& nd : kNDs) {
-        if (nd.y < 0)
-          continue;
-
         Coordinate d(c + nd);
         if (!src.isInRange(d) || state.matrix(d) != Voxel::kVoid)
           continue;
@@ -57,7 +56,7 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
     for (const auto& fill : fillables) {
       Coordinate c(fill.first);
       int dist = (c - from).mLen();
-      int value = dist * 50 + c.y - fill.second;
+      int value = dist * 50 + c.y;
       if (value < best_value) {
         ret = c;
         best_value = value;
@@ -67,10 +66,19 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
     return ret;
   };
 
+  int loop_count = 0;
   Nanobot& bot = state.bots[0];
   do {
     std::unordered_set<Coordinate, Coordinate::Hash> next_to_fills;
     while (to_fills.size()) {
+      if (++loop_count > 10000) {
+        LOG(INFO) << "too long. abort. "
+                  << "no ways found to fill " << to_fills.size() << " voxels.";
+        to_fills.clear();
+        next_to_fills.clear();
+        break;
+      }
+
       Coordinate to_go(computeToGo(bot.position));
       if (!dst.isInRange(to_go))
         break;
@@ -84,16 +92,20 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
       bot.position = to_go;
 
       std::vector<Coordinate> filleds;
-      for (const ND& nd : kNDs) {
-        if (nd.y > 0)
-          continue;
-        Coordinate c(to_go + nd);
-        auto itr = to_fills.find(c);
-        if (itr != to_fills.end()) {
-          state.trace.emplace_back(std::make_unique<Fill>(nd));
-          state.matrix(c) = Voxel::kFull;
-          to_fills.erase(itr);
-          filleds.push_back(c);
+      for (int dy = -1; dy <= 1; ++dy) {
+        if (filleds.size())
+          break;
+        for (const ND& nd : kNDs) {
+          if (nd.y != dy)
+            continue;
+          Coordinate c(to_go + nd);
+          auto itr = to_fills.find(c);
+          if (itr != to_fills.end()) {
+            state.trace.emplace_back(std::make_unique<Fill>(nd));
+            state.matrix(c) = Voxel::kFull;
+            to_fills.erase(itr);
+            filleds.push_back(c);
+          }
         }
       }
       for (const Coordinate& filled : filleds) {
@@ -106,7 +118,7 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
         }
       }
     }
-    to_fills = next_to_fills;
+    to_fills.insert(next_to_fills.begin(), next_to_fills.end());
   } while (to_fills.size());
 
   {
