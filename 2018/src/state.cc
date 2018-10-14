@@ -146,6 +146,7 @@ int State::step(Nanobot& bot,
         matrix(c) = Voxel::kFull;
         return 12;
       }
+      LOG(INFO) << "Try to fill a full voxel " << c << " from " << bot.position;
       DCHECK_EQ(Voxel::kFull, matrix(c));
       return 6;
     }

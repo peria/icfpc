@@ -95,6 +95,7 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
             bot.trace.emplace_back(std::make_unique<Fill>(nd));
             state.matrix(c) = Voxel::kFull;
             to_fills.erase(itr);
+            next_to_fills.erase(c);
             filleds.push_back(c);
           }
         }
