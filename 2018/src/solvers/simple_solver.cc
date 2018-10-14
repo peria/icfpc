@@ -31,6 +31,11 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
   const int R = src.R;
   State state(src);
 
+  if (R > 20) {
+    LOG(INFO) << "No work for R=" << R;
+    return Trace();
+  }
+
   std::unordered_set<Coordinate, Coordinate::Hash> to_fills;
   for (int x = 0; x < R; ++x) {
     for (int z = 0; z < R; ++z) {
@@ -66,18 +71,24 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
     return ret;
   };
 
-  int loop_count = 0;
   Nanobot& bot = state.bots[0];
+  int stacking = 0;
+  Coordinate stack_pos(-1, -1, -1);
+  size_t stack_size = 0;
   do {
     std::unordered_set<Coordinate, Coordinate::Hash> next_to_fills;
     while (to_fills.size()) {
-      if (++loop_count > 10000) {
+      if (stack_size != to_fills.size() || stack_pos != bot.position)
+        stacking = -1;
+      if (++stacking > 10) {
         LOG(INFO) << "too long. abort. "
                   << "no ways found to fill " << to_fills.size() << " voxels.";
         to_fills.clear();
         next_to_fills.clear();
         break;
       }
+      stack_size = to_fills.size();
+      stack_pos = bot.position;
       // LOG(INFO) << bot.position << " " << to_fills.size();
 
       bot.goTo(state.matrix, computeToGo(bot.position));

@@ -44,6 +44,9 @@ struct Coordinate {
   bool operator==(const Coordinate& other) const {
     return x == other.x && y == other.y && z == other.z;
   }
+  bool operator!=(const Coordinate& other) const {
+    return !operator==(other);
+  }
 
   int x = 0;
   int y = 0;
