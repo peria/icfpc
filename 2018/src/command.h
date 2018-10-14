@@ -19,7 +19,7 @@ struct Command {
     kSync,
   };
 
-  template<typename T>
+  template <typename T>
   const T* To() const {
     return static_cast<const T*>(this);
   }
