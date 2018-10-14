@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ostream>
+
 #include "coordinate.h"
 
 struct Command {
@@ -127,3 +129,5 @@ struct Sync : public Command {
   ~Sync() override {}
   Type type() const override { return kSync; }
 };
+
+std::ostream& operator<<(std::ostream&, const Command&);

@@ -71,7 +71,7 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
   do {
     std::unordered_set<Coordinate, Coordinate::Hash> next_to_fills;
     while (to_fills.size()) {
-      if (++loop_count > 30000) {
+      if (++loop_count > 10000) {
         LOG(INFO) << "too long. abort. "
                   << "no ways found to fill " << to_fills.size() << " voxels.";
         to_fills.clear();
@@ -80,17 +80,7 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
       }
       // LOG(INFO) << bot.position << " " << to_fills.size();
 
-      Coordinate to_go(computeToGo(bot.position));
-      if (!dst.isInRange(to_go))
-        break;
-
-      {
-        Trace route(state.matrix.findPath(bot.position, to_go));
-        for (auto& cmd : route) {
-          state.trace.push_back(std::move(cmd));
-        }
-      }
-      bot.position = to_go;
+      bot.goTo(state.matrix, computeToGo(bot.position));
 
       std::vector<Coordinate> filleds;
       for (int dy = 0; dy <= 1; ++dy) {
@@ -99,10 +89,10 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
         for (const ND& nd : kNDs) {
           if (nd.y > dy)
             continue;
-          Coordinate c(to_go + nd);
+          Coordinate c(bot.position + nd);
           auto itr = to_fills.find(c);
           if (itr != to_fills.end()) {
-            state.trace.emplace_back(std::make_unique<Fill>(nd));
+            bot.trace.emplace_back(std::make_unique<Fill>(nd));
             state.matrix(c) = Voxel::kFull;
             to_fills.erase(itr);
             filleds.push_back(c);
@@ -122,14 +112,10 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
     to_fills = next_to_fills;
   } while (to_fills.size());
 
-  {
-    Trace route(state.matrix.findPath(bot.position, Coordinate(0, 0, 0)));
-    for (auto& cmd : route) {
-      state.trace.push_back(std::move(cmd));
-    }
-  }
+  bot.goTo(state.matrix, Coordinate(0, 0, 0));
 
-  state.trace.emplace_back(std::make_unique<Halt>());
+  state.collectTrace();
+  state.execute();
   LOG(INFO) << "commands: " << state.trace.size();
   LOG(INFO) << "energy: " << state.energy;
   return std::move(state.trace);

@@ -42,7 +42,7 @@ struct Matrix {
   bool isInRange(const Coordinate& c) const { return isInRange(c.x, c.y, c.z); }
   bool isAllGrounded() const;
 
-  Trace findPath(const Coordinate& from, const Coordinate& to);
+  Trace findPath(const Coordinate& from, const Coordinate& to) const;
 
   int R;
 

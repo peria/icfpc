@@ -42,6 +42,7 @@ bool State::isWellFormed() const {
 int State::execute() {
   time = 0;
   energy = 0;
+  matrix = Matrix(matrix.R);
   num_active_bots = 1;
 
   auto cmd = trace.begin();
@@ -52,6 +53,8 @@ int State::execute() {
     const int coef = (harmonics == Harmonics::kHigh) ? 30 : 3;
     energy += coef * matrix.R * matrix.R * matrix.R;
     energy += 20 * n;
+
+    // LOG(INFO) << *command << " " << energy;
 
     std::vector<Collaboration> collaborations;
     if (command->type() == Command::kHalt) {
@@ -144,7 +147,7 @@ int State::step(Nanobot& bot,
         return 12;
       }
       DCHECK_EQ(Voxel::kFull, matrix(c));
-      return 0;
+      return 6;
     }
     case Command::kVoid: {
       const ND& nd = command->To<Void>()->nd;
@@ -186,6 +189,13 @@ int State::step(Nanobot& bot,
 Nanobot& State::findBot(int bid) {
   return *find_if(bots.begin(), bots.end(),
                   [bid](const Nanobot& b) { return bid == b.bid; });
+}
+
+void State::collectTrace() {
+  for (auto& cmd : bots[0].trace) {
+    trace.push_back(std::move(cmd));
+  }
+  trace.push_back(std::make_unique<Halt>());
 }
 
 void State::ProcessFusion(std::vector<Collaboration>& collaborations) {

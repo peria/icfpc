@@ -87,7 +87,7 @@ struct Compare {
 
 }  // namespace
 
-Trace Matrix::findPath(const Coordinate& from, const Coordinate& to) {
+Trace Matrix::findPath(const Coordinate& from, const Coordinate& to) const {
   DCHECK_EQ(Voxel::kVoid, operator()(to)) << to;
 
   // Look for a trace to reach |to| from |from| through void voxels

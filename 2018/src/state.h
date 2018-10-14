@@ -27,6 +27,8 @@ struct State {
 
   Nanobot& findBot(int bid);
 
+  void collectTrace();
+
   int64 energy = 0;
   Harmonics harmonics = Harmonics::kLow;
   Matrix matrix;
