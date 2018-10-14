@@ -71,13 +71,14 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
   do {
     std::unordered_set<Coordinate, Coordinate::Hash> next_to_fills;
     while (to_fills.size()) {
-      if (++loop_count > 10000) {
+      if (++loop_count > 30000) {
         LOG(INFO) << "too long. abort. "
                   << "no ways found to fill " << to_fills.size() << " voxels.";
         to_fills.clear();
         next_to_fills.clear();
         break;
       }
+      // LOG(INFO) << bot.position << " " << to_fills.size();
 
       Coordinate to_go(computeToGo(bot.position));
       if (!dst.isInRange(to_go))
@@ -92,11 +93,11 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
       bot.position = to_go;
 
       std::vector<Coordinate> filleds;
-      for (int dy = -1; dy <= 1; ++dy) {
+      for (int dy = 0; dy <= 1; ++dy) {
         if (filleds.size())
           break;
         for (const ND& nd : kNDs) {
-          if (nd.y != dy)
+          if (nd.y > dy)
             continue;
           Coordinate c(to_go + nd);
           auto itr = to_fills.find(c);
@@ -118,7 +119,7 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
         }
       }
     }
-    to_fills.insert(next_to_fills.begin(), next_to_fills.end());
+    to_fills = next_to_fills;
   } while (to_fills.size());
 
   {
