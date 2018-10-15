@@ -128,7 +128,5 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
 
   state.collectTrace();
   state.execute();
-  LOG(INFO) << "commands: " << state.trace.size();
-  LOG(INFO) << "energy: " << state.energy;
   return std::move(state.trace);
 };

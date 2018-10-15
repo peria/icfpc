@@ -1,7 +1,10 @@
 #include "main.h"
 
 #include <glog/logging.h>
+
 #include <memory>
+#include <chrono>
+#include <fstream>
 
 #include "matrix.h"
 #include "solver.h"
@@ -9,7 +12,13 @@
 // 3rd party
 #include "cmdline.h"
 
+namespace {
+
 cmdline::parser ParseOption(int, char*[]);
+using MS = std::chrono::milliseconds;
+using Clock = std::chrono::system_clock;
+
+}  // namespace
 
 int main(int argc, char* argv[]) {
   cmdline::parser options = ParseOption(argc, argv);
@@ -26,12 +35,36 @@ int main(int argc, char* argv[]) {
 
   std::unique_ptr<Solver> solver(
       Solver::GetSolver(options.get<std::string>("solver")));
-  LOG(INFO) << "Solver: " << solver->name();
+  auto start_time = Clock::now();
   Trace trace = solver->solve(src, dst);
+  auto end_time = Clock::now();
   trace.dump(options.get<std::string>("trace"));
+
+  time_t cpu_time = std::chrono::duration_cast<MS>(end_time - start_time).count();
+  LOG(INFO) << options.get<std::string>("label") << " " << cpu_time << "ms";
+
+  if (options.exist("info")) {
+    State state(src);
+    state.trace = std::move(trace);
+    state.execute();
+
+    std::ofstream ofs(options.get<std::string>("info"));
+    ofs << "{"
+        << "\"name\":\"" << options.get<std::string>("label") << "\","
+        << "\"R\":" << src.R << ","
+        << "\"solver\":\"" << solver->name() << "\","
+        << "\"time\":" << state.time << ","
+        << "\"energy\":" << state.energy << ","
+        << "\"cpu_time\":" << cpu_time << ","
+        << "\"timestamp\":" << Clock::to_time_t(end_time)
+        << "}\n";
+    ofs.close();
+  }
 
   return 0;
 }
+
+namespace {
 
 cmdline::parser ParseOption(int argc, char* argv[]) {
   cmdline::parser parser;
@@ -45,10 +78,13 @@ cmdline::parser ParseOption(int argc, char* argv[]) {
       false, "");
   parser.add<std::string>("trace", 'n', "Filename to output trace.", false,
                           "trace.nbt");
+  parser.add<std::string>("label", 'l', "Name of the problem.", false, "unknown");
+  parser.add<std::string>("info", 'i', "Output simulated result.", false, "");
   // parser.add("strace", 's', "Output trace as readable string.");
-  // parser.add("info", 'i', "Output simulated result.");
 
   parser.parse_check(argc, argv);
 
   return parser;
 }
+
+}  // namespace
