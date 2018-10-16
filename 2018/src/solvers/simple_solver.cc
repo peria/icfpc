@@ -3,6 +3,7 @@
 #include <glog/logging.h>
 
 #include <algorithm>
+#include <chrono>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -14,6 +15,7 @@
 namespace {
 
 using PII = std::pair<int, int>;
+using Clock = std::chrono::system_clock;
 
 const ND kNDs[] = {
     {1, 0, 0},  {-1, 0, 0},  {0, 1, 0},  {0, -1, 0},  {0, 0, 1},  {0, 0, -1},
@@ -72,23 +74,18 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
   };
 
   Nanobot& bot = state.bots[0];
-  int stacking = 0;
-  Coordinate stack_pos(-1, -1, -1);
-  size_t stack_size = 0;
+  // Exit if it takes longer than 5 secs.
+  auto time_limit = Clock::now() + std::chrono::seconds(5);
   do {
     std::unordered_set<Coordinate, Coordinate::Hash> next_to_fills;
     while (to_fills.size()) {
-      if (stack_size != to_fills.size() || stack_pos != bot.position)
-        stacking = -1;
-      if (++stacking > 10) {
+      if (Clock::now() >= time_limit) {
         LOG(INFO) << "too long. abort. "
                   << "no ways found to fill " << to_fills.size() << " voxels.";
         to_fills.clear();
         next_to_fills.clear();
         break;
       }
-      stack_size = to_fills.size();
-      stack_pos = bot.position;
       // LOG(INFO) << bot.position << " " << to_fills.size();
 
       bot.goTo(state.matrix, computeToGo(bot.position));

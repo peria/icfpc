@@ -24,33 +24,32 @@ int main(int argc, char* argv[]) {
   cmdline::parser options = ParseOption(argc, argv);
 
   Matrix src(options.get<std::string>("src"));
-  Matrix dst(options.get<std::string>("dst"));
+  Matrix tgt(options.get<std::string>("tgt"));
 
-  if (!src.isValid() && dst.isValid()) {
-    src = Matrix(dst.R);
-  } else if (src.isValid() && !dst.isValid()) {
-    dst = Matrix(src.R);
+  if (!src.isValid() && tgt.isValid()) {
+    src = Matrix(tgt.R);
+  } else if (src.isValid() && !tgt.isValid()) {
+    tgt = Matrix(src.R);
   }
-  CHECK_EQ(src.R, dst.R);
+  CHECK_EQ(src.R, tgt.R);
 
   std::unique_ptr<Solver> solver(
       Solver::GetSolver(options.get<std::string>("solver")));
   auto start_time = Clock::now();
-  Trace trace = solver->solve(src, dst);
+  Trace trace = solver->solve(src, tgt);
   auto end_time = Clock::now();
   trace.dump(options.get<std::string>("trace"));
 
   time_t cpu_time = std::chrono::duration_cast<MS>(end_time - start_time).count();
   LOG(INFO) << options.get<std::string>("label") << " " << cpu_time << "ms";
 
-  if (options.exist("info")) {
+  if (!trace.empty() && options.exist("info")) {
     State state(src);
     state.trace = std::move(trace);
     state.execute();
 
     std::ofstream ofs(options.get<std::string>("info"));
     ofs << "{"
-        << "\"name\":\"" << options.get<std::string>("label") << "\","
         << "\"R\":" << src.R << ","
         << "\"solver\":\"" << solver->name() << "\","
         << "\"time\":" << state.time << ","
@@ -74,7 +73,7 @@ cmdline::parser ParseOption(int argc, char* argv[]) {
                           "Source model file. No need to specify for assembly.",
                           false, "");
   parser.add<std::string>(
-      "dst", 'd', "Destination model file. No need to specify for disassembly.",
+      "tgt", 't', "Target model file. No need to specify for disassembly.",
       false, "");
   parser.add<std::string>("trace", 'n', "Filename to output trace.", false,
                           "trace.nbt");
