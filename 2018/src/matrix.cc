@@ -26,7 +26,7 @@ Matrix::Matrix(const std::string& filename) : R(0) {
   ifs.read(buffer.data(), size);
   ifs.close();
 
-  R = static_cast<int>(buffer[0]);
+  R = static_cast<uint8>(buffer[0]);
   voxels_.resize(R * R * R, Voxel::kVoid);
   for (int x = 0; x < R; ++x) {
     for (int y = 0; y < R; ++y) {
