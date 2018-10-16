@@ -4,8 +4,8 @@ TEST_SRC=$(shell ls *_test.cc)
 TESTS=$(TEST_SRC:%.cc=%)
 
 CXX=clang++
-CXXFLAGS=-O2 -std=c++1z -W
-#CXXFLAGS=-O0 -g -std=c++1z -W -Werror
+CXXFLAGS=-O2 -std=c++17 -W
+#CXXFLAGS=-O0 -g -std=c++17 -W -Werror
 CXXFLAGS+=-I.
 # 3rd party libraries
 CXXFLAGS+=-Ithird_party/cmdline

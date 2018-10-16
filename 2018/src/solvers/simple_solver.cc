@@ -33,11 +33,6 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
   const int R = src.R;
   State state(src);
 
-  if (R > 20) {
-    LOG(INFO) << "No work for R=" << R;
-    return Trace();
-  }
-
   std::unordered_set<Coordinate, Coordinate::Hash> to_fills;
   for (int x = 0; x < R; ++x) {
     for (int z = 0; z < R; ++z) {
