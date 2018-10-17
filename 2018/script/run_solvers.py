@@ -61,6 +61,7 @@ def CompareAndUpdate(tmp_dir, problems, trace_dir):
   except:
     all_info = {}
 
+  # TODO: Run this in parallel.
   for problem in problems:
     info_file = os.path.join(tmp_dir, problem + '.info')
     trace_file = os.path.join(tmp_dir, problem + '.nbt')

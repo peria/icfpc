@@ -75,18 +75,16 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
     std::unordered_set<Coordinate, Coordinate::Hash> next_to_fills;
     while (to_fills.size()) {
       if (Clock::now() >= time_limit) {
-        LOG(INFO) << "too long. abort. "
+        LOG(INFO) << "Too long. abort. "
                   << "no ways found to fill " << to_fills.size() << " voxels.";
-        to_fills.clear();
-        next_to_fills.clear();
-        break;
+        return Trace();
       }
 
-      if (!bot.goTo(state.matrix, computeToGo(bot.position))) {
-        LOG(INFO) << "failed to find a path";
-        to_fills.clear();
-        next_to_fills.clear();
-        break;
+      Coordinate to_go = computeToGo(bot.position);
+      if (!bot.goTo(state.matrix, to_go)) {
+        LOG(INFO) << "Failed to find a path from " << bot.position
+                  << " to " << to_go << ".";
+        return Trace();
       }
 
       std::vector<Coordinate> filleds;
@@ -120,7 +118,10 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
     to_fills = next_to_fills;
   } while (to_fills.size());
 
-  bot.goTo(state.matrix, Coordinate(0, 0, 0));
+  if (!bot.goTo(state.matrix, Coordinate(0, 0, 0))) {
+    LOG(INFO) << "Failed to go back home from " << bot.position;
+    return Trace();
+  }
 
   state.collectTrace();
   state.execute();
