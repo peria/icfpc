@@ -3,12 +3,13 @@
 #include <map>
 #include <string>
 
-#include "solvers/simple_solver.h"
+#include "solvers/cluster_solver.h"
 #include "solvers/horizon_solver.h"
+#include "solvers/simple_solver.h"
 
 namespace {
 
-const char kDefaultSolverName[] = "horizon";
+const char kDefaultSolverName[] = "cluster";
 
 std::map<const std::string, std::unique_ptr<Solver>> g_solvers;
 
@@ -29,4 +30,5 @@ void Solver::RegisterSolvers() {
 
   registerSolver(std::make_unique<SimpleSolver>());
   registerSolver(std::make_unique<HorizonSolver>());
+  registerSolver(std::make_unique<ClusterSolver>());
 }
