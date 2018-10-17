@@ -40,7 +40,7 @@ Trace HorizonSolver::solve(const Matrix& src, const Matrix& dst) {
     for (int y = 0; y < R; ++y) {
       for (x += dx; x >= 0 && x < R; x += dx) {
         for (z += dz; z >= 0 && z < R; z += dz) {
-          if (dst(x, y, z) == Voxel::kVoid)
+          if (dst(x, y, z) != Voxel::kFull)
             continue;
           if (y == 0 || state.matrix(x, y - 1, z) == Voxel::kFull ||
               state.matrix(x + 1, y, z) == Voxel::kFull ||
@@ -49,6 +49,7 @@ Trace HorizonSolver::solve(const Matrix& src, const Matrix& dst) {
               state.matrix(x, y, z - 1) == Voxel::kFull) {
             bot.goTo(state.matrix, Coordinate(x, y + 1, z));
             bot.trace.emplace_back(std::make_unique<Fill>(ND(0, -1, 0)));
+            state.matrix(x, y, z) = Voxel::kFull;
           }
         }
         dz = -dz;
@@ -117,21 +118,15 @@ Trace HorizonSolver::solve(const Matrix& src, const Matrix& dst) {
       }
 
       std::vector<Coordinate> filleds;
-      for (int dy = 0; dy <= 1; ++dy) {
-        if (filleds.size())
-          break;
-        for (const ND& nd : kNDs) {
-          if (nd.y > dy)
-            continue;
-          Coordinate c(bot.position + nd);
-          auto itr = to_fills.find(c);
-          if (itr != to_fills.end()) {
-            bot.trace.emplace_back(std::make_unique<Fill>(nd));
-            state.matrix(c) = Voxel::kFull;
-            to_fills.erase(itr);
-            next_to_fills.erase(c);
-            filleds.push_back(c);
-          }
+      for (const ND& nd : kNDs) {
+        Coordinate c(bot.position + nd);
+        auto itr = to_fills.find(c);
+        if (itr != to_fills.end()) {
+          bot.trace.emplace_back(std::make_unique<Fill>(nd));
+          state.matrix(c) = Voxel::kFull;
+          to_fills.erase(itr);
+          next_to_fills.erase(c);
+          filleds.push_back(c);
         }
       }
       for (const Coordinate& filled : filleds) {

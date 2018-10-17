@@ -5,6 +5,7 @@
 
 struct Solver {
   static Solver* GetSolver(const std::string& name);
+  static void RegisterSolvers();
 
   virtual ~Solver() {}
 

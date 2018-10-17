@@ -22,6 +22,7 @@ using Clock = std::chrono::system_clock;
 
 int main(int argc, char* argv[]) {
   cmdline::parser options = ParseOption(argc, argv);
+  Solver::RegisterSolvers();
 
   Matrix src(options.get<std::string>("src"));
   Matrix tgt(options.get<std::string>("tgt"));
