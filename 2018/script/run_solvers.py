@@ -10,9 +10,10 @@ import tempfile
 
 def ParseArgs():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--solver', required=True)
+  parser.add_argument('--execute', required=True)
   parser.add_argument('--model_dir', required=True)
   parser.add_argument('--trace_dir', required=True)
+  parser.add_argument('--solver', required=False)
   return parser.parse_args()
 
 
@@ -30,7 +31,7 @@ def RunSolver(problem, opts, tmp_dir):
   if problem[1] != 'A':
     return
 
-  args = [opts.solver]
+  args = [opts.execute]
 
   src_file = os.path.join(opts.model_dir, problem + '_src.mdl')
   if os.path.isfile(src_file):
@@ -39,6 +40,9 @@ def RunSolver(problem, opts, tmp_dir):
   tgt_file = os.path.join(opts.model_dir, problem + '_tgt.mdl')
   if os.path.isfile(tgt_file):
     args.extend(['--tgt', tgt_file])
+
+  if opts.solver:
+    args.extend(['--solver', opts.solver])
 
   trace_file = os.path.join(tmp_dir, problem + '.nbt')
   info_file = os.path.join(tmp_dir, problem + '.info')
