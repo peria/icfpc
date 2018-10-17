@@ -69,8 +69,8 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
   };
 
   Nanobot& bot = state.bots[0];
-  // Exit if it takes longer than 5 secs.
-  auto time_limit = Clock::now() + std::chrono::seconds(5);
+  // Exit if it takes longer than 8 secs.
+  auto time_limit = Clock::now() + std::chrono::seconds(8);
   do {
     std::unordered_set<Coordinate, Coordinate::Hash> next_to_fills;
     while (to_fills.size()) {
@@ -81,9 +81,13 @@ Trace SimpleSolver::solve(const Matrix& src, const Matrix& dst) {
         next_to_fills.clear();
         break;
       }
-      // LOG(INFO) << bot.position << " " << to_fills.size();
 
-      bot.goTo(state.matrix, computeToGo(bot.position));
+      if (!bot.goTo(state.matrix, computeToGo(bot.position))) {
+        LOG(INFO) << "failed to find a path";
+        to_fills.clear();
+        next_to_fills.clear();
+        break;
+      }
 
       std::vector<Coordinate> filleds;
       for (int dy = 0; dy <= 1; ++dy) {

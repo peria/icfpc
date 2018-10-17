@@ -27,6 +27,9 @@ void Nanobot::fuse(Nanobot& s) {
 bool Nanobot::goTo(const Matrix& matrix, const Coordinate& dst) {
   if (!matrix.isInRange(dst))
     return false;
+  // No need to move
+  if (position == dst)
+    return true;
 
   Trace route(matrix.findPath(position, dst));
   if (route.empty())

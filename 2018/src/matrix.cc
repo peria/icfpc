@@ -72,10 +72,15 @@ struct Compare {
     if (ib == steps.end())
       return true;
 
+    int da = (to - a).mLen();
+    int db = (to - b).mLen();
+    if (da != db)
+      return da < db;
+
     const Step& sa = ia->second;
     const Step& sb = ib->second;
-    int va = sa.step + (to - a).mLen();
-    int vb = sb.step + (to - b).mLen();
+    int va = sa.step + da;
+    int vb = sb.step + db;
     if (va != vb)
       return va < vb;
     return sa.step > sb.step;
@@ -84,6 +89,8 @@ struct Compare {
   const Coordinate& to;
   const std::unordered_map<Coordinate, Step, Coordinate::Hash>& steps;
 };
+
+const int kSizeThreshold = 4000;
 
 }  // namespace
 
@@ -98,6 +105,10 @@ Trace Matrix::findPath(const Coordinate& from, const Coordinate& to) const {
   Compare cmp(to, steps);
   Q.push_back(from);
   while (Q.size() && steps.find(to) == steps.end()) {
+    if (Q.size() > kSizeThreshold) {
+      LOG(INFO) << "maybe unreachable";
+      return Trace();
+    }
     std::sort(Q.begin(), Q.end(), cmp);
     Coordinate c = Q.front();
     Q.pop_front();
