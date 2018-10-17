@@ -43,8 +43,10 @@ int main(int argc, char* argv[]) {
 
   time_t cpu_time =
       std::chrono::duration_cast<MS>(end_time - start_time).count();
-  LOG(INFO) << options.get<std::string>("label") << " " << cpu_time << "ms";
-
+  if (options.exist("label"))
+    LOG(INFO) << options.get<std::string>("label") << " " << cpu_time << "ms";
+  else
+    LOG(INFO) << cpu_time << "ms";
   if (!trace.empty() && options.exist("info")) {
     State state(src);
     state.trace = std::move(trace);
@@ -61,7 +63,7 @@ int main(int argc, char* argv[]) {
     ofs.close();
   }
 
-  return 0;
+  _exit(0);
 }
 
 namespace {

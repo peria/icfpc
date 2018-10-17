@@ -5,6 +5,7 @@
 // A Coordinate-Coordinate union find.
 struct CoordinateUnionFind {
   void Register(const Coordinate& c);
+  void Unregister(const Coordinate& c);
 
   Coordinate Find(Coordinate c);
   void Union(Coordinate a, Coordinate b);

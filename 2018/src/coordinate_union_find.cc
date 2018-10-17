@@ -17,6 +17,11 @@ void CoordinateUnionFind::Register(const Coordinate& c) {
   size[c] = 1;
 }
 
+void CoordinateUnionFind::Unregister(const Coordinate& c) {
+  parent.erase(c);
+  size.erase(c);
+}
+
 Coordinate CoordinateUnionFind::Find(Coordinate c) {
   if (parent[c] != c)
     parent[c] = Find(parent[c]);
@@ -74,5 +79,10 @@ CoordinateSet CoordinateUnionFind::GetCluster(Coordinate c) {
     if (Find(p.first) == c)
       ret.insert(p.first);
   }
+  for (auto& p : ret) {
+    parent.erase(p);
+    size.erase(p);
+  }
+
   return std::move(ret);
 }

@@ -33,27 +33,27 @@ Trace ClusterSolver::solve(const Matrix& src, const Matrix& dst) {
   State state(src);
   Nanobot& bot = state.bots[0];
 
-  CoordinateUnionFind to_fill_clusters;
+  CoordinateUnionFind clusters;
   for (int x = 0; x < R; ++x) {
     for (int z = 0; z < R; ++z) {
       if (dst(x, 0, z) != Voxel::kFull)
         continue;
       Coordinate c(x, 0, z);
-      to_fill_clusters.Register(c);
+      clusters.Register(c);
     }
   }
 
-  while (true) {
-    to_fill_clusters.Clustering();
-    Coordinate near = to_fill_clusters.GetClose(bot.position);
-    CoordinateSet to_fills(to_fill_clusters.GetCluster(near));
-
+  while (clusters.parent.size()) {
+    clusters.Clustering();
+    Coordinate near = clusters.GetClose(bot.position);
+    CoordinateSet to_fills(clusters.GetCluster(near));
     auto computeToGo = [&](const Coordinate& from) {
       CoordinateMap<int> fillables;
       for (auto& c : to_fills) {
+        CHECK_NE(state.matrix(c), Voxel::kFull) << c;
         for (auto& nd : kNDs) {
           Coordinate d(c + nd);
-          if (!src.isInRange(d) || state.matrix(d) != Voxel::kVoid)
+          if (!dst.isInRange(d) || state.matrix(d) != Voxel::kVoid)
             continue;
           fillables[d] = fillables[d] + 1;
         }
@@ -76,53 +76,42 @@ Trace ClusterSolver::solve(const Matrix& src, const Matrix& dst) {
 
     // Exit if it takes longer than 8 secs.
     auto time_limit = Clock::now() + std::chrono::seconds(8);
-    do {
-      CoordinateSet next_to_fills;
-      while (to_fills.size()) {
-        if (Clock::now() >= time_limit) {
-          LOG(INFO) << "Too long. abort. "
-                    << "no ways found to fill " << to_fills.size()
-                    << " voxels.";
-          return Trace();
-        }
+    while (to_fills.size()) {
+      if (Clock::now() >= time_limit) {
+        LOG(INFO) << "Too long. abort. "
+                  << "no ways found to fill " << to_fills.size() << " voxels.";
+        return Trace();
+      }
 
-        Coordinate to_go = computeToGo(bot.position);
-        if (!bot.goTo(state.matrix, to_go)) {
-          LOG(INFO) << "Failed to find a path from " << bot.position << " to "
-                    << to_go << ".";
-          return Trace();
-        }
+      // LOG(INFO) << bot.position << " " << to_fills.size();
+      Coordinate to_go = computeToGo(bot.position);
+      if (!bot.goTo(state.matrix, to_go)) {
+        LOG(INFO) << "Failed to find a path from " << bot.position << " to "
+                  << to_go << ".";
+        return Trace();
+      }
 
-        std::vector<Coordinate> filleds;
-        for (int dy = 0; dy <= 1; ++dy) {
-          if (filleds.size())
-            break;
-          for (const ND& nd : kNDs) {
-            if (nd.y > dy)
-              continue;
-            Coordinate c(bot.position + nd);
-            auto itr = to_fills.find(c);
-            if (itr != to_fills.end()) {
-              bot.trace.emplace_back(std::make_unique<Fill>(nd));
-              state.matrix(c) = Voxel::kFull;
-              to_fills.erase(itr);
-              next_to_fills.erase(c);
-              filleds.push_back(c);
-            }
-          }
+      CoordinateSet filleds;
+      for (const ND& nd : kNDs) {
+        Coordinate c(bot.position + nd);
+        if (to_fills.count(c)) {
+          bot.trace.emplace_back(std::make_unique<Fill>(nd));
+          state.matrix(c) = Voxel::kFull;
+          to_fills.erase(c);
+          clusters.Unregister(c);
+          filleds.insert(c);
         }
-        for (const Coordinate& filled : filleds) {
-          for (const ND& dd : kDDs) {
-            Coordinate c(filled + dd);
-            if (dst.isInRange(c) && dst(c) == Voxel::kFull &&
-                state.matrix(c) == Voxel::kVoid) {
-              next_to_fills.insert(c);
-            }
+      }
+      for (const Coordinate& filled : filleds) {
+        for (const ND& dd : kDDs) {
+          Coordinate c(filled + dd);
+          if (dst.isInRange(c) && dst(c) == Voxel::kFull &&
+              state.matrix(c) == Voxel::kVoid) {
+            clusters.Register(c);
           }
         }
       }
-      to_fills = next_to_fills;
-    } while (to_fills.size());
+    }
   }
 
   if (!bot.goTo(state.matrix, Coordinate(0, 0, 0))) {
