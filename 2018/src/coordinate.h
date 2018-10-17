@@ -11,6 +11,7 @@ struct Coordinate {
     }
   };
 
+  Coordinate() = default;
   Coordinate(int x, int y, int z) : x(x), y(y), z(z) {}
   Coordinate(const Coordinate&) = default;
   Coordinate(int h) : Coordinate(h >> 16, (h >> 8) & 0xff, h & 0xff) {}
