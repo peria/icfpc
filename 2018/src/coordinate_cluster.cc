@@ -1,4 +1,4 @@
-#include "coordinate_union_find.h"
+#include "coordinate_cluster.h"
 
 #include <unordered_set>
 
@@ -12,23 +12,23 @@ const ND kDDs[] = {
 
 }  // namespace
 
-void CoordinateUnionFind::Register(const Coordinate& c) {
+void CoordinateCluster::Register(const Coordinate& c) {
   parent[c] = c;
   size[c] = 1;
 }
 
-void CoordinateUnionFind::Unregister(const Coordinate& c) {
+void CoordinateCluster::Unregister(const Coordinate& c) {
   parent.erase(c);
   size.erase(c);
 }
 
-Coordinate CoordinateUnionFind::Find(Coordinate c) {
+Coordinate CoordinateCluster::Find(Coordinate c) {
   if (parent[c] != c)
     parent[c] = Find(parent[c]);
   return parent[c];
 }
 
-void CoordinateUnionFind::Union(Coordinate a, Coordinate b) {
+void CoordinateCluster::Union(Coordinate a, Coordinate b) {
   if (parent.find(a) == parent.end())
     return;
   if (parent.find(b) == parent.end())
@@ -46,7 +46,7 @@ void CoordinateUnionFind::Union(Coordinate a, Coordinate b) {
   size[a] += size[b];
 }
 
-void CoordinateUnionFind::Clustering() {
+void CoordinateCluster::Clustering() {
   std::unordered_set<Coordinate, Coordinate::Hash> coords;
   for (auto& c : parent)
     coords.insert(c.first);
@@ -59,7 +59,7 @@ void CoordinateUnionFind::Clustering() {
   }
 }
 
-Coordinate CoordinateUnionFind::GetClose(const Coordinate& c) {
+Coordinate CoordinateCluster::GetClose(const Coordinate& c) {
   Coordinate ret(-1, -1, -1);
   int dist = 1000000;
   for (auto& p : parent) {
@@ -72,7 +72,7 @@ Coordinate CoordinateUnionFind::GetClose(const Coordinate& c) {
   return ret;
 }
 
-CoordinateSet CoordinateUnionFind::GetCluster(Coordinate c) {
+CoordinateSet CoordinateCluster::GetCluster(Coordinate c) {
   CoordinateSet ret;
   c = Find(c);
   for (auto& p : parent) {

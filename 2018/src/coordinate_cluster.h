@@ -2,8 +2,7 @@
 
 #include "coordinate.h"
 
-// A Coordinate-Coordinate union find.
-struct CoordinateUnionFind {
+struct CoordinateCluster {
   void Register(const Coordinate& c);
   void Unregister(const Coordinate& c);
 
