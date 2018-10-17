@@ -30,7 +30,7 @@ obj/%.o: %.cc %.h
 
 
 format:
-	clang-format -i **/*.cc **/*.h
+	clang-format -i *.{cc,h} solvers/*.{cc,h}
 
 clean:
 	$(RM) -rf $(OBJ) *~ solver

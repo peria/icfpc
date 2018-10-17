@@ -1,7 +1,6 @@
 #include "state.h"
 
 #include <algorithm>
-#include <unordered_set>
 #include <vector>
 
 #include "coordinate.h"
@@ -27,7 +26,7 @@ bool State::isWellFormed() const {
   if (!matrix.isAllGrounded())
     return false;
 
-  std::unordered_set<Coordinate, Coordinate::Hash> actives;
+  CoordinateSet actives;
   for (auto& bot : bots) {
     const Coordinate& c = bot.position;
     if (!matrix.isInRange(c))

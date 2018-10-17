@@ -53,3 +53,26 @@ void CoordinateUnionFind::Clustering() {
     }
   }
 }
+
+Coordinate CoordinateUnionFind::GetClose(const Coordinate& c) {
+  Coordinate ret(-1, -1, -1);
+  int dist = 1000000;
+  for (auto& p : parent) {
+    int d = (c - p.first).mLen();
+    if (d < dist) {
+      dist = d;
+      ret = p.first;
+    }
+  }
+  return ret;
+}
+
+CoordinateSet CoordinateUnionFind::GetCluster(Coordinate c) {
+  CoordinateSet ret;
+  c = Find(c);
+  for (auto& p : parent) {
+    if (Find(p.first) == c)
+      ret.insert(p.first);
+  }
+  return std::move(ret);
+}

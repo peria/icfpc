@@ -4,8 +4,9 @@
 #include <deque>
 #include <fstream>
 #include <set>
-#include <unordered_map>
 #include <vector>
+
+#include "coordinate.h"
 
 Matrix::Matrix(const std::string& filename) : R(0) {
   if (filename.empty()) {
@@ -60,8 +61,7 @@ struct Step {
 };
 
 struct Compare {
-  Compare(const Coordinate& to,
-          const std::unordered_map<Coordinate, Step, Coordinate::Hash>& steps)
+  Compare(const Coordinate& to, const CoordinateMap<Step>& steps)
       : to(to), steps(steps) {}
 
   bool operator()(const Coordinate& a, const Coordinate& b) {
@@ -87,7 +87,7 @@ struct Compare {
   }
 
   const Coordinate& to;
-  const std::unordered_map<Coordinate, Step, Coordinate::Hash>& steps;
+  const CoordinateMap<Step>& steps;
 };
 
 const int kSizeThreshold = 4000;
@@ -99,7 +99,7 @@ Trace Matrix::findPath(const Coordinate& from, const Coordinate& to) const {
 
   // Look for a trace to reach |to| from |from| through void voxels
   // using A* algorithm.
-  std::unordered_map<Coordinate, Step, Coordinate::Hash> steps;
+  CoordinateMap<Step> steps;
   steps[from] = Step{0, nullptr};
   std::deque<Coordinate> Q;
   Compare cmp(to, steps);

@@ -2,9 +2,9 @@
 
 #include <glog/logging.h>
 
-#include <memory>
 #include <chrono>
 #include <fstream>
+#include <memory>
 
 #include "matrix.h"
 #include "solver.h"
@@ -41,7 +41,8 @@ int main(int argc, char* argv[]) {
   auto end_time = Clock::now();
   trace.dump(options.get<std::string>("trace"));
 
-  time_t cpu_time = std::chrono::duration_cast<MS>(end_time - start_time).count();
+  time_t cpu_time =
+      std::chrono::duration_cast<MS>(end_time - start_time).count();
   LOG(INFO) << options.get<std::string>("label") << " " << cpu_time << "ms";
 
   if (!trace.empty() && options.exist("info")) {
@@ -56,8 +57,7 @@ int main(int argc, char* argv[]) {
         << "\"time\":" << state.time << ","
         << "\"energy\":" << state.energy << ","
         << "\"cpu_time\":" << cpu_time << ","
-        << "\"timestamp\":" << Clock::to_time_t(end_time)
-        << "}\n";
+        << "\"timestamp\":" << Clock::to_time_t(end_time) << "}\n";
     ofs.close();
   }
 
@@ -78,7 +78,8 @@ cmdline::parser ParseOption(int argc, char* argv[]) {
       false, "");
   parser.add<std::string>("trace", 'n', "Filename to output trace.", false,
                           "trace.nbt");
-  parser.add<std::string>("label", 'l', "Name of the problem.", false, "unknown");
+  parser.add<std::string>("label", 'l', "Name of the problem.", false,
+                          "unknown");
   parser.add<std::string>("info", 'i', "Output simulated result.", false, "");
   // parser.add("strace", 's', "Output trace as readable string.");
 

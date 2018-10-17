@@ -1,7 +1,5 @@
 #pragma once
 
-#include <unordered_map>
-
 #include "coordinate.h"
 
 // A Coordinate-Coordinate union find.
@@ -12,6 +10,9 @@ struct CoordinateUnionFind {
   void Union(Coordinate a, Coordinate b);
   void Clustering();
 
-  std::unordered_map<Coordinate, Coordinate, Coordinate::Hash> parent;
-  std::unordered_map<Coordinate, int, Coordinate::Hash> size;
+  Coordinate GetClose(const Coordinate& c);
+  CoordinateSet GetCluster(Coordinate c);
+
+  CoordinateMap<Coordinate> parent;
+  CoordinateMap<int> size;
 };

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cmath>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "base.h"
 
@@ -45,9 +47,7 @@ struct Coordinate {
   bool operator==(const Coordinate& other) const {
     return x == other.x && y == other.y && z == other.z;
   }
-  bool operator!=(const Coordinate& other) const {
-    return !operator==(other);
-  }
+  bool operator!=(const Coordinate& other) const { return !operator==(other); }
 
   int x = 0;
   int y = 0;
@@ -55,6 +55,11 @@ struct Coordinate {
 };
 
 std::ostream& operator<<(std::ostream& ost, const Coordinate& c);
+
+template <typename T>
+using CoordinateMap = std::unordered_map<Coordinate, T, Coordinate::Hash>;
+
+using CoordinateSet = std::unordered_set<Coordinate, Coordinate::Hash>;
 
 struct SLD : public Coordinate {
   SLD(int x, int y, int z) : Coordinate(x, y, z) {

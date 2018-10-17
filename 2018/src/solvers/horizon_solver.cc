@@ -4,8 +4,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "matrix.h"
@@ -58,7 +56,7 @@ Trace HorizonSolver::solve(const Matrix& src, const Matrix& dst) {
     }
   }
 
-  std::unordered_set<Coordinate, Coordinate::Hash> to_fills;
+  CoordinateSet to_fills;
   for (int x = 0; x < R; ++x) {
     for (int y = 0; y < R; ++y) {
       for (int z = 0; z < R; ++z) {
@@ -74,7 +72,7 @@ Trace HorizonSolver::solve(const Matrix& src, const Matrix& dst) {
   }
 
   auto computeToGo = [&](const Coordinate& from) {
-    std::unordered_map<Coordinate, int, Coordinate::Hash> fillables;
+    CoordinateMap<int> fillables;
     for (auto& c : to_fills) {
       for (auto& nd : kNDs) {
         Coordinate d(c + nd);
@@ -102,7 +100,7 @@ Trace HorizonSolver::solve(const Matrix& src, const Matrix& dst) {
   // Exit if it takes longer than 8 secs.
   auto time_limit = Clock::now() + std::chrono::seconds(8);
   do {
-    std::unordered_set<Coordinate, Coordinate::Hash> next_to_fills;
+    CoordinateSet next_to_fills;
     while (to_fills.size()) {
       if (Clock::now() >= time_limit) {
         LOG(INFO) << "Too long. abort. "
@@ -112,8 +110,8 @@ Trace HorizonSolver::solve(const Matrix& src, const Matrix& dst) {
 
       Coordinate to_go = computeToGo(bot.position);
       if (!bot.goTo(state.matrix, to_go)) {
-        LOG(INFO) << "Failed to find a path from " << bot.position
-                  << " to " << to_go << ".";
+        LOG(INFO) << "Failed to find a path from " << bot.position << " to "
+                  << to_go << ".";
         return Trace();
       }
 

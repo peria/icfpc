@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+
 #include "solver.h"
 
 // ClusterSolver fills voxels layer by layer using clusting.

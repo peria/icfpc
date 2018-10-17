@@ -4,8 +4,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "coordinate_union_find.h"
@@ -46,28 +44,12 @@ Trace ClusterSolver::solve(const Matrix& src, const Matrix& dst) {
   }
 
   while (true) {
-    Coordinate cluster(-1, -1, -1);
     to_fill_clusters.Clustering();
-    {
-      int close_distance = R * 10;
-      for (auto& p : to_fill_clusters.parent) {
-        int d = (bot.position - p.first).mLen();
-        if (d < close_distance) {
-          close_distance = d;
-          cluster = p.first;
-        }
-      }
-    }
-    cluster = to_fill_clusters.Find(cluster);
-
-    std::unordered_set<Coordinate, Coordinate::Hash> to_fills;
-    for (auto& p : to_fill_clusters.parent) {
-      if (to_fill_clusters.Find(p.first) == cluster)
-        to_fills.insert(p.first);
-    }
+    Coordinate near = to_fill_clusters.GetClose(bot.position);
+    CoordinateSet to_fills(to_fill_clusters.GetCluster(near));
 
     auto computeToGo = [&](const Coordinate& from) {
-      std::unordered_map<Coordinate, int, Coordinate::Hash> fillables;
+      CoordinateMap<int> fillables;
       for (auto& c : to_fills) {
         for (auto& nd : kNDs) {
           Coordinate d(c + nd);
@@ -95,18 +77,19 @@ Trace ClusterSolver::solve(const Matrix& src, const Matrix& dst) {
     // Exit if it takes longer than 8 secs.
     auto time_limit = Clock::now() + std::chrono::seconds(8);
     do {
-      std::unordered_set<Coordinate, Coordinate::Hash> next_to_fills;
+      CoordinateSet next_to_fills;
       while (to_fills.size()) {
         if (Clock::now() >= time_limit) {
           LOG(INFO) << "Too long. abort. "
-                    << "no ways found to fill " << to_fills.size() << " voxels.";
+                    << "no ways found to fill " << to_fills.size()
+                    << " voxels.";
           return Trace();
         }
 
         Coordinate to_go = computeToGo(bot.position);
         if (!bot.goTo(state.matrix, to_go)) {
-          LOG(INFO) << "Failed to find a path from " << bot.position
-                    << " to " << to_go << ".";
+          LOG(INFO) << "Failed to find a path from " << bot.position << " to "
+                    << to_go << ".";
           return Trace();
         }
 

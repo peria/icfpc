@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+
 #include "solver.h"
 
 // SimpleSolver puts every Full voxel from ground. Do not run in parallel.
