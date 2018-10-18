@@ -1,6 +1,8 @@
-CXXFLAGS+=-O3 -Wall -std=c++0x
+CXX=clang++
+CXXFLAGS+=-O2 -Wall -std=c++1z
+
 LDFLAGS+=-lglog -lgflags
-CC=g++
+GTEST_DIR=../third_party/googletest/googletest
 
 all: dna2rna_main dna2rna_test
 
@@ -10,10 +12,10 @@ test: dna2rna_test
 dna2rna_main: dna2rna.o dna2rna_main.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-dna2rna_test: dna2rna.o dna2rna_test.o
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -lgtest_main -lgtest -lpthread
-
-.o.cc:
+dna2rna_test: dna2rna.o dna2rna_test.cc
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) \
+	$(GTEST_DIR)/src/gtest_main.cc $(GTEST_DIR)/src/gtest-all.cc \
+	-I$(GTEST_DIR)/include -I$(GTEST_DIR) -lpthread
 
 clean:
 	rm -f *.o *~ dna2rna_main dna2rna_test

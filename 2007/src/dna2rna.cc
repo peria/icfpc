@@ -29,21 +29,38 @@ void Dna2Rna::ExecuteIteration() {
   MakeTemplate(&t);
   MatchReplace(p, t);
 }
-  
+
 void Dna2Rna::MakePattern(Pattern* p) {
   p->clear();
 
   int lvl = 0;
   while (i_ < dna_.size()) {
     switch (dna_[i_]) {
-    case 'C': {++i_; p->push_back(PItem('I')); break;}
-    case 'F': {++i_; p->push_back(PItem('C')); break;}
-    case 'P': {++i_; p->push_back(PItem('F')); break;}
+    case 'C': {
+      ++i_;
+      p->push_back(PItem('I'));
+      break;
+    }
+    case 'F': {
+      ++i_;
+      p->push_back(PItem('C'));
+      break;
+    }
+    case 'P': {
+      ++i_;
+      p->push_back(PItem('F'));
+      break;
+    }
     case 'I': {
-      if (i_ + 1 >= dna_.size()) Finish();
+      if (i_ + 1 >= dna_.size())
+        Finish();
 
       switch (dna_[i_ + 1]) {
-      case 'C': {i_ += 2; p->push_back(PItem('P')); break;}
+      case 'C': {
+        i_ += 2;
+        p->push_back(PItem('P'));
+        break;
+      }
       case 'P': {
         i_ += 2;
         int n = Nat();
@@ -57,7 +74,8 @@ void Dna2Rna::MakePattern(Pattern* p) {
         break;
       }
       case 'I': {
-        if (i_ + 2 >= dna_.size()) Finish();
+        if (i_ + 2 >= dna_.size())
+          Finish();
 
         switch (dna_[i_ + 2]) {
         case 'P': {
@@ -80,17 +98,20 @@ void Dna2Rna::MakePattern(Pattern* p) {
           i_ += 10;
           break;
         }
-        default: Finish();
+        default:
+          Finish();
         }  // switch([i+2])
         break;
       }
-      default: Finish();
+      default:
+        Finish();
       }  // switch([i+1])
       break;
     }
-    default: Finish();
+    default:
+      Finish();
     }  // switch([i])
-  }  // while()
+  }    // while()
 }
 
 void Dna2Rna::MakeTemplate(Template* t) {
@@ -98,14 +119,27 @@ void Dna2Rna::MakeTemplate(Template* t) {
 
   while (i_ < dna_.size()) {
     switch (dna_[i_]) {
-    case 'C': ++i_; t->push_back(TItem('I')); break;
-    case 'F': ++i_; t->push_back(TItem('C')); break;
-    case 'P': ++i_; t->push_back(TItem('F')); break;
+    case 'C':
+      ++i_;
+      t->push_back(TItem('I'));
+      break;
+    case 'F':
+      ++i_;
+      t->push_back(TItem('C'));
+      break;
+    case 'P':
+      ++i_;
+      t->push_back(TItem('F'));
+      break;
     case 'I': {
-      if (i_ + 1 >= dna_.size()) Finish();
+      if (i_ + 1 >= dna_.size())
+        Finish();
 
       switch (dna_[i_ + 1]) {
-      case 'C': i_ += 2; t->push_back(TItem('P')); break;
+      case 'C':
+        i_ += 2;
+        t->push_back(TItem('P'));
+        break;
       case 'F':
       case 'P': {
         i_ += 2;
@@ -115,7 +149,8 @@ void Dna2Rna::MakeTemplate(Template* t) {
         break;
       }
       case 'I': {
-        if (i_ + 2 >= dna_.size()) Finish();
+        if (i_ + 2 >= dna_.size())
+          Finish();
 
         switch (dna_[i_ + 2]) {
         case 'C':
@@ -134,15 +169,18 @@ void Dna2Rna::MakeTemplate(Template* t) {
           i_ += 10;
           break;
         }
-        default: Finish();
+        default:
+          Finish();
         }  // switch ([i+2])
         break;
       }
-      default: Finish();
+      default:
+        Finish();
       }  // switch ([i+1])
       break;
     }
-    default: Finish();
+    default:
+      Finish();
     }  // switch ([i])
   }
 }
@@ -225,9 +263,21 @@ Dna Dna2Rna::Consts() {
       continue;
     }
     switch (dna_[i_]) {
-    case 'C': { ++i_; consts.push_back('I'); continue; }
-    case 'F': { ++i_; consts.push_back('C'); continue; }
-    case 'P': { ++i_; consts.push_back('F'); continue; }
+    case 'C': {
+      ++i_;
+      consts.push_back('I');
+      continue;
+    }
+    case 'F': {
+      ++i_;
+      consts.push_back('C');
+      continue;
+    }
+    case 'P': {
+      ++i_;
+      consts.push_back('F');
+      continue;
+    }
     }
     break;
   }
@@ -278,11 +328,24 @@ Dna Dna2Rna::Quote(const Dna& d) {
   Dna quote;
   for (size_t i = 0; i < d.size(); ++i) {
     switch (d[i]) {
-    case 'I': { quote.push_back('C'); break; }
-    case 'C': { quote.push_back('F'); break; }
-    case 'F': { quote.push_back('P'); break; }
-    case 'P': { quote.append("IC"); break; }
-    default: return quote;
+    case 'I': {
+      quote.push_back('C');
+      break;
+    }
+    case 'C': {
+      quote.push_back('F');
+      break;
+    }
+    case 'F': {
+      quote.push_back('P');
+      break;
+    }
+    case 'P': {
+      quote.append("IC");
+      break;
+    }
+    default:
+      return quote;
     }
   }
   return quote;

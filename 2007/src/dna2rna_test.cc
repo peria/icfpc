@@ -11,12 +11,12 @@ class TDna2Rna : public Dna2Rna {
   TDna2Rna(const String& dna) : Dna2Rna(dna) {}
   std::string dna() { return dna_.c_str() + i_; }
 
-  using Dna2Rna::ExecuteIteration;
-  using Dna2Rna::MakePattern;
-  using Dna2Rna::Protect;
-  using Dna2Rna::Nat;
   using Dna2Rna::Consts;
+  using Dna2Rna::ExecuteIteration;
   using Dna2Rna::i_;
+  using Dna2Rna::MakePattern;
+  using Dna2Rna::Nat;
+  using Dna2Rna::Protect;
 };
 
 class Dna2RnaTest : public testing::Test {};
@@ -55,14 +55,9 @@ TEST_F(Dna2RnaTest, Nat) {
     int expect;
     const char* remain;
   } tests[] = {
-    {"P", 0, ""},
-    {"CP", 1, ""},
-    {"ICP", 2, ""},
-    {"ICFP", 2, ""},
-    {"CCCCP", 15, ""},
-    {"PCCP", 0, "CCP"},
-    {"CPICF", 1, "ICF"},
-    {"ICPICFP", 2, "ICFP"},
+      {"P", 0, ""},        {"CP", 1, ""},          {"ICP", 2, ""},
+      {"ICFP", 2, ""},     {"CCCCP", 15, ""},      {"PCCP", 0, "CCP"},
+      {"CPICF", 1, "ICF"}, {"ICPICFP", 2, "ICFP"},
   };
   for (const TestData& test : tests) {
     TDna2Rna endo(test.dna);
@@ -77,18 +72,13 @@ TEST_F(Dna2RnaTest, Consts) {
     const char* expect;
     const char* remain;
   } tests[] = {
-    {"", "", ""},
-    {"I", "", "I"},
-    {"C", "I", ""},
-    {"F", "C", ""},
-    {"P", "F", ""},
-    {"IC", "P", ""},
-    {"II", "", "II"},
+      {"", "", ""},   {"I", "", "I"},  {"C", "I", ""},   {"F", "C", ""},
+      {"P", "F", ""}, {"IC", "P", ""}, {"II", "", "II"},
   };
   for (const TestData& test : tests) {
     TDna2Rna endo(test.dna);
     EXPECT_EQ(test.expect, std::string(endo.Consts().c_str()))
-      << "Input: " << test.dna;
+        << "Input: " << test.dna;
     EXPECT_EQ(test.remain, endo.dna()) << "Input: " << test.dna;
   }
 }
@@ -98,9 +88,9 @@ TEST_F(Dna2RnaTest, ExecuteIteration) {
     const char* dna;
     const char* expect;
   } tests[] = {
-    {"IIPIPICPIICICIIFICCIFPPIICCFPC", "PICFC"},
-    {"IIPIPICPIICICIIFICCIFCCCPPIICCFPC", "PIICCFCFFPC"},
-    {"IIPIPIICPIICIICCIICFCFC", "I"},
+      {"IIPIPICPIICICIIFICCIFPPIICCFPC", "PICFC"},
+      {"IIPIPICPIICICIIFICCIFCCCPPIICCFPC", "PIICCFCFFPC"},
+      {"IIPIPIICPIICIICCIICFCFC", "I"},
   };
   for (const TestData& test : tests) {
     TDna2Rna endo(test.dna);
@@ -114,15 +104,13 @@ TEST_F(Dna2RnaTest, Asnat) {
     int n;
     const char* expect;
   } tests[] = {
-    {0, "P"},
-    {1, "CP"},
-    {2, "ICP"},
-    {5, "CICP"},
+      {0, "P"},
+      {1, "CP"},
+      {2, "ICP"},
+      {5, "CICP"},
   };
 
   for (const TestData& test : tests) {
     EXPECT_EQ(std::string(test.expect), Dna2Rna::Asnat(test.n).c_str());
   }
 }
-
-
