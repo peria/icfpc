@@ -36,17 +36,17 @@ Pattern Dna2Rna::MakePattern() {
     switch (dna_[i_]) {
     case 'C': {
       ++i_;
-      pattern.push_back(PItem('I'));
+      pattern.emplace_back('I');
       break;
     }
     case 'F': {
       ++i_;
-      pattern.push_back(PItem('C'));
+      pattern.emplace_back('C');
       break;
     }
     case 'P': {
       ++i_;
-      pattern.push_back(PItem('F'));
+      pattern.emplace_back('F');
       break;
     }
     case 'I': {
@@ -56,19 +56,19 @@ Pattern Dna2Rna::MakePattern() {
       switch (dna_[i_ + 1]) {
       case 'C': {
         i_ += 2;
-        pattern.push_back(PItem('P'));
+        pattern.emplace_back('P');
         break;
       }
       case 'P': {
         i_ += 2;
         int n = Nat();
-        pattern.push_back(PItem(n));
+        pattern.emplace_back(n);
         break;
       }
       case 'F': {
         i_ += 3;
         const Dna& s = Consts();
-        pattern.push_back(PItem(s));
+        pattern.emplace_back(s);
         break;
       }
       case 'I': {
@@ -79,7 +79,7 @@ Pattern Dna2Rna::MakePattern() {
         case 'P': {
           i_ += 3;
           ++lvl;
-          pattern.push_back(PItem(PItem::kBla));
+          pattern.emplace_back(PItem::kBla);
           break;
         }
         case 'C':
@@ -88,7 +88,7 @@ Pattern Dna2Rna::MakePattern() {
           if (lvl == 0)
             return std::move(pattern);
           --lvl;
-          pattern.push_back(PItem(PItem::kCket));
+          pattern.emplace_back(PItem::kCket);
           break;
         }
         case 'I': {
@@ -121,15 +121,15 @@ Template Dna2Rna::MakeTemplate() {
     switch (dna_[i_]) {
     case 'C':
       ++i_;
-      tmpl.push_back(TItem('I'));
+      tmpl.emplace_back('I');
       break;
     case 'F':
       ++i_;
-      tmpl.push_back(TItem('C'));
+      tmpl.emplace_back('C');
       break;
     case 'P':
       ++i_;
-      tmpl.push_back(TItem('F'));
+      tmpl.emplace_back('F');
       break;
     case 'I': {
       if (i_ + 1 >= dna_.size())
@@ -138,14 +138,14 @@ Template Dna2Rna::MakeTemplate() {
       switch (dna_[i_ + 1]) {
       case 'C':
         i_ += 2;
-        tmpl.push_back(TItem('P'));
+        tmpl.emplace_back('P');
         break;
       case 'F':
       case 'P': {
         i_ += 2;
         int l = Nat();
         int n = Nat();
-        tmpl.push_back(TItem(n, l));
+        tmpl.emplace_back(n, l);
         break;
       }
       case 'I': {
@@ -161,7 +161,7 @@ Template Dna2Rna::MakeTemplate() {
         case 'P': {
           i_ += 3;
           int n = Nat();
-          tmpl.push_back(TItem(n));
+          tmpl.emplace_back(n);
           break;
         }
         case 'I': {
@@ -290,18 +290,18 @@ void Dna2Rna::Replace(const Template& tpl, const Environment& e) {
   Dna r;
   for (const TItem& t : tpl) {
     switch (t.type) {
-    case TItem::BASE: {
+    case TItem::kBase: {
       r.push_back(t.base);
       break;
     }
-    case TItem::REFERENCE: {
+    case TItem::kReference: {
       if (t.number >= e.size())
         r.append(Protect(t.level, ""));
       else
         r.append(Protect(t.level, e[t.number]));
       break;
     }
-    case TItem::LENGTH: {
+    case TItem::kLength: {
       if (t.number >= e.size())
         r.append(Asnat(0));
       else

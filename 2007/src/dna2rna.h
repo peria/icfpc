@@ -24,18 +24,19 @@ struct PItem {
 using Pattern = std::vector<PItem>;
 
 struct TItem {
-  enum Type { BASE, REFERENCE, LENGTH } type;
+  enum Type { kBase, kReference, kLength };
+
+  Type type;
   char base;
   size_t number;
   size_t level;
 
-  TItem(const char b) : type(BASE), base(b) {}
-  TItem(const int n, const int l) : type(REFERENCE), number(n), level(l) {}
-  TItem(const int n) : type(LENGTH), number(n) {}
+  TItem(const char b) : type(kBase), base(b) {}
+  TItem(const int n, const int l) : type(kReference), number(n), level(l) {}
+  TItem(const int n) : type(kLength), number(n) {}
 };
-typedef std::vector<TItem> Template;
-
-typedef std::vector<Dna> Environment;
+using Template = std::vector<TItem>;
+using Environment = std::vector<Dna>;
 
 class Dna2Rna {
  public:
