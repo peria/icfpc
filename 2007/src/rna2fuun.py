@@ -2,7 +2,7 @@
 
 import profile
 import sys
-import Image
+from PIL import Image
 
 OUTPUT_FILE = 'fuun.png'
 
@@ -40,7 +40,6 @@ class Rna2Fuun:
     self.dir = EAST
     self.bitmaps = [TransparentBitmap]
 
-    
   def build(self, rnas, isTest):
     rnaSize = len(rnas)
     print 'Number of RNA is %d' % rnaSize
@@ -101,12 +100,10 @@ class Rna2Fuun:
     if not isTest:
       self.draw(self.bitmaps.pop(), OUTPUT_FILE)
 
-  
   def addColor(self, c):
     self.bucket.append(c)
     self.currentCache = None
 
-  
   def currentPixel(self):
     if self.currentCache == None:
       rgbSize, alphaSize = (0, 0)
@@ -137,7 +134,6 @@ class Rna2Fuun:
 
     return self.currentCache
 
-
   @staticmethod
   def move(pos, d):
     dx = [1, 0, WIDTH - 1, 0]
@@ -145,26 +141,21 @@ class Rna2Fuun:
     x, y = pos
     return ((x + dx[d]) % WIDTH, (y + dy[d]) % HEIGHT)
 
-  
   @staticmethod
   def turnCounterClockwise(d):
     return (d + 3) % 4
-
 
   @staticmethod
   def turnClockwise(d):
     return (d + 1) % 4
 
-
   def getPixel(self, p):
     x, y = p
     return self.bitmaps[len(self.bitmaps) - 1][y][x]
 
-
   def setPixel(self, p):
     x, y = p
     self.bitmaps[len(self.bitmaps) - 1][y][x] = self.currentPixel()
-
 
   def line(self, p0, p1):
     x0, y0 = p0
@@ -181,13 +172,11 @@ class Rna2Fuun:
       y += deltay
     self.setPixel((x1, y1))
 
-
   def tryfill(self):
     new = self.currentPixel()
     old = self.getPixel(self.position)
     if new != old:
       self.fill(self.position, old)
-
 
   def fill(self, pos, initial):
     stack = [pos]
@@ -204,11 +193,9 @@ class Rna2Fuun:
       if y < HEIGHT - 1 and self.getPixel((x, y + 1)) == initial:
         stack.append((x, y + 1))
 
-
   def addBitmap(self, bitmap):
     if len(self.bitmaps) < 10:
       self.bitmaps.append(bitmap)
-
 
   def compose(self):
     if len(self.bitmaps) >= 2:
@@ -224,7 +211,6 @@ class Rna2Fuun:
                            a0 + a1 * (255 - a0) / 255)
       self.bitmaps.append(bitmap1)
 
-
   def clip(self):
     if len(self.bitmaps) >= 2:
       bitmap0 = self.bitmaps.pop()
@@ -239,7 +225,6 @@ class Rna2Fuun:
                             a1 * a0 / 255)
       self.bitmaps.append(bitmap1)
 
-    
   # Parses computed array and draw it in a PNG file.
   def draw(self, bitmap, filename):
     img = Image.new('RGB', (WIDTH, HEIGHT))
@@ -275,6 +260,6 @@ def main():
     fuun = Rna2Fuun()
     fuun.build(rnas, False)
 
-  
+
 if __name__ == "__main__":
   main()

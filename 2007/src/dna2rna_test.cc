@@ -24,22 +24,20 @@ class Dna2RnaTest : public testing::Test {};
 TEST_F(Dna2RnaTest, Pattern) {
   {
     TDna2Rna endo("CIIC");
-    Pattern pat;
-    endo.MakePattern(&pat);
+    Pattern pat = endo.MakePattern();
     ASSERT_EQ(1, pat.size());
-    EXPECT_EQ(PItem::BASE, pat[0].type);
+    EXPECT_EQ(PItem::kBase, pat[0].type);
     EXPECT_EQ('I', pat[0].base);
   }
   {
     TDna2Rna endo("IIPIPICPIICICIIF");
-    Pattern pat;
-    endo.MakePattern(&pat);
+    Pattern pat = endo.MakePattern();
     ASSERT_EQ(4, pat.size());
-    EXPECT_EQ(PItem::BLA, pat[0].type);
-    EXPECT_EQ(PItem::SKIP, pat[1].type);
+    EXPECT_EQ(PItem::kBla, pat[0].type);
+    EXPECT_EQ(PItem::kSkip, pat[1].type);
     EXPECT_EQ(2, pat[1].n);
-    EXPECT_EQ(PItem::CKET, pat[2].type);
-    EXPECT_EQ(PItem::BASE, pat[3].type);
+    EXPECT_EQ(PItem::kCket, pat[2].type);
+    EXPECT_EQ(PItem::kBase, pat[3].type);
     EXPECT_EQ('P', pat[3].base);
   }
 }

@@ -23,32 +23,30 @@ void Dna2Rna::Finish() {
 }
 
 void Dna2Rna::ExecuteIteration() {
-  Pattern p;
-  Template t;
-  MakePattern(&p);
-  MakeTemplate(&t);
-  MatchReplace(p, t);
+  Pattern pattern = MakePattern();
+  Template tmpl = MakeTemplate();
+  MatchReplace(pattern, tmpl);
 }
 
-void Dna2Rna::MakePattern(Pattern* p) {
-  p->clear();
+Pattern Dna2Rna::MakePattern() {
+  Pattern pattern;
 
   int lvl = 0;
   while (i_ < dna_.size()) {
     switch (dna_[i_]) {
     case 'C': {
       ++i_;
-      p->push_back(PItem('I'));
+      pattern.push_back(PItem('I'));
       break;
     }
     case 'F': {
       ++i_;
-      p->push_back(PItem('C'));
+      pattern.push_back(PItem('C'));
       break;
     }
     case 'P': {
       ++i_;
-      p->push_back(PItem('F'));
+      pattern.push_back(PItem('F'));
       break;
     }
     case 'I': {
@@ -58,19 +56,19 @@ void Dna2Rna::MakePattern(Pattern* p) {
       switch (dna_[i_ + 1]) {
       case 'C': {
         i_ += 2;
-        p->push_back(PItem('P'));
+        pattern.push_back(PItem('P'));
         break;
       }
       case 'P': {
         i_ += 2;
         int n = Nat();
-        p->push_back(PItem(n));
+        pattern.push_back(PItem(n));
         break;
       }
       case 'F': {
         i_ += 3;
         const Dna& s = Consts();
-        p->push_back(PItem(s));
+        pattern.push_back(PItem(s));
         break;
       }
       case 'I': {
@@ -81,16 +79,16 @@ void Dna2Rna::MakePattern(Pattern* p) {
         case 'P': {
           i_ += 3;
           ++lvl;
-          p->push_back(PItem(PItem::BLA));
+          pattern.push_back(PItem(PItem::kBla));
           break;
         }
         case 'C':
         case 'F': {
           i_ += 3;
           if (lvl == 0)
-            return;  // return *p;
+            return std::move(pattern);
           --lvl;
-          p->push_back(PItem(PItem::CKET));
+          pattern.push_back(PItem(PItem::kCket));
           break;
         }
         case 'I': {
@@ -112,24 +110,26 @@ void Dna2Rna::MakePattern(Pattern* p) {
       Finish();
     }  // switch([i])
   }    // while()
+
+  return std::move(pattern);
 }
 
-void Dna2Rna::MakeTemplate(Template* t) {
-  t->clear();
+Template Dna2Rna::MakeTemplate() {
+  Template tmpl;
 
   while (i_ < dna_.size()) {
     switch (dna_[i_]) {
     case 'C':
       ++i_;
-      t->push_back(TItem('I'));
+      tmpl.push_back(TItem('I'));
       break;
     case 'F':
       ++i_;
-      t->push_back(TItem('C'));
+      tmpl.push_back(TItem('C'));
       break;
     case 'P':
       ++i_;
-      t->push_back(TItem('F'));
+      tmpl.push_back(TItem('F'));
       break;
     case 'I': {
       if (i_ + 1 >= dna_.size())
@@ -138,14 +138,14 @@ void Dna2Rna::MakeTemplate(Template* t) {
       switch (dna_[i_ + 1]) {
       case 'C':
         i_ += 2;
-        t->push_back(TItem('P'));
+        tmpl.push_back(TItem('P'));
         break;
       case 'F':
       case 'P': {
         i_ += 2;
         int l = Nat();
         int n = Nat();
-        t->push_back(TItem(n, l));
+        tmpl.push_back(TItem(n, l));
         break;
       }
       case 'I': {
@@ -156,12 +156,12 @@ void Dna2Rna::MakeTemplate(Template* t) {
         case 'C':
         case 'F': {
           i_ += 3;
-          return;
+          return std::move(tmpl);
         }
         case 'P': {
           i_ += 3;
           int n = Nat();
-          t->push_back(TItem(n));
+          tmpl.push_back(TItem(n));
           break;
         }
         case 'I': {
@@ -183,6 +183,8 @@ void Dna2Rna::MakeTemplate(Template* t) {
       Finish();
     }  // switch ([i])
   }
+
+  return std::move(tmpl);
 }
 
 void Dna2Rna::MatchReplace(const Pattern& pat, const Template& t) {
@@ -191,30 +193,30 @@ void Dna2Rna::MatchReplace(const Pattern& pat, const Template& t) {
   std::vector<int> c;
   for (const PItem& p : pat) {
     switch (p.type) {
-    case PItem::BASE: {
+    case PItem::kBase: {
       if (dna_[i] != p.base)
         return;
       ++i;
       break;
     }
-    case PItem::SKIP: {
+    case PItem::kSkip: {
       i += p.n;
       if (i > dna_.size())
         return;
       break;
     }
-    case PItem::SEARCH: {
+    case PItem::kSearch: {
       size_t n = dna_.find(p.sequence.c_str(), i);
       if (n == std::string::npos)
         return;
       i = n + p.sequence.size();
       break;
     }
-    case PItem::BLA: {
+    case PItem::kBla: {
       c.push_back(i);
       break;
     }
-    case PItem::CKET: {
+    case PItem::kCket: {
       int c0 = c.back();
       e.push_back(dna_.substr(c0, i - c0));
       c.pop_back();

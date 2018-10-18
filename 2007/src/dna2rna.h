@@ -4,21 +4,24 @@
 #include <ext/rope>
 #include <vector>
 
-typedef __gnu_cxx::crope String;
-typedef String Dna;
+using String = __gnu_cxx::crope;
+using Dna = String;
 
 struct PItem {
-  enum Type { BASE, SKIP, SEARCH, BLA, CKET } type;
+  enum Type { kBase, kSkip, kSearch, kBla, kCket };
+
+  Type type;
   char base;
   int n;
   String sequence;
 
-  PItem(const char b) : type(BASE), base(b) {}
-  PItem(const int m) : type(SKIP), n(m) {}
-  PItem(const String& s) : type(SEARCH), sequence(s) {}
+  PItem(const char b) : type(kBase), base(b) {}
+  PItem(const int m) : type(kSkip), n(m) {}
+  PItem(const String& s) : type(kSearch), sequence(s) {}
   PItem(const Type t) : type(t) {}
 };
-typedef std::vector<PItem> Pattern;
+
+using Pattern = std::vector<PItem>;
 
 struct TItem {
   enum Type { BASE, REFERENCE, LENGTH } type;
@@ -46,8 +49,8 @@ class Dna2Rna {
  protected:
   void Finish();
   void ExecuteIteration();
-  void MakePattern(Pattern* p);
-  void MakeTemplate(Template* t);
+  Pattern MakePattern();
+  Template MakeTemplate();
   void MatchReplace(const Pattern& p, const Template& t);
   int Nat();
   String Consts();
