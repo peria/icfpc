@@ -34,7 +34,7 @@ TransparentBitmap = [[((0, 0, 0), 0) for _ in xrange(WIDTH)]
 class Rna2Fuun:
   def __init__(self):
     self.bucket = []
-    self.currentCache = None
+    self.current_pixel = None
     self.position = (0, 0)
     self.mark = (0, 0)
     self.dir = EAST
