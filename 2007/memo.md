@@ -6,3 +6,5 @@
 - no_input_first で出てきた prefix を利用 → repair_guide
 - ガイドの下にある prefix → light
 - ガイドのカタログ用と言われてる prefix → catalog_1337
+  I=0 と C=1 を使って数字をビット表現してページ指定ができるらしい。並び順が逆なのに注意。
+  1337=0b10100111001 → CIICCCIICIC (最後のCが無い？)
