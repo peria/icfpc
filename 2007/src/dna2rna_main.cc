@@ -16,6 +16,8 @@ int main(void) {
 
   std::ifstream ifs(ENDO_PATH);
   std::string original;
+  // Take only the first line (first continuous string).
+  // Other lines can be used to put comments. :)
   ifs >> original;
   ifs.close();
 
