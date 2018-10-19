@@ -13,11 +13,11 @@ struct PItem {
   Type type;
   char base;
   int n;
-  String sequence;
+  String s;
 
   PItem(const char b) : type(kBase), base(b) {}
   PItem(const int m) : type(kSkip), n(m) {}
-  PItem(const String& s) : type(kSearch), sequence(s) {}
+  PItem(const String& s) : type(kSearch), s(s) {}
   PItem(const Type t) : type(t) {}
 };
 

@@ -11,17 +11,16 @@
 #endif
 
 int main(void) {
-  std::string dna;
-  std::cin >> dna;
+  std::string prefix;
+  std::cin >> prefix;
 
-  {
-    std::ifstream ifs(ENDO_PATH);
-    std::string endo;
-    ifs >> endo;
-    ifs.close();
-    dna += endo;
-  }
-  LOG(INFO) << "Total length is " << dna.size() << " bytes";
+  std::ifstream ifs(ENDO_PATH);
+  std::string original;
+  ifs >> original;
+  ifs.close();
+
+  std::string dna(prefix + original);
+  LOG(INFO) << "Processing prefix:\n" << prefix;
   Dna2Rna endo(dna.c_str());
   for (const Dna& rna : endo.Execute())
     std::cout << rna << "\n";

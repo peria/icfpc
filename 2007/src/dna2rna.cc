@@ -10,8 +10,13 @@ Dna2Rna::Dna2Rna(const String& dna) : dna_(dna), i_(0) {}
 
 const std::vector<Dna>& Dna2Rna::Execute() {
   try {
-    while (i_ < dna_.size())
+    int iteration = 0;
+    while (i_ < dna_.size()) {
+      ++iteration;
       ExecuteIteration();
+    }
+    LOG(INFO) << "Performed " << iteration << " iterations";
+    LOG(INFO) << "Output " << rna_.size() << " RNA commands";
   } catch (const std::vector<Dna>& rna) {
     return rna_;
   }
@@ -29,24 +34,23 @@ void Dna2Rna::ExecuteIteration() {
 }
 
 Pattern Dna2Rna::MakePattern() {
-  Pattern pattern;
-
+  Pattern p;
   int lvl = 0;
   while (i_ < dna_.size()) {
     switch (dna_[i_]) {
     case 'C': {
       ++i_;
-      pattern.emplace_back('I');
+      p.emplace_back('I');
       break;
     }
     case 'F': {
       ++i_;
-      pattern.emplace_back('C');
+      p.emplace_back('C');
       break;
     }
     case 'P': {
       ++i_;
-      pattern.emplace_back('F');
+      p.emplace_back('F');
       break;
     }
     case 'I': {
@@ -56,19 +60,19 @@ Pattern Dna2Rna::MakePattern() {
       switch (dna_[i_ + 1]) {
       case 'C': {
         i_ += 2;
-        pattern.emplace_back('P');
+        p.emplace_back('P');
         break;
       }
       case 'P': {
         i_ += 2;
         int n = Nat();
-        pattern.emplace_back(n);
+        p.emplace_back(n);
         break;
       }
       case 'F': {
         i_ += 3;
         const Dna& s = Consts();
-        pattern.emplace_back(s);
+        p.emplace_back(s);
         break;
       }
       case 'I': {
@@ -79,16 +83,16 @@ Pattern Dna2Rna::MakePattern() {
         case 'P': {
           i_ += 3;
           ++lvl;
-          pattern.emplace_back(PItem::kBla);
+          p.emplace_back(PItem::kBla);
           break;
         }
         case 'C':
         case 'F': {
           i_ += 3;
           if (lvl == 0)
-            return std::move(pattern);
+            return p;
           --lvl;
-          pattern.emplace_back(PItem::kCket);
+          p.emplace_back(PItem::kCket);
           break;
         }
         case 'I': {
@@ -98,38 +102,38 @@ Pattern Dna2Rna::MakePattern() {
         }
         default:
           Finish();
-        }  // switch([i+2])
+        }
         break;
       }
       default:
         Finish();
-      }  // switch([i+1])
+      }
       break;
     }
     default:
       Finish();
-    }  // switch([i])
+    }
   }    // while()
 
-  return std::move(pattern);
+  return Pattern();
 }
 
 Template Dna2Rna::MakeTemplate() {
-  Template tmpl;
+  Template t;
 
   while (i_ < dna_.size()) {
     switch (dna_[i_]) {
     case 'C':
       ++i_;
-      tmpl.emplace_back('I');
+      t.emplace_back('I');
       break;
     case 'F':
       ++i_;
-      tmpl.emplace_back('C');
+      t.emplace_back('C');
       break;
     case 'P':
       ++i_;
-      tmpl.emplace_back('F');
+      t.emplace_back('F');
       break;
     case 'I': {
       if (i_ + 1 >= dna_.size())
@@ -138,14 +142,14 @@ Template Dna2Rna::MakeTemplate() {
       switch (dna_[i_ + 1]) {
       case 'C':
         i_ += 2;
-        tmpl.emplace_back('P');
+        t.emplace_back('P');
         break;
       case 'F':
       case 'P': {
         i_ += 2;
         int l = Nat();
         int n = Nat();
-        tmpl.emplace_back(n, l);
+        t.emplace_back(n, l);
         break;
       }
       case 'I': {
@@ -156,12 +160,12 @@ Template Dna2Rna::MakeTemplate() {
         case 'C':
         case 'F': {
           i_ += 3;
-          return std::move(tmpl);
+          return t;
         }
         case 'P': {
           i_ += 3;
           int n = Nat();
-          tmpl.emplace_back(n);
+          t.emplace_back(n);
           break;
         }
         case 'I': {
@@ -183,8 +187,7 @@ Template Dna2Rna::MakeTemplate() {
       Finish();
     }  // switch ([i])
   }
-
-  return std::move(tmpl);
+  return Template();
 }
 
 void Dna2Rna::MatchReplace(const Pattern& pat, const Template& t) {
@@ -206,10 +209,10 @@ void Dna2Rna::MatchReplace(const Pattern& pat, const Template& t) {
       break;
     }
     case PItem::kSearch: {
-      size_t n = dna_.find(p.sequence.c_str(), i);
+      size_t n = dna_.find(p.s.c_str(), i);
       if (n == std::string::npos)
         return;
-      i = n + p.sequence.size();
+      i = n + p.s.size();
       break;
     }
     case PItem::kBla: {
@@ -231,6 +234,8 @@ void Dna2Rna::MatchReplace(const Pattern& pat, const Template& t) {
 int Dna2Rna::Nat() {
   if (i_ >= dna_.size())
     Finish();
+  // Consider I/F as 0, C as 1, and invert their order.
+  // It represents a binary number.
 
   int nat = 0;
   int base = 1;
@@ -283,7 +288,7 @@ Dna Dna2Rna::Consts() {
     }
     break;
   }
-  return consts;
+  return std::move(consts);
 }
 
 void Dna2Rna::Replace(const Template& tpl, const Environment& e) {

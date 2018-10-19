@@ -4,12 +4,12 @@ CXXFLAGS+=-O2 -Wall -std=c++1z
 LDFLAGS+=-lglog -lgflags
 GTEST_DIR=../third_party/googletest/googletest
 
-all: dna2rna_main dna2rna_test
+all: dna2rna dna2rna_test
 
 test: dna2rna_test
 	./dna2rna_test
 
-dna2rna_main: dna2rna.o dna2rna_main.o
+dna2rna: dna2rna.o dna2rna_main.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 dna2rna_test: dna2rna.o dna2rna_test.cc
