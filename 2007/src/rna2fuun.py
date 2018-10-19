@@ -40,16 +40,16 @@ class Rna2Fuun:
     self.dir = EAST
     self.bitmaps = [TransparentBitmap]
 
-  def build(self, rnas, isTest):
-    rnaSize = len(rnas)
-    print 'Number of RNA is %d' % rnaSize
+  def build(self, rnas):
+    rna_size = len(rnas)
+    print 'Number of RNA is %d' % rna_size
 
     i = 0
     percent = 10
     for rna in rnas:
       i += 1
-      if rnaSize * percent / 100 == i:
-        print '%d%% (%d/%d) is Done' % (percent, i, len(rnas))
+      if rna_size * percent / 100 == i:
+        print '%d%% (%d/%d) is Done' % (percent, i, rna_size)
         percent += 10
 
       if   rna == 'PIPIIIC':
@@ -74,22 +74,19 @@ class Rna2Fuun:
         self.addColor(OPAQUE)
       elif rna == 'PIIPICP':
         self.bucket = []
-        self.currentCache = None
-
+        self.current_pixel = None
       elif rna == 'PIIIIIP':
         self.position = self.move(self.position, self.dir)
       elif rna == 'PCCCCCP':
         self.dir = self.turnCounterClockwise(self.dir)
       elif rna == 'PFFFFFP':
         self.dir = self.turnClockwise(self.dir)
-
       elif rna == 'PCCIFFP':
         self.mark = self.position
       elif rna == 'PFFICCP':
         self.line(self.position, self.mark)
       elif rna == 'PIIPIIP':
         self.tryfill()
-
       elif rna == 'PCCPFFP':
         self.addBitmap(TransparentBitmap)
       elif rna == 'PFFPCCP':
@@ -97,42 +94,37 @@ class Rna2Fuun:
       elif rna == 'PFFICCF':
         self.clip()
 
-    if not isTest:
-      self.draw(self.bitmaps.pop(), OUTPUT_FILE)
+    self.draw(self.bitmaps.pop(), OUTPUT_FILE)
 
   def addColor(self, c):
     self.bucket.append(c)
-    self.currentCache = None
+    self.current_pixel = None
 
   def currentPixel(self):
-    if self.currentCache == None:
-      rgbSize, alphaSize = (0, 0)
+    # Cache the result
+    if self.current_pixel is None:
+      rgb_size, alpha_size = (0, 0)
       rc, gc, bc = (0, 0, 0)
       ac = 0
       for color in self.bucket:
         rgb, a = color
-        if rgb != None:
-          rgbSize += 1
+        if rgb is not None:
+          rgb_size += 1
           r, g, b = rgb
           rc += r
           gc += g
           bc += b
-        if a != None:
-          alphaSize += 1
+        if a is not None:
+          alpha_size += 1
           ac += a
 
-      if rgbSize > 0:
-        rc /= rgbSize
-        gc /= rgbSize
-        bc /= rgbSize
-      if alphaSize > 0:
-        ac /= alphaSize
-      else:
-        ac = 255
+      rc = (rc / rgb_size) if rgb_size > 0 else 0
+      gc = (gc / rgb_size) if rgb_size > 0 else 0
+      bc = (bc / rgb_size) if rgb_size > 0 else 0
+      ac = (ac / alpha_size) if alpha_size > 0 else 255
+      self.current_pixel = ((rc * ac / 255, gc * ac / 255, bc * ac / 255), ac)
 
-      self.currentCache = ((rc * ac / 255, gc * ac / 255, bc * ac / 255), ac)
-
-    return self.currentCache
+    return self.current_pixel
 
   @staticmethod
   def move(pos, d):
@@ -151,11 +143,11 @@ class Rna2Fuun:
 
   def getPixel(self, p):
     x, y = p
-    return self.bitmaps[len(self.bitmaps) - 1][y][x]
+    return self.bitmaps[-1][y][x]
 
   def setPixel(self, p):
     x, y = p
-    self.bitmaps[len(self.bitmaps) - 1][y][x] = self.currentPixel()
+    self.bitmaps[-1][y][x] = self.currentPixel()
 
   def line(self, p0, p1):
     x0, y0 = p0
@@ -200,7 +192,7 @@ class Rna2Fuun:
   def compose(self):
     if len(self.bitmaps) >= 2:
       bitmap0 = self.bitmaps.pop()
-      bitmap1 = self.bitmaps.pop()
+      bitmap1 = self.bitmaps[-1]
       for y in xrange(HEIGHT):
         for x in xrange(WIDTH):
           (r0, g0, b0), a0 = bitmap0[y][x]
@@ -209,12 +201,11 @@ class Rna2Fuun:
                             g0 + g1 * (255 - a0) / 255,
                             b0 + b1 * (255 - a0) / 255),
                            a0 + a1 * (255 - a0) / 255)
-      self.bitmaps.append(bitmap1)
 
   def clip(self):
     if len(self.bitmaps) >= 2:
       bitmap0 = self.bitmaps.pop()
-      bitmap1 = self.bitmaps.pop()
+      bitmap1 = self.bitmaps[-1]
       for y in xrange(HEIGHT):
         for x in xrange(WIDTH):
           _, a0 = bitmap0[y][x]
@@ -223,7 +214,6 @@ class Rna2Fuun:
                             g1 * a0 / 255,
                             b1 * a0 / 255),
                             a1 * a0 / 255)
-      self.bitmaps.append(bitmap1)
 
   # Parses computed array and draw it in a PNG file.
   def draw(self, bitmap, filename):
@@ -236,29 +226,18 @@ class Rna2Fuun:
     print 'output %s' % filename
 
 
-def performance(n):
+def main():
   rnas = []
   for rna in sys.stdin:
     rna = rna.rstrip()  # Remove new line code
     rnas.append(rna)
-  fuun = Rna2Fuun()
-  rnas = rnas[0:n]
-  print 'len(rnas) = %d' % len(rnas)
-  fuun.build(rnas, True)
 
-
-def main():
   if len(sys.argv) >= 2:
     n = int(sys.argv[1])
-    print 'Performance test, running first %d commands.' % n
-    profile.run('performance(%d)' % n)
-  else:
-    rnas = []
-    for rna in sys.stdin:
-      rna = rna.rstrip()  # Remove new line code
-      rnas.append(rna)
-    fuun = Rna2Fuun()
-    fuun.build(rnas, False)
+    rnas = rnas[0:n]
+
+  fuun = Rna2Fuun()
+  fuun.build(rnas)
 
 
 if __name__ == "__main__":
