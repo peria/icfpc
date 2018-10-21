@@ -20,3 +20,5 @@ Guide 8p.
   4. sum of all movements (?)
 - 256 degrees in a circle. ($2\pi = 256 deg?$)
 - integers in DNAs may be quoted.
+
+![encodings](../image/encodings.png "encodings")
