@@ -26,3 +26,4 @@
     ( cCIF PCFF P  )IIIIIIIIIII  /ln00CIICCCIICIC  /  <- Pattern&Template
 ```
 - ビンゴ。以降メモの詳細は各prefixの2行目以降に書くことに。
+- 目次をもとにいくつか生成 (structure, encodings, list, lookout)
