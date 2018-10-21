@@ -1,5 +1,5 @@
 CXX=clang++
-CXXFLAGS+=-O2 -Wall -std=c++1z
+CXXFLAGS+=-O2 -Wall -std=c++17
 
 LDFLAGS+=-lglog -lgflags
 GTEST_DIR=../third_party/googletest/googletest
@@ -18,4 +18,4 @@ dna2rna_test: dna2rna.o dna2rna_test.cc
 	-I$(GTEST_DIR)/include -I$(GTEST_DIR) -lpthread
 
 clean:
-	rm -f *.o *~ dna2rna_main dna2rna_test
+	rm -f *.o *~ dna2rna dna2rna_test
