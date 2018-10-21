@@ -18,6 +18,7 @@ const std::vector<Dna>& Dna2Rna::Execute() {
     LOG(INFO) << "Performed " << iteration << " iterations";
     LOG(INFO) << "Output " << rna_.size() << " RNA commands";
   } catch (const std::vector<Dna>& rna) {
+    LOG(INFO) << "Error";
     return rna_;
   }
   return rna_;
@@ -324,10 +325,27 @@ void Dna2Rna::Replace(const Template& tpl, const Environment& e) {
 Dna Dna2Rna::Protect(int l, const Dna& d) {
   if (d.empty())
     return "";
+  if (l == 0)
+    return d;
 
-  Dna protect(d);
-  for (int i = 0; i < l; ++i)
-    protect = Quote(protect);
+  static const std::vector<std::vector<Dna>> kQuotMatrix = {
+    // [l][ICFP -> 0213]
+    {},
+    {"C", "P", "F", "IC"},
+    {"F", "IC", "P", "CF"},
+    {"P", "CF", "IC", "FP"},
+    {"IC", "FP", "CF", "PIC"},
+    {"CF", "PIC", "FP", "ICCF"},
+    {"FP", "ICCF", "PIC", "CFFP"},
+    {"PIC", "CFFP", "ICCF", "FPPIC"},
+  };
+
+  DCHECK_LE(l, 7);
+  const auto& mp = kQuotMatrix[l];
+  Dna protect;
+  for (char c : d) {
+    protect.append(mp[(c - 'A') & 3]);
+  }
   return protect;
 }
 
