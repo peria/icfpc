@@ -102,10 +102,7 @@ TEST_F(Dna2RnaTest, Asnat) {
     int n;
     const char* expect;
   } tests[] = {
-      {0, "P"},
-      {1, "CP"},
-      {2, "ICP"},
-      {5, "CICP"},
+      {0, "P"}, {1, "CP"}, {2, "ICP"}, {5, "CICP"},
   };
 
   for (const TestData& test : tests) {

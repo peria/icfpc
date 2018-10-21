@@ -114,7 +114,7 @@ Pattern Dna2Rna::MakePattern() {
     default:
       Finish();
     }
-  }    // while()
+  }  // while()
 
   return Pattern();
 }
@@ -329,15 +329,15 @@ Dna Dna2Rna::Protect(int l, const Dna& d) {
     return d;
 
   static const std::vector<std::vector<Dna>> kQuotMatrix = {
-    // [l][ICFP -> 0213]
-    {},
-    {"C", "P", "F", "IC"},
-    {"F", "IC", "P", "CF"},
-    {"P", "CF", "IC", "FP"},
-    {"IC", "FP", "CF", "PIC"},
-    {"CF", "PIC", "FP", "ICCF"},
-    {"FP", "ICCF", "PIC", "CFFP"},
-    {"PIC", "CFFP", "ICCF", "FPPIC"},
+      // [l][ICFP -> 0213]
+      {},
+      {"C", "P", "F", "IC"},
+      {"F", "IC", "P", "CF"},
+      {"P", "CF", "IC", "FP"},
+      {"IC", "FP", "CF", "PIC"},
+      {"CF", "PIC", "FP", "ICCF"},
+      {"FP", "ICCF", "PIC", "CFFP"},
+      {"PIC", "CFFP", "ICCF", "FPPIC"},
   };
 
   DCHECK_LE(l, 7);
