@@ -155,11 +155,11 @@ class Rna2Fuun:
     c = 1 if deltax * deltay <= 0 else 0
     x = x0 * d + (d - c) / 2
     y = y0 * d + (d - c) / 2
+    self.setPixel((x1, y1))
     for _ in xrange(d):
-      self.setPixel((x / d, y / d))
+      self.current_bitmap[y / d][x / d] = self.current_pixel
       x += deltax
       y += deltay
-    self.setPixel((x1, y1))
 
   def tryfill(self):
     new = self.currentPixel()
@@ -168,24 +168,22 @@ class Rna2Fuun:
       self.fill(self.position, old)
 
   def fill(self, pos, initial):
-    def check_and_register(p):
-      if self.getPixel(p) == initial:
-        stack.append(p)
-
     self.setPixel(pos)
+    bitmap = self.current_bitmap
+
     stack = [pos]
     while len(stack) > 0:
       p = stack.pop()
       x, y = p
-      self.current_bitmap[y][x] = self.current_pixel
-      if x > 0:
-        check_and_register((x - 1, y))
-      if x < WIDTH - 1:
-        check_and_register((x + 1, y))
-      if y > 0:
-        check_and_register((x, y - 1))
-      if y < HEIGHT - 1:
-        check_and_register((x, y + 1))
+      bitmap[y][x] = self.current_pixel
+      if x > 0 and bitmap[y][x - 1] == initial:
+        stack.append((x - 1, y))
+      if x < WIDTH - 1 and bitmap[y][x + 1] == initial:
+        stack.append((x + 1, y))
+      if y > 0 and bitmap[y - 1][x] == initial:
+        stack.append((x, y - 1))
+      if y < HEIGHT - 1 and bitmap[y + 1][x] == initial:
+        stack.append((x, y + 1))
 
   def addBitmap(self, bitmap):
     if len(self.bitmaps) < 10:
@@ -193,19 +191,20 @@ class Rna2Fuun:
       self.current_bitmap = self.bitmaps[-1]
 
   def compose(self):
-    if len(self.bitmaps) >= 2:
-      bitmap0 = self.bitmaps.pop()
-      bitmap1 = self.bitmaps[-1]
-      for y in xrange(HEIGHT):
-        for x in xrange(WIDTH):
-          (r0, g0, b0), a0 = bitmap0[y][x]
-          (r1, g1, b1), a1 = bitmap1[y][x]
-          bitmap1[y][x] = ((r0 + r1 * (255 - a0) / 255,
-                            g0 + g1 * (255 - a0) / 255,
-                            b0 + b1 * (255 - a0) / 255),
-                           a0 + a1 * (255 - a0) / 255)
-      self.current_bitmap = self.bitmaps[-1]
+    if len(self.bitmaps) < 2:
+      return
 
+    bitmap0 = self.bitmaps.pop()
+    bitmap1 = self.bitmaps[-1]
+    for y in xrange(HEIGHT):
+      for x in xrange(WIDTH):
+        (r0, g0, b0), a0 = bitmap0[y][x]
+        (r1, g1, b1), a1 = bitmap1[y][x]
+        bitmap1[y][x] = ((r0 + r1 * (255 - a0) / 255,
+                          g0 + g1 * (255 - a0) / 255,
+                          b0 + b1 * (255 - a0) / 255),
+                         a0 + a1 * (255 - a0) / 255)
+    self.current_bitmap = self.bitmaps[-1]
 
   def clip(self):
     if len(self.bitmaps) >= 2:
