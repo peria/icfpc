@@ -156,8 +156,11 @@ class Rna2Fuun:
     x = x0 * d + (d - c) / 2
     y = y0 * d + (d - c) / 2
     self.setPixel((x1, y1))
+
+    bitmap = self.current_bitmap
+    current_pixel = self.current_pixel
     for _ in xrange(d):
-      self.current_bitmap[y / d][x / d] = self.current_pixel
+      bitmap[y / d][x / d] = current_pixel
       x += deltax
       y += deltay
 
