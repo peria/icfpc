@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
+import copy
+import operator
 import profile
 import sys
-import copy
 from PIL import Image
 
 OUTPUT_FILE = 'fuun.png'
@@ -29,8 +30,9 @@ SOUTH = 1
 WEST  = 2
 NORTH = 3
 
-TransparentBitmap = [[(BLACK, TRANSPARENT) for _ in xrange(WIDTH)]
-                     for _ in xrange(HEIGHT)]
+def generateTransparentBitmap():
+  return [[((0, 0, 0), 0) for _ in xrange(WIDTH)] for _ in xrange(HEIGHT)]
+
 
 class Rna2Fuun:
   def __init__(self):
@@ -39,10 +41,10 @@ class Rna2Fuun:
     self.position = (0, 0)
     self.mark = (0, 0)
     self.dir = EAST
-    self.bitmaps = [[[((0,0,0), 0) for _ in xrange(WIDTH)] for _ in xrange(HEIGHT)]]
+    self.bitmaps = [generateTransparentBitmap()]
     self.current_bitmap = self.bitmaps[0]
 
-  def build(self, rnas):
+  def build(self, rnas, output_file):
     rna_size = len(rnas)
     print 'Number of RNA is %d' % rna_size
 
@@ -90,13 +92,14 @@ class Rna2Fuun:
       elif rna == 'PIIPIIP':
         self.tryfill()
       elif rna == 'PCCPFFP':
-        self.addBitmap()
+        self.addBitmap(generateTransparentBitmap())
       elif rna == 'PFFPCCP':
         self.compose()
       elif rna == 'PFFICCF':
         self.clip()
 
-    self.draw(self.current_bitmap, OUTPUT_FILE)
+    if output_file:
+      self.draw(self.current_bitmap, output_file)
 
   def addColor(self, c):
     self.bucket.append(c)
@@ -105,24 +108,17 @@ class Rna2Fuun:
   def currentPixel(self):
     # Cache the result
     if self.current_pixel is None:
-      rgb_size, alpha_size = (0, 0)
-      rc, gc, bc = (0, 0, 0)
-      ac = 0
-      for color in self.bucket:
-        if isinstance(color, tuple):
-          rgb_size += 1
-          r, g, b = color
-          rc += r
-          gc += g
-          bc += b
-        else:
-          alpha_size += 1
-          ac += color
+      rgbs = [color for color in self.bucket if isinstance(color, tuple)]
+      rgb = (0, 0, 0)
+      if rgbs:
+        n = len(rgbs)
+        rgb = tuple(reduce(lambda x, y: (x[0] + y[0], x[1] + y[1], x[2] + y[2]), rgbs))
+        rgb = (rgb[0] / n, rgb[1] / n, rgb[2] / n)
+      rc, gc, bc = rgb
 
-      rc = (rc / rgb_size) if rgb_size > 0 else 0
-      gc = (gc / rgb_size) if rgb_size > 0 else 0
-      bc = (bc / rgb_size) if rgb_size > 0 else 0
-      ac = (ac / alpha_size) if alpha_size > 0 else 255
+      alphas = [color for color in self.bucket if not isinstance(color, tuple)]
+      ac = (sum(alphas) / len(alphas)) if alphas else 255
+
       self.current_pixel = ((rc * ac / 255, gc * ac / 255, bc * ac / 255), ac)
 
     return self.current_pixel
@@ -176,11 +172,12 @@ class Rna2Fuun:
       if self.getPixel(p) == initial:
         stack.append(p)
 
+    self.setPixel(pos)
     stack = [pos]
     while len(stack) > 0:
       p = stack.pop()
-      self.setPixel(p)
       x, y = p
+      self.current_bitmap[y][x] = self.current_pixel
       if x > 0:
         check_and_register((x - 1, y))
       if x < WIDTH - 1:
@@ -190,9 +187,9 @@ class Rna2Fuun:
       if y < HEIGHT - 1:
         check_and_register((x, y + 1))
 
-  def addBitmap(self):
+  def addBitmap(self, bitmap):
     if len(self.bitmaps) < 10:
-      self.bitmaps.append([[((0,0,0), 0) for _ in xrange(WIDTH)] for _ in xrange(HEIGHT)])
+      self.bitmaps.append(bitmap)
       self.current_bitmap = self.bitmaps[-1]
 
   def compose(self):
@@ -235,18 +232,31 @@ class Rna2Fuun:
     print 'output %s' % filename
 
 
-def main():
+def performance():
   rnas = []
   for rna in sys.stdin:
-    rna = rna.rstrip()  # Remove new line code
-    rnas.append(rna)
+    rnas.append(rna.rstrip())  # Remove new line code
 
+  fuun = Rna2Fuun()
+  fuun.build(rnas, None)
+
+
+def main():
+  n = None
   if len(sys.argv) >= 2:
+    if sys.argv[1] == 'perf':
+      profile.run('performance()')
+      return
     n = int(sys.argv[1])
+
+  rnas = []
+  for rna in sys.stdin:
+    rnas.append(rna.rstrip())  # Remove new line code
+  if n is not None and n < len(rnas):
     rnas = rnas[0:n]
 
   fuun = Rna2Fuun()
-  fuun.build(rnas)
+  fuun.build(rnas, OUTPUT_FILE)
 
 
 if __name__ == "__main__":
