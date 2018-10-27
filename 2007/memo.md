@@ -26,4 +26,4 @@
     ( cCIF PCFF P  )IIIIIIIIIII  /ln00CIICCCIICIC  /  <- Pattern&Template
 ```
 - ビンゴ。以降メモの詳細は各prefixの2行目以降に書くことに。
-- 目次をもとにいくつか生成 ([structure](../image/structure.png), [encodings](../image/encodings.png), [list](../image/list.png), [lookout](../image/lookout.png), [charset](../image/charset.png), [field](../image/field.png), [notes](../image/notes.png), [lsystems](../image/lsystems.png), [security](../image/security.png))
+- 目次をもとにいくつか生成 ([structure](image/structure.png), [encodings](image/encodings.png), [list](image/list.png), [lookout](image/lookout.png), [charset](image/charset.png), [field](image/field.png), [notes](image/notes.png), [lsystems](image/lsystems.png), [security](image/security.png))
