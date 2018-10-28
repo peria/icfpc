@@ -27,3 +27,4 @@
 ```
 - ビンゴ。以降メモの詳細は各prefixの2行目以降に書くことに。
 - 目次をもとにいくつか生成 ([structure](image/structure.png), [encodings](image/encodings.png), [list](image/list.png), [lookout](image/lookout.png), [charset](image/charset.png), [field](image/field.png), [notes](image/notes.png), [lsystems](image/lsystems.png), [security](image/security.png), [history](image/history.png))
+- [field](input/field.md) と [list](input/list.md) から apple のお絵かきを呼び出すやり方が何となくわかった気がするのであとで試す。引数無しで該当位置＆長さを呼び出す様に数値変換。
