@@ -1,0 +1,15 @@
+IIPIFFCPICFPPICIICCCCCCCCCCCCCCCCCCIICIPPPCCCCCCFCCFCCCFFFFIIC
+
+```
+IIPIFFCPICFPPICIICCCCCCCCCCCCCCCCCCIICIPPPCCCCCCFCCFCCCFFFFIIC
+  ( cCIF PCFF P  )IIIIIIIIIIIIIIIII  /ln00IIIIIICIICIIICCCC  /
+```
+
+Guide 123456p. = 0x1e240 = 11110001001000000
+
+## Historical note on RNA compression
+
+RNA is able to be compressed (7 -> 5) easily.
+This compression maybe found in Fuun's DNA/RNA.
+
+![history](../image/history.png "history")

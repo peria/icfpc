@@ -23,7 +23,7 @@ This content is index of pages, and it says some pages are broken or not visible
 - Notes on weird RNA: [2181889](notes.md)
 - Synthesis of complex structures: [5](lsystems.md)
 - Fuun security features: [4405829](security.md)
-- A historical note on RNA compression: 123456
+- A historical note on RNA compression: [123456](history.md)
 - The question to the Ultimate Answer: 999999999
 
 ![index](../image/index.png "index")
