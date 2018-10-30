@@ -2,7 +2,7 @@ IIPIFFCPICFPPICIICCIICIPPPFIIC
 
 ```
 IIPIFFCPICFPPICIICCIICIPPPFIIC
-  ( cCIF PCFF P  )I  /ln00C  /
+  ( cCIF PCFF P  )I  / n00C  /
 ```
 
 This prefix is drawn at the beginning of processing RNA. At about 1300 operation.

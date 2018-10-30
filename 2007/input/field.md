@@ -37,9 +37,9 @@ Looks same format with 42.
 
 - And finally, to activate the Adapter to in turn activate the gene at offset 1234:
 ```
-IPIFFCPICCFPICICFFFIIPIFFCPICCFPICICFFFIICIICIICIPPPCFCCFCFFCCFICCCFCFFFFFICIPPCPIIC
- n    8 PICF P PCCC  ( sCIF PICF P PCCC  )  /  / n0FICIICICCIIC PIICICCCCC P n0IF  /
-                                                    ^^^^^^^^^^^  ^^^^^^^^^
+IIPIFFCPICCFPICICFFFIIPIFFCPICCFPICICFFFIICIICIICIPPPCFCCFCFFCCFICCCFCFFFFFICIPPCPIIC
+  ( cCIF PICF P PCCC  ( cCIF PICF P PCCC  )  )  / n00       1234        500   n0 1  /
+                                                     ^^^^^^^^^^^  ^^^^^^^^^
 ````
 Two integers are indicated with `^`. The first one is 1234, which means the starting offset address, and the second one is 500, the length.
 
