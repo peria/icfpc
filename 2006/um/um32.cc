@@ -16,12 +16,12 @@ class UM {
 
  private:
   Platter Alloc(Platter size);
-  
+
   Platter* program_ = NULL;
-  Platter r[8] {};
+  Platter r[8]{};
   Platter pc = 0;
 };
-  
+
 Platter UM::Alloc(Platter size) {
   Platter* p = new Platter[size + 1];
   p[0] = size;
@@ -46,10 +46,9 @@ bool UM::Load(const char* filename) {
   ifs.read(reinterpret_cast<char*>(program_), size_byte);
   ifs.close();
 
-
   Platter size = size_byte / sizeof(Platter);
   // Change endian
-  for (Platter i = 0 ; i < size ; ++i) {
+  for (Platter i = 0; i < size; ++i) {
     Platter word = program_[i];
     word = ((word & 0x00ff00ff) << 8) | ((word >> 8) & 0x00ff00ff);
     word = ((word & 0x0000ffff) << 16) | ((word >> 16) & 0x0000ffff);

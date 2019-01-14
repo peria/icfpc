@@ -5,24 +5,30 @@
 #include <map>
 #include <vector>
 
-typedef uint32_t Platter;
-typedef std::unique_ptr<Platter[]> Array;
+using Platter = std::uint32_t;
+
 struct Memory {
+  Memory(std::unique_ptr<Platter[]>&& a, size_t s)
+      : array(std::move(a)), size(s) {}
+  Memory(size_t s) : array(std::make_unique<Platter[]>(s)), size(s) {}
+  Platter* get() const { return array.get(); }
+
+  void ConvertEndian();
+
+  std::unique_ptr<Platter[]> array;
   size_t size;
-  Array array;
 };
 
 class UM {
  public:
-  UM(Array program, size_t size);
-  ~UM();
+  UM(Memory&& program);
+  ~UM() = default;
 
   void Run();
   bool Step(const Platter& operation);
 
  private:
-  int pc_;  // Program counter;
-  Platter registers_[8] {};  // General purpose
+  int pc_;                  // Program counter;
+  Platter registers_[8]{};  // General purpose
   std::vector<Memory> memory_;
-  Platter memory_base_;
 };

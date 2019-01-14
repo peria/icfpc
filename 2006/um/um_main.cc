@@ -3,17 +3,6 @@
 #include <fstream>
 #include <iostream>
 
-namespace {
-const Platter kMask1 = 0x00FF00FFU;
-const Platter kMask2 = 0x0000FFFFU;
-
-Platter Endian(Platter operation) {
-  operation = ((operation >>  8) & kMask1) | ((operation & kMask1) <<  8);
-  operation = ((operation >> 16) & kMask2) | ((operation & kMask2) << 16);
-  return operation;
-}
-}
-
 int main(int argc, char* argv[]) {
   if (argc < 2) {
     std::cerr << "Usage: " << argv[0] << " <UM file>\n";
@@ -37,15 +26,13 @@ int main(int argc, char* argv[]) {
 
   size /= sizeof(Platter);
   std::cerr << "FileSize: " << size << " platters\n";
-  Array program(new Platter[size * 2]);
+  Memory program(size);
   ifs.read(reinterpret_cast<char*>(program.get()), size * sizeof(Platter));
   ifs.close();
-  
-  // Endian change
-  for (int i = 0; i < size; ++i)
-    program[i] = Endian(program[i]);
 
-  UM um(std::move(program), size);
+  program.ConvertEndian();
+
+  UM um(std::move(program));
   um.Run();
 
   return 0;
