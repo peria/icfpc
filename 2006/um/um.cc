@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <limits>
 #include <memory>
 
 void Memory::ConvertEndian() {
@@ -41,6 +42,7 @@ enum Operator : Platter {
   kInput = 0xBU << 28,
   kLoad = 0xCU << 28,
   kImmediate = 0xDU << 28,
+  kFullBit = std::numeric_limits<Platter>::max(),
   kImmMask = (1U << 25) - 1,
 };
 
@@ -115,10 +117,10 @@ bool UM::Step(const Platter& operation) {
     break;
   }
   case Operator::kInput: {
-    unsigned char c = 255;
-    if (!std::feof(stdin))
-      c = std::getchar();
-    reg_c = c;
+    if (std::feof(stdin))
+      reg_c = Operator::kFullBit;
+    else
+      reg_c = std::getchar();
     break;
   }
   case Operator::kLoad: {
