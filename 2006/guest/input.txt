@@ -108,14 +108,41 @@ CDLXXX   REM    dictwordDD
 CDLXXXV  REM  where DD is a two-digit decimal number. try these next:
 CDXC     i = I
 CDXCV    DIM j AS INTEGER
-D        IF i >  ~3U$p;JS*X?:8< MRc<1 ,,,)/zWWWWWWWWWWW
+D        DIM k AS INTEGER
+DV       DIM d(X) AS STRING
+DX       d(I) = "1"
+DXV      d(II) = "2"
+DXX      d(III) = "3"
+DXXV     d(IV) = "4"
+DXXX     d(V) = "5"
+DXXXV    d(VI) = "6"
+DXL      d(VII) = "7"
+DXLV     d(VIII) = "8"
+DL       d(IX) = "9"
+DLV      d(X) = "0"
+DLX      j = I
+DLXV     k = I
+DLXVI    DIM pass AS STRING
+DLXX     pass = words(i) + d(j) + d(k)
+DLXXV    IF CHECKPASS(username, pass) THEN GOTO DCXX
+DLXXX    k = k + I
+DLXXXV   IF k <= X THEN GOTO DLXX
+DXC      j = j + I
+DXCV     IF j <= X THEN GOTO DLXV
+DC       i = i + I
+DCV      IF i <= pwdcount THEN GOTO DLX
+DCX      PRINT "no matches for user " + username + CHR(X)
+DCXV     END
+DCXX     PRINT "found for user " + username + " " + pass + CHR(X)
+DCXXV    END
 STOP
 /bin/qbasic hack.bas
-./hack.exe ftd
-./hack.exe knr
-./hack.exe gardener
+exit # Following commands take too long time and memory, but no points
 ./hack.exe ohmega
-./hack.exe yang
 ./hack.exe howie
-./hack.exe hmonk
+./hack.exe ftd
 ./hack.exe bbarker
+./hack.exe gardener
+./hack.exe hmonk
+./hack.exe knr
+./hack.exe yang
