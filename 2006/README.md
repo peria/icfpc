@@ -25,11 +25,11 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 | [`ohmega`](ohmega/) | bidirectional | CIRCS | 2D プログラム |
 | [`howie`](howie/) | xyzzy | ADVTR | 壮大なテキストベース冒険プログラム…か？ |
 | [`ftd`](ftd/) | falderal90 | BASIC | `guest`のBASICができたか確認など。|
-| [`hmonk`](hmonk/) | COMEFROM | ADVIS | O'Cult の実装|
-| [`gardener`](gardener/) | mathemantica |||
+| [`hmonk`](hmonk/) | COMEFROM | ADVIS | O'Cult の実装 |
+| [`gardener`](gardener/) | mathemantica | ANTWO | Antomaton の実装 |
+| [`bbarker`](bbarker/) | plinko |||
 | [`knr`](knr/) ||||
 | [`yang`](yang/) ||||
-| [`bbarker`](bbarker/) ||||
 
 ちなみにそれぞれのユーザーアカウントをハックできる条件をいくつか。
 
@@ -39,3 +39,4 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 - `ftd` : `guest` のプログラムを完成させて走らせる
 - `hmonk` : `ftd` の `TODO` に書いている
 - `gardener` : `hmonk` で 1 問解くとメールが来る
+- `bbarker` : `gardener` の `.history` に書いている
