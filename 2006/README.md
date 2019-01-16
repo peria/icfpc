@@ -25,8 +25,8 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 | [`ohmega`](ohmega/) | bidirectional | | |
 | [`howie`](howie/) | xyzzy | | |
 | [`ftd`](ftd/) | falderal90 | BASIC | `guest`のBASICができたか確認など。|
-| [`hmonk`](hmonk/) | COMEFROM |||
+| [`hmonk`](hmonk/) | COMEFROM | ADVIS | O'Cult の実装|
+| [`gardener`](gardener/) | mathemantica |||
 | [`knr`](knr/) ||||
-| [`gardener`](gardener/) ||||
 | [`yang`](yang/) ||||
 | [`bbarker`](bbarker/) ||||
