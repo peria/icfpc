@@ -1,4 +1,5 @@
 ftd
 falderal90
-cat TODO # To get hmonk's password
 ./ml19100.exe
+ls
+# cat TODO

@@ -1,2 +1,5 @@
 howie
 xyzzy
+adventure
+take pamphlet
+inc pamphlet
