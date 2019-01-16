@@ -27,7 +27,7 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 | [`ftd`](ftd/) | falderal90 | BASIC | `guest`のBASICができたか確認など。|
 | [`hmonk`](hmonk/) | COMEFROM | ADVIS | O'Cult の実装 |
 | [`gardener`](gardener/) | mathemantica | ANTWO | Antomaton の実装 |
-| [`bbarker`](bbarker/) | plinko |||
+| [`bbarker`](bbarker/) | plinko | BLACK | 条件付きあみだくじを作る |
 | [`knr`](knr/) ||||
 | [`yang`](yang/) ||||
 
