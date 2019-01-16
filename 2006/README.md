@@ -21,12 +21,21 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 
 | User | Password | Code | 備考 |
 | ----:| --------:| ---- | ---- |
-| [`guest`](guest/) | _なし_ | INTRO | 立ち上がった時点で教えてくれる。UMIX 入門 |
-| [`ohmega`](ohmega/) | bidirectional | | |
-| [`howie`](howie/) | xyzzy | | |
+| [`guest`](guest/) | _なし_ | INTRO | UMIX 入門 |
+| [`ohmega`](ohmega/) | bidirectional | CIRCS | 2D プログラム |
+| [`howie`](howie/) | xyzzy | ADVTR | 壮大なテキストベース冒険プログラム…か？ |
 | [`ftd`](ftd/) | falderal90 | BASIC | `guest`のBASICができたか確認など。|
 | [`hmonk`](hmonk/) | COMEFROM | ADVIS | O'Cult の実装|
 | [`gardener`](gardener/) | mathemantica |||
 | [`knr`](knr/) ||||
 | [`yang`](yang/) ||||
 | [`bbarker`](bbarker/) ||||
+
+ちなみにそれぞれのユーザーアカウントをハックできる条件をいくつか。
+
+- `guest` : ログイン画面に書いてる
+- `ohmega` : `guest` のプログラムを走らせる
+- `howie` : `guest` のプログラムを走らせる
+- `ftd` : `guest` のプログラムを完成させて走らせる
+- `hmonk` : `ftd` の `TODO` に書いている
+- `gardener` : `hmonk` で 1 問解くとメールが来る
