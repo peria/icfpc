@@ -28,15 +28,16 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 | [`hmonk`](hmonk/) | COMEFROM | ADVIS | O'Cult の実装 |
 | [`gardener`](gardener/) | mathemantica | ANTWO | Antomaton の実装 |
 | [`bbarker`](bbarker/) | plinko | BLACK | 条件付きあみだくじを作る |
+| [`yang`](yang/) | U+262F |||
 | [`knr`](knr/) ||||
-| [`yang`](yang/) ||||
 
 ちなみにそれぞれのユーザーアカウントをハックできる条件をいくつか。
 
 - `guest` : ログイン画面に書いてる
 - `ohmega` : `guest` のプログラムを走らせる
-- `howie` : `guest` のプログラムを走らせる
+- `howie` : `guest` のプログラムを走らせる、`bbarekr` で 000 を解いてランキングを見る
 - `ftd` : `guest` のプログラムを完成させて走らせる
 - `hmonk` : `ftd` の `TODO` に書いている
 - `gardener` : `hmonk` で 1 問解くとメールが来る
 - `bbarker` : `gardener` の `.history` に書いている
+- `yang` : `bbarekr` で 000 を解いてランキングを見る
