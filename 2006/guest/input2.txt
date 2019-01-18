@@ -1,0 +1,10 @@
+STOP
+/bin/qbasic hack.bas
+./hack.exe bbarker
+./hack.exe ftd
+./hack.exe gardener
+./hack.exe hmonk
+./hack.exe howie
+./hack.exe knr
+./hack.exe ohmega
+./hack.exe yang

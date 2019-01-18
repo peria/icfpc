@@ -1,0 +1,11 @@
+guest
+mail
+mail
+1
+
+q
+./a.out
+cat core
+cd code
+rm hack.bas
+/bin/umodem hack.bas STOP
