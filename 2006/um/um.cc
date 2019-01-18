@@ -114,6 +114,8 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kOutput: {
     std::putchar(static_cast<char>(reg_c));
+    if (reg_c == '\n')
+      std::fflush(stdout);
     break;
   }
   case Operator::kInput: {
