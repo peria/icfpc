@@ -1,0 +1,2 @@
+STOP
+./advise xml xml.adv

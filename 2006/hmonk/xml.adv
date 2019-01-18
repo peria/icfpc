@@ -1,0 +1,16 @@
+{From https://schani.wordpress.com/2006/07/24/the-icfp-programming-contest-2006/}
+Down A => Up A;
+Down B => Up B;
+Down (Seq a b) => Seq (Down a) b;
+Down (Tag q a) => Tag q (Down a);
+Seq (Up a) b => Seq a (Down b);
+Seq (Seq a b) (Up c) => Seq a (Down (Seq b c));
+Tag q (Up (Tag q a)) => (Up (Tag q a));
+Seq (Tag q a) (Up (Tag q b)) => Tag q (Down (Seq a b));
+Tag Emph (Up (Tag Bold a)) => Tag Bold (Down (Tag Emph a));
+Tag Maj (Up (Tag q a)) => Tag q (Down (Tag Maj a));
+Seq a (Up b) => Up (Seq a b);
+Tag q (Up a) => Up (Tag q a);
+SNF x => Down (x);
+Up (x) => x;
+.

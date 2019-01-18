@@ -1,0 +1,4 @@
+STOP
+./advise arith arith.adv
+mail
+/bin/umodem xml.adv STOP

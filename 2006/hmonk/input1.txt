@@ -1,0 +1,4 @@
+hmonk
+COMEFROM
+rm arith.adv
+/bin/umodem arith.adv STOP
