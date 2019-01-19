@@ -1,2 +1,3 @@
 STOP
 ./verify mult mult.2d
+/bin/umodem rev.2d STOP

@@ -1,0 +1,2 @@
+STOP
+./verify rev rev.2d
