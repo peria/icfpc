@@ -26,9 +26,9 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 | [`howie`](howie/) | xyzzy | ADVTR | 壮大なテキストベース冒険プログラム…か？ |
 | [`ftd`](ftd/) | falderal90 | BASIC | `guest`のBASICができたか確認など。|
 | [`hmonk`](hmonk/) | COMEFROM | ADVIS | O'Cult の実装 |
-| [`gardener`](gardener/) | mathemantica | ANTWO | Antomaton の実装 |
+| [`gardener`](gardener/) | mathemantica | ANTWO | Antomaton で実装 |
 | [`bbarker`](bbarker/) | plinko | BLACK | 条件付きあみだくじを作る |
-| [`yang`](yang/) | U+262F |||
+| [`yang`](yang/) | U+262F | BLNCE | 極小 VM アセンブラ BALANCE で実装 |
 | [`knr`](knr/) ||||
 
 ちなみにそれぞれのユーザーアカウントをハックできる条件をいくつか。
