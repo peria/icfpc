@@ -7,6 +7,6 @@ users=("bbarker" "ftd" "gardener" "guest" "hmonk" "howie" "ohmega")
 
 for user in "${users[@]}"
 do
-  cd ${user}
+  cd ${BASE_DIR}/${user}
   ./run.sh
 done
