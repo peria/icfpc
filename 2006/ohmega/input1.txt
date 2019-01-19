@@ -1,0 +1,3 @@
+ohmega
+bidirectional
+/bin/umodem mult.2d STOP

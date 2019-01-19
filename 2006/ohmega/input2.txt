@@ -1,0 +1,2 @@
+STOP
+./verify mult mult.2d
