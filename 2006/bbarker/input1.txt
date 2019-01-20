@@ -1,0 +1,3 @@
+bbarker
+plinko
+./verify
