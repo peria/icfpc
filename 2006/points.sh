@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 BASE_DIR=$(cd $(dirname $0); pwd)
 
