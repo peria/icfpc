@@ -2,7 +2,7 @@
 
 BASE_DIR=$(cd $(dirname $0); pwd)
 
-users=("bbarker" "ftd" "gardener" "guest" "hmonk" "howie" "ohmega")
+users=("bbarker" "ftd" "gardener" "guest" "hmonk" "howie" "ohmega" "yang")
 
 for user in "${users[@]}"
 do
