@@ -1,2 +1,3 @@
 STOP
 ./certify stop stop.bal
+/bin/umodem stop1.bal STOP
