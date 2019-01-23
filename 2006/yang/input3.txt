@@ -1,2 +1,0 @@
-STOP
-./certify stop1 stop1.bal
