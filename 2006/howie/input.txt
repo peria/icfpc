@@ -1,5 +1,33 @@
 howie
 xyzzy
 adventure
-take pamphlet
-inc pamphlet
+n
+get bolt
+get spring
+inc spring
+get button
+get processor
+get pill
+inc pill
+get radio
+get cache
+c processor cache
+get blue transistor
+c radio transistor
+get antenna
+inc antenna
+get screw
+get motherboard
+c motherboard screw
+get A-1920-IXB
+c A-1920-IXB bolt
+c A-1920-IXB processor
+c A-1920-IXB radio
+get transistor
+c A-1920-IXB transistor
+c motherboard A-1920-IXB
+get keypad
+c keypad motherboard
+c keypad button
+s
+use keypad
