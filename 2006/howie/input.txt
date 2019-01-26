@@ -31,3 +31,4 @@ c keypad motherboard
 c keypad button
 s
 use keypad
+inc keypad

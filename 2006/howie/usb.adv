@@ -1,0 +1,29 @@
+e
+get X-9247-GWE
+get V-0010-XBD
+c V-0010-XBD X-9247-GWE
+get F-1403-QDS
+inc F-1403-QDS
+get P-5065-WQO
+inc P-5065-WQO
+get B-4832-LAL
+inc B-4832-LAL
+get L-6458-RNH
+inc L-6458-RNH
+get T-9887-OFC
+get Z-1623-CEK
+inc Z-1623-CEK
+get H-9887-MKY
+c T-9887-OFC H-9887-MKY
+get F-6678-DOX
+c F-6678-DOX V-0010-XBD
+get R-1403-SXU
+inc R-1403-SXU
+get USB cable
+get N-4832-NUN
+get J-9247-IRG
+c F-6678-DOX J-9247-IRG
+c USB cable F-6678-DOX
+c USB cable N-4832-NUN
+c USB cable T-9887-OFC
+w
