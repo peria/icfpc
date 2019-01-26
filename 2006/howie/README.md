@@ -23,3 +23,13 @@
 - `examine`、`ex`、`x`、`look`、`l` はアイテムやら周りの状況やらを見る
 - `inventory`、`show`、`inv`、`i` は持ってる荷物を表示する
 - `quit`、`exit` はゲーム終了
+
+世界地図
+-------
+最初の部屋を出ると世界中で色々ものを作るのでマップと作れるものリスト。
+
+|Street\Avenue| |Ridgewood |Dorchester|
+|-------------|-|--------- |----------|
+|52nd St.     | | X | |
+|53rd St.     | | X | display |
+|54th St.     | | uploader |USB cable |
