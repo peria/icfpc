@@ -37,7 +37,7 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 - `ohmega` : `guest` のプログラムを走らせる
 - `howie` : `guest` のプログラムを走らせる、`bbarekr` で 000 を解いてランキングを見る
 - `ftd` : `guest` のプログラムを完成させて走らせる
-- `hmonk` : `ftd` の `TODO` に書いている
+- `hmonk` : `ftd` の `TODO` に書いている、`howie` で部屋を出る
 - `gardener` : `hmonk` で 1 問解くとメールが来る
 - `bbarker` : `gardener` の `.history` に書いている
-- `yang` : `bbarekr` で 000 を解いてランキングを見る
+- `yang` : `bbarekr` で 000 を解いてランキングを見る、`howie` で部屋を出る
