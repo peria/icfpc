@@ -32,3 +32,7 @@ c keypad button
 s
 use keypad
 inc keypad
+get /etc/passwd
+inc /etc/passwd
+get note
+inc note

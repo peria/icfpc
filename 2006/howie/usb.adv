@@ -23,7 +23,7 @@ get USB cable
 get N-4832-NUN
 get J-9247-IRG
 c F-6678-DOX J-9247-IRG
-c USB cable F-6678-DOX
 c USB cable N-4832-NUN
+c USB cable F-6678-DOX
 c USB cable T-9887-OFC
 w

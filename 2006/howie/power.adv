@@ -1,0 +1,67 @@
+e
+s
+get T-9887-OAU
+inc T-9887-OAU
+get L-1623-ETG
+inc L-1623-ETG
+get heliotrope B-1403-YDU
+inc B-1403-YDU
+get imported H-9247-MCE
+get R-0010-FBF
+inc R-0010-FBF
+get Z-4832-PKJ
+inc Z-4832-PKJ
+get T-0010-BLZ
+inc T-0010-BLZ
+get R-6678-FET
+inc R-6678-FET
+get linen-colored H-9247-MCE
+inc linen-colored H-9247-MCE
+get snow L-4832-RFL
+inc L-4832-RFL
+get H-0010-ZQX
+get X-1623-GOI
+inc X-1623-GOI
+get L-4832-RFL
+get V-1623-KEM
+c V-1623-KEM H-9247-MCE
+c V-1623-KEM L-4832-RFL
+get gray40 N-4013-DJW
+c gray40 N-4013-DJW H-0010-ZQX
+get T-9247-OWG
+inc T-9247-OWG
+get peach F-0010-DGD
+inc F-0010-DGD
+get pine-green H-6458-ZNJ
+inc H-6458-ZNJ
+get persian-blue X-4832-TAN
+inc X-4832-TAN
+get P-4292-JWN
+inc P-4292-JWN
+get F-0010-DGD
+inc F-0010-DGD
+get salmon-colored Z-4292-PHT
+inc Z-4292-PHT
+get B-1403-YDU
+inc B-1403-YDU
+get J-1623-IJK
+inc J-1623-IJK
+get X-4832-TAN
+inc X-4832-TAN
+get P-6678-JTX
+inc P-6678-JTX
+get peach-orange Z-4292-PHT
+inc Z-4292-PHT
+get N-4013-DJW
+inc yellow N-4013-DJW
+get red-violet Z-4292-PHT
+inc Z-4292-PHT
+get purple H-6458-ZNJ
+get power cord
+c power cord H-6458-ZNJ
+c power cord N-4013-DJW
+c power cord V-1623-KEM
+get purple Z-4292-PHT
+c power cord Z-4292-PHT
+n
+w
