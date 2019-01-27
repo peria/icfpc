@@ -1,14 +1,21 @@
 `howie` (`ADVTR`)
 ==================
 
-適当にコマンドを叩いていくアドベンチャーゲーム。周囲に散らばったアイテムを集めて何か鍵的なものを作るのがとりあえずの目標。
+適当にコマンドを叩いていくアドベンチャーゲーム。いくつか中間ゴール的なものが設定されていて
+
+1. 周囲に散らばったアイテムを集めて何か鍵的なものを作る(チュートリアル)
+2. 各地を巡ってアイテム合成をし downloader を作る
+3. 同様に uploader を組み立てる
 
 | 小問題 | 得点 | 備考 |
 | ----- | --- | ---- |
 | INC | 5 | アイテムを破壊する |
 | CMB | 5 | アイテム合成する |
 | KEY | 20 | 最初の部屋を突破する |
-
+| USB | 20 | USB cable を合成する |
+| DSP | 20 | display を合成する |
+| PGB | 5 | progress bar を入手する(合成の必要なし) |
+| PWR | 20 | power cord を合成する |
 
 コマンド
 -------
@@ -30,6 +37,8 @@
 
 |Street\Avenue| |Ridgewood |Dorchester|
 |-------------|-|--------- |----------|
-|52nd St.     | | X | |
+|52nd St.     | | X | progress bar |
 |53rd St.     | | X | display |
-|54th St.     | | uploader |USB cable |
+|54th St.     | | downloader uploader |USB cable |
+|54th place   | | X | power cord |
+
