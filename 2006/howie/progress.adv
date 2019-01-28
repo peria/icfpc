@@ -104,6 +104,7 @@ inc V-9887-KFU
 get F-4292-DHL
 inc F-4292-DHL
 get progress bar
+c downloader progress bar
 s
 s
 w
