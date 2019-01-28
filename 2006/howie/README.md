@@ -20,6 +20,7 @@
 | PGB | 5 | progress bar を入手する(合成の必要なし) |
 | PWR | 20 | power cord を合成する |
 | JMP | 20 | jumper shunt を作る |
+| DNL | 5 | downloader を使う |
 
 コマンド
 -------
@@ -42,8 +43,17 @@
 |Street\Avenue| |Ridgewood |Dorchester| Blackstone |
 |-------------|-|--------- |----------| ---------- |
 |52nd Street  | | X | progress bar | |
-|53rd Street  | | X | display | |
+|53th Street  | | X | display | |
 |54th Street  | | downloader uploader | USB cable | textbook |
 |54th place   | | X | power cord | jumper shunt |
 
 downloader を作るときは display を最初に作ってから downloader を取らないと持てる荷物の枠が足りなくなる。
+
+解いていく流れ
+-------------
+まずは最初の部屋 （Room With a Door) から隣 (Junk Room) へ移動し、荷物を組み合わせることで keypad を作る。
+この keypad を Room With a Door に戻って使うとドアを開けて外に出ることができる(戻れない)。
+出たところ (54th Street and Ridgewood Avenue) から街を移動して同様のことを繰り返す。
+まずは 53th Street and Dorchester Avenue で display を作る。そして元のところに戻って downloader を拾い合成。
+同様に上の地図に従って progress bar, USB cable, power cord, jumper shunt を作り downloader と合成することで downloader が治る。
+これを使うと [gc.rml] というプログラムをダウンロードすることができる。
