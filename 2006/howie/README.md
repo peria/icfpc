@@ -7,6 +7,9 @@
 2. 各地を巡ってアイテム合成をし downloader を作る
 3. 同様に uploader を組み立てる
 
+といった手順を取ることになる。
+
+
 | 小問題 | 得点 | 備考 |
 | ----- | --- | ---- |
 | INC | 5 | アイテムを破壊する |
@@ -16,6 +19,7 @@
 | DSP | 20 | display を合成する |
 | PGB | 5 | progress bar を入手する(合成の必要なし) |
 | PWR | 20 | power cord を合成する |
+| JMP | 20 | jumper shunt を作る |
 
 コマンド
 -------
@@ -35,10 +39,11 @@
 -------
 最初の部屋を出ると世界中で色々ものを作るのでマップと作れるものリスト。
 
-|Street\Avenue| |Ridgewood |Dorchester|
-|-------------|-|--------- |----------|
-|52nd St.     | | X | progress bar |
-|53rd St.     | | X | display |
-|54th St.     | | downloader uploader |USB cable |
-|54th place   | | X | power cord |
+|Street\Avenue| |Ridgewood |Dorchester| Blackstone |
+|-------------|-|--------- |----------| ---------- |
+|52nd Street  | | X | progress bar | |
+|53rd Street  | | X | display | |
+|54th Street  | | downloader uploader | USB cable | textbook |
+|54th place   | | X | power cord | jumper shunt |
 
+downloader を作るときは display を最初に作ってから downloader を取らないと持てる荷物の枠が足りなくなる。
