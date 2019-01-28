@@ -23,7 +23,7 @@
 - `help` は簡単なコマンドリストと説明
 - `go` は移動。`n`、`e`、`s`、`w` を引数に取るが、`go` が無くても四方の文字だけで移動できる。
 - `take`、`get`、`grab` は手元にある重なった荷物の一番上のものを取る
-- `drop` は手元の荷物を捨てる
+- `drop` は持ってる荷物から1つ指定して足元の荷物スタックに置く。ただし改造したものは置けない。
 - `incinerate`、`inc` アイテムを破壊する。state-of-the-art DVNUL-9000 incinerator という装備をしているらしい。
 - `combine`、`c` はアイテムの修復。 `combine radio with transistor` という感じに使う。
 - `use` はアイテムの機能があれば使う
