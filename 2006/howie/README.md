@@ -51,9 +51,9 @@ downloader を作るときは display を最初に作ってから downloader を
 
 解いていく流れ
 -------------
-まずは最初の部屋 （Room With a Door) から隣 (Junk Room) へ移動し、荷物を組み合わせることで keypad を作る。
+まずは Room With a Door から Junk Room へ移動し、荷物を組み合わせることで keypad を作る。
 この keypad を Room With a Door に戻って使うとドアを開けて外に出ることができる(戻れない)。
-出たところ (54th Street and Ridgewood Avenue) から街を移動して同様のことを繰り返す。
-まずは 53th Street and Dorchester Avenue で display を作る。そして元のところに戻って downloader を拾い合成。
-同様に上の地図に従って progress bar, USB cable, power cord, jumper shunt を作り downloader と合成することで downloader が治る。
+
+出たところ 54th Street and Ridgewood Avenue からまずは 53th Street and Dorchester Avenue まで行き display を作る。
+そして戻って downloader を拾い合成。同様に上の地図に従って progress bar, USB cable, power cord, jumper shunt を作りそれぞれ downloader と合成することで downloader が治る。
 これを使うと [gc.rml] というプログラムをダウンロードすることができる。
