@@ -59,8 +59,10 @@ downloader を作るときは display を最初に作ってから downloader を
 - 2つ便利なもの (downloader, uploader) を残してるらしい
 - 科学博物館 (the Museum of Science and Industry) で blueprint を見つけなければならないっぽい
 - 読めない場合は Censory Engine が行動ではなく視覚を邪魔してるらしい (この微妙な違いが後で重要になる)
+
 という方針が分かる。
 
 まずは 53th Street and Dorchester Avenue まで行き display を作る。
-そして戻って downloader を拾い合成。同様に上の地図に従って progress bar, USB cable, power cord, jumper shunt を作りそれぞれ downloader と合成することで downloader が治る。
-これを使うと [gc.rml](./gc.rml) というプログラムをダウンロードすることができる。
+そして戻って downloader を拾い合成する。あとは上の地図に従って progress bar, USB cable, power cord, jumper shunt を作りそれぞれ downloader と合成することで downloader が治るのでこれを使うと [gc.rml](./gc.rml) というプログラムをダウンロードすることができる。
+
+プログラムを読むとこの adventure のプログラムであることが分かる。コメントを読んでいくと `incinerate` は実はゴミ箱に荷物を送り込んでいて破壊してない(復旧できるはず)ということや `break`、`whistle`、`hum`、`speak` といった隠しコマンドがあることがわかる。
