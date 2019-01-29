@@ -51,9 +51,16 @@ downloader を作るときは display を最初に作ってから downloader を
 
 解いていく流れ
 -------------
-まずは Room With a Door から Junk Room へ移動し、荷物を組み合わせることで keypad を作る。
+まずは Room With a Door に [pamphlet](./pamphlet.txt) と [manifesto](./manifesto.txt) があるが、manifesto は `[_READACTED_]`(検閲済み) とあり読めない。
+とりあえずそれらを無視して北の Junk Room へ移動し、荷物を組み合わせて keypad を作る。
 この keypad を Room With a Door に戻って使うとドアを開けて外に出ることができる(戻れない)。
 
-出たところ 54th Street and Ridgewood Avenue からまずは 53th Street and Dorchester Avenue まで行き display を作る。
+出たところ 54th Street and Ridgewood Avenue の足元に [note](./note.txt) があるので読んでみると
+- 2つ便利なもの (downloader, uploader) を残してるらしい
+- 科学博物館 (the Museum of Science and Industry) で blueprint を見つけなければならないっぽい
+- 読めない場合は Censory Engine が行動ではなく視覚を邪魔してるらしい (この微妙な違いが後で重要になる)
+という方針が分かる。
+
+まずは 53th Street and Dorchester Avenue まで行き display を作る。
 そして戻って downloader を拾い合成。同様に上の地図に従って progress bar, USB cable, power cord, jumper shunt を作りそれぞれ downloader と合成することで downloader が治る。
 これを使うと [gc.rml](./gc.rml) というプログラムをダウンロードすることができる。
