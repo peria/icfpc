@@ -56,4 +56,4 @@ downloader を作るときは display を最初に作ってから downloader を
 
 出たところ 54th Street and Ridgewood Avenue からまずは 53th Street and Dorchester Avenue まで行き display を作る。
 そして戻って downloader を拾い合成。同様に上の地図に従って progress bar, USB cable, power cord, jumper shunt を作りそれぞれ downloader と合成することで downloader が治る。
-これを使うと [gc.rml] というプログラムをダウンロードすることができる。
+これを使うと [gc.rml](./gc.rml) というプログラムをダウンロードすることができる。
