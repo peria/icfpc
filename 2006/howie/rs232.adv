@@ -1,0 +1,85 @@
+e
+e
+e
+get gray60 Z-4292-PRV
+get pale-carmine D-9887-UUE
+inc pale-carmine D-9887-UUE
+get pale-cornflower-blue D-9887-UUE
+inc pale-cornflower-blue D-9887-UUE
+get imported D-9887-UUE
+inc imported D-9887-UUE
+get gray90 Z-4292-PRV
+get sepia Z-4292-PRV
+c gray90 Z-4292-PRV sepia Z-4292-PRV
+get gray30 D-9887-UUE
+inc gray30 D-9887-UUE
+get robin-egg-blue Z-4292-PRV
+c gray60 Z-4292-PRV robin-egg-blue Z-4292-PRV
+get slate-blue D-9887-UUE
+inc slate-blue D-9887-UUE
+get rosy-brown D-9887-UUE
+inc rosy-brown D-9887-UUE
+get gray50 Z-4292-PRV
+inc gray50 Z-4292-PRV
+get misty-rose Z-4292-PRV
+inc misty-rose Z-4292-PRV
+get cinnamon Z-9887-CUG
+inc cinnamon Z-9887-CUG
+get saffron N-9247-AWO
+inc saffron N-9247-AWO
+get indigo V-4292-XRX
+inc indigo V-4292-XRX
+get pale-sandy-brown R-4832-FAV
+inc pale-sandy-brown R-4832-FAV
+get momemtum-preserving Z-0010-PGL
+inc momemtum-preserving Z-0010-PGL
+get swamp-green V-4292-XRX
+inc swamp-green V-4292-XRX
+get pale-pink R-1623-SOQ
+inc pale-pink R-1623-SOQ
+get cream R-1623-SOQ
+inc cream R-1623-SOQ
+get royal-blue B-9247-YCM
+inc royal-blue B-9247-YCM
+get burgundy J-1403-IIC
+inc burgundy J-1403-IIC
+get blue Z-0010-PGL
+inc blue Z-0010-PGL
+get pink Z-0010-PGL
+inc pink Z-0010-PGL
+get moss-green F-4832-DFT
+inc moss-green F-4832-DFT
+get pine-green B-9247-YCM
+inc pine-green B-9247-YCM
+get floating R-4832-FAV
+inc floating R-4832-FAV
+get russet R-4832-FAV
+inc russet R-4832-FAV
+get lavender-blush D-9887-UUE
+inc lavender-blush D-9887-UUE
+get old-gold N-9247-AWO
+inc old-gold N-9247-AWO
+get pear N-9247-AWO
+inc pear N-9247-AWO
+get pastel-pink D-9887-UUE
+inc pastel-pink D-9887-UUE
+get heliotrope D-9887-UUE
+inc heliotrope D-9887-UUE
+get persian-blue Z-4292-PRV
+get emerald Z-4292-PRV
+inc emerald Z-4292-PRV
+get violet-red Z-4292-PRV
+get blaze-orange Z-4292-PRV
+inc blaze-orange Z-4292-PRV
+get RS232 adapter
+c RS232 adapter gray90 Z-4292-PRV
+c RS232 adapter violet-red Z-4292-PRV
+get jade D-9887-UUE
+inc jade D-9887-UUE
+get steel-blue D-9887-UUE
+c RS232 adapter steel-blue D-9887-UUE
+c RS232 adapter persian-blue Z-4292-PRV
+c RS232 adapter gray60 Z-4292-PRV
+w
+w
+w

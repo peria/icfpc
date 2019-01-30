@@ -1,0 +1,91 @@
+e
+e
+n
+get battery
+get buff F-6678-DYP
+inc F-6678-DYP
+get olive-green R-4292-FWH
+inc R-4292-FWH
+get D-4832-HUX
+inc D-4832-HUX
+get P-1623-WEU
+get X-9887-GKK
+inc X-9887-GKK
+get H-9887-MUQ
+c battery H-9887-MUQ
+get T-4292-BHD
+c P-1623-WEU T-4292-BHD
+get flax D-4292-HRJ
+inc D-4292-HRJ
+get yellow Z-1623-COC
+c yellow Z-1623-COC P-1623-WEU
+get X-0010-TVP
+inc X-0010-TVP
+get forest-green F-6678-DYP
+inc F-6678-DYP
+get sky-blue N-1623-ATY
+inc N-1623-ATY
+get H-6678-ZJL
+inc H-6678-ZJL
+get sienna T-6678-BEN
+inc T-6678-BEN
+get D-5065-UGE
+inc D-5065-UGE
+get sea-green N-1623-ATY
+inc N-1623-ATY
+get ochre D-4292-HRJ
+inc D-4292-HRJ
+get cream Z-1623-COC
+inc cream Z-1623-COC
+get powder-blue T-6678-BEN
+inc T-6678-BEN
+get gold N-4832-NFF
+inc N-4832-NFF
+get V-0010-XLT
+get bronze J-9247-ICW
+inc J-9247-ICW
+get selective-yellow N-4832-NFF
+get peach-puff F-6678-DYP
+get bright-violet N-4832-NFF
+inc bright-violet N-4832-NFF
+get moccasin N-4832-NFF
+inc moccasin N-4832-NFF
+get royal-blue J-9247-ICW
+c yellow Z-1623-COC royal-blue J-9247-ICW
+c yellow Z-1623-COC V-0010-XLT
+get R-4292-FWH
+inc R-4292-FWH
+get N-6458-NIT
+inc N-6458-NIT
+get J-9887-IFM
+inc J-9887-IFM
+get olive-drab N-1623-ATY
+inc N-1623-ATY
+get F-4292-DCF
+inc F-4292-DCF
+get gray30 X-9247-GHU
+inc X-9247-GHU
+get V-9887-KAO
+inc V-9887-KAO
+get steel-blue N-4832-NFF
+inc steel-blue N-4832-NFF
+get N-1623-ATY
+inc N-1623-ATY
+get X-9247-GHU
+inc X-9247-GHU
+get low-carb N-4832-NFF
+inc low-carb N-4832-NFF
+get P-5065-WBG
+inc P-5065-WBG
+get L-6458-RXX
+inc L-6458-RXX
+get eggplant Z-1623-COC
+c battery eggplant Z-1623-COC
+c battery yellow Z-1623-COC
+c battery F-6678-DYP
+get camouflage-green J-9247-ICW
+c battery camouflage-green J-9247-ICW
+c battery N-4832-NFF
+s
+w
+w

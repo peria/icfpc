@@ -1,0 +1,449 @@
+e
+n
+get N-1623-AOE
+get R-4292-FRL
+get F-6458-DDN
+inc F-6458-DDN
+get H-1623-MYO
+inc H-1623-MYO
+get rotating H-4292-ZHF
+inc H-4292-ZHF
+get R-6458-FXP
+inc R-6458-FXP
+get T-6458-BIL
+inc T-6458-BIL
+get R-9247-SMK
+get Z-1403-CSY
+inc Z-1403-CSY
+get N-6678-NJD
+c N-6678-NJD R-9247-SMK
+get X-4292-TWX
+c X-4292-TWX N-6678-NJD
+get Z-6678-PEF
+c Z-6678-PEF X-4292-TWX
+get H-4832-ZKT
+get P-0010-JQJ
+inc P-0010-JQJ
+get J-1403-IDG
+c J-1403-IDG H-4832-ZKT
+get D-9247-UHM
+inc D-9247-UHM
+get N-6458-NDX
+c N-6458-NDX Z-6678-PEF
+c N-6458-NDX J-1403-IDG
+get red-violet V-9887-KUS
+inc V-9887-KUS
+get N-0010-NGN
+c N-0010-NGN N-6458-NDX
+get X-1403-GIE
+inc X-1403-GIE
+get T-4832-BFV
+inc T-4832-BFV
+get D-6458-HSR
+get F-4832-DAX
+show
+get V-4292-XMD
+c F-4832-DAX D-6458-HSR
+c F-4832-DAX V-4292-XMD
+c F-4832-DAX N-0010-NGN
+get H-4292-ZHF
+inc H-4292-ZHF
+get X-6678-TTJ
+c X-6678-TTJ F-4832-DAX
+get T-4292-BCH
+c T-4292-BCH X-6678-TTJ
+get P-6458-JNT
+inc P-6458-JNT
+get Z-0010-PBP
+inc Z-0010-PBP
+get F-5065-QLE
+inc F-5065-QLE
+get V-9887-KUS
+inc V-9887-KUS
+get B-6458-LIV
+inc B-6458-LIV
+get D-5065-UBI
+c D-5065-UBI T-4292-BCH
+get L-9247-EHW
+c L-9247-EHW D-5065-UBI
+get P-1623-WYY
+c L-9247-EHW P-1623-WYY
+get D-4832-HPD
+inc D-4832-HPD
+get B-1623-YTC
+c B-1623-YTC Z-6458-PXZ
+get rust Z-6458-PXZ
+inc rust Z-6458-PXZ
+get Z-6458-PXZ
+c B-1623-YTC Z-6458-PXZ
+get display
+c display L-9247-EHW
+c display B-1623-YTC
+c display N-1623-AOE
+c display R-4292-FRL
+s
+get X-9247-GWE
+get V-0010-XBD
+c V-0010-XBD X-9247-GWE
+get F-1403-QDS
+inc F-1403-QDS
+get P-5065-WQO
+inc P-5065-WQO
+get B-4832-LAL
+inc B-4832-LAL
+get L-6458-RNH
+inc L-6458-RNH
+get T-9887-OFC
+get Z-1623-CEK
+inc Z-1623-CEK
+get H-9887-MKY
+c T-9887-OFC H-9887-MKY
+get F-6678-DOX
+c F-6678-DOX V-0010-XBD
+get R-1403-SXU
+inc R-1403-SXU
+get USB cable
+get N-4832-NUN
+get J-9247-IRG
+c F-6678-DOX J-9247-IRG
+c USB cable N-4832-NUN
+c USB cable F-6678-DOX
+c USB cable T-9887-OFC
+w
+get downloader
+c downloader display
+c downloader USB cable
+e
+s
+get T-9887-OAU
+inc T-9887-OAU
+get L-1623-ETG
+inc L-1623-ETG
+get heliotrope B-1403-YDU
+inc B-1403-YDU
+get imported H-9247-MCE
+get R-0010-FBF
+inc R-0010-FBF
+get Z-4832-PKJ
+inc Z-4832-PKJ
+get T-0010-BLZ
+inc T-0010-BLZ
+get R-6678-FET
+inc R-6678-FET
+get linen-colored H-9247-MCE
+inc linen-colored H-9247-MCE
+get snow L-4832-RFL
+inc L-4832-RFL
+get H-0010-ZQX
+get X-1623-GOI
+inc X-1623-GOI
+get L-4832-RFL
+get V-1623-KEM
+c V-1623-KEM H-9247-MCE
+c V-1623-KEM L-4832-RFL
+get gray40 N-4013-DJW
+c gray40 N-4013-DJW H-0010-ZQX
+get T-9247-OWG
+inc T-9247-OWG
+get peach F-0010-DGD
+inc F-0010-DGD
+get pine-green H-6458-ZNJ
+inc H-6458-ZNJ
+get persian-blue X-4832-TAN
+inc X-4832-TAN
+get P-4292-JWN
+inc P-4292-JWN
+get F-0010-DGD
+inc F-0010-DGD
+get salmon-colored Z-4292-PHT
+inc Z-4292-PHT
+get B-1403-YDU
+inc B-1403-YDU
+get J-1623-IJK
+inc J-1623-IJK
+get X-4832-TAN
+inc X-4832-TAN
+get P-6678-JTX
+inc P-6678-JTX
+get peach-orange Z-4292-PHT
+inc Z-4292-PHT
+get N-4013-DJW
+inc yellow N-4013-DJW
+get red-violet Z-4292-PHT
+inc Z-4292-PHT
+get purple H-6458-ZNJ
+get power cord
+c power cord H-6458-ZNJ
+c power cord N-4013-DJW
+c power cord V-1623-KEM
+get purple Z-4292-PHT
+c power cord Z-4292-PHT
+c downloader power cord
+e
+get blaze-orange V-1623-KTK
+inc V-1623-KTK
+get dodger-blue V-1623-KTK
+inc V-1623-KTK
+get X-6458-TSZ
+inc X-6458-TSZ
+get V-1623-KTK
+inc V-1623-KTK
+get carrot T-9887-OPS
+inc T-9887-OPS
+get T-9887-OPS
+inc T-9887-OPS
+get mint-green R-9887-SFW
+inc R-9887-SFW
+get V-9247-KWY
+inc V-9247-KWY
+get Z-4832-PAH
+inc Z-4832-PAH
+get P-1403-WXQ
+inc P-1403-WXQ
+get R-6678-FTR
+inc R-6678-FTR
+get T-0010-BBX
+inc T-0010-BBX
+get D-6678-HOT
+inc D-6678-HOT
+get H-9247-MRC
+inc H-9247-MRC
+get mysterious L-6678-ROF
+inc L-6678-ROF
+get peach R-9887-SFW
+inc R-9887-SFW
+get V-6458-XIF
+inc V-6458-XIF
+get N-4292-NCP
+inc N-4292-NCP
+get R-9887-SFW
+inc R-9887-SFW
+get P-6678-JJV
+inc P-6678-JJV
+get H-6458-ZDH
+inc H-6458-ZDH
+get gray20 L-5065-EGO
+inc L-5065-EGO
+get L-5065-EGO
+inc L-5065-EGO
+get amethyst T-6678-BOP
+inc T-6678-BOP
+get pink L-6678-ROF
+inc L-6678-ROF
+get P-9247-WRM
+inc P-9247-WRM
+get cornflower-blue D-6458-HIP
+inc D-6458-HIP
+get L-6678-ROF
+inc L-6678-ROF
+get F-1623-QEQ
+inc F-1623-QEQ
+get J-4292-VHX
+inc J-4292-VHX
+get lemon-cream N-9887-AKG
+inc N-9887-AKG
+get Z-6678-PTD
+inc Z-6678-PTD
+get B-0010-LBJ
+inc B-0010-LBJ
+get sapphire N-9887-AKG
+inc N-9887-AKG
+get H-5065-MLW
+inc H-5065-MLW
+get gray20 D-6458-HIP
+inc D-6458-HIP
+get N-6678-NYZ
+inc N-6678-NYZ
+get R-9247-SCI
+inc R-9247-SCI
+get J-5065-IVS
+inc J-5065-IVS
+get V-4832-XFP
+inc V-4832-XFP
+get P-9887-WUC
+inc P-9887-WUC
+get bright-green Z-1403-CIW
+inc Z-1403-CIW
+get school-bus-yellow F-6458-DSL
+inc F-6458-DSL
+get T-6458-BXJ
+inc T-6458-BXJ
+get F-6458-DSL
+inc F-6458-DSL
+get P-0010-JGH
+inc P-0010-JGH
+get N-1403-ANU
+inc N-1403-ANU
+get Z-1403-CIW
+inc Z-1403-CIW
+get D-6458-HIP
+inc D-6458-HIP
+get N-9887-AKG
+inc N-9887-AKG
+get celadon P-5065-WLI
+inc P-5065-WLI
+get discounted D-4292-HCL
+get indigo B-5065-YGK
+get jumper shunt
+c jumper shunt D-4292-HCL
+c jumper shunt B-5065-YGK
+get B-4832-LUF
+inc B-4832-LUF
+get R-4292-FHJ
+inc R-4292-FHJ
+get T-6678-BOP
+c jumper shunt T-6678-BOP
+get dodger-blue P-4832-JAD
+inc P-4832-JAD
+get L-6458-RIZ
+get X-0010-TGR
+inc X-0010-TGR
+get gamboge P-4832-JAD
+inc P-4832-JAD
+get T-1403-ODK
+c L-6458-RIZ T-1403-ODK
+get water-logged D-4292-HCL
+inc D-4292-HCL
+get blue Z-6458-PNX
+inc Z-6458-PNX
+get T-4292-BRF
+inc T-4292-BRF
+get spring-green D-4832-HFZ
+inc D-4832-HFZ
+get sapphire D-4292-HCL
+inc D-4292-HCL
+get D-4292-HCL
+inc D-4292-HCL
+get P-4832-JAD
+inc P-4832-JAD
+get flax D-4832-HFZ
+inc D-4832-HFZ
+get F-5065-QBC
+inc F-5065-QBC
+get X-9887-GUM
+inc X-9887-GUM
+get N-9247-AHQ
+inc N-9247-AHQ
+get P-1623-WOW
+inc P-1623-WOW
+get D-1623-UTU
+inc D-1623-UTU
+get R-4832-FKX
+inc R-4832-FKX
+get H-4292-ZWD
+inc H-4292-ZWD
+get D-4832-HFZ
+inc D-4832-HFZ
+get Z-6458-PNX
+c L-6458-RIZ Z-6458-PNX
+c jumper shunt L-6458-RIZ
+c downloader jumper shunt
+w
+n
+n
+n
+get V-5065-KLY
+inc V-5065-KLY
+get J-5065-IQW
+inc J-5065-IQW
+get X-5065-GVU
+inc X-5065-GVU
+get B-6678-LYD
+inc B-6678-LYD
+get N-1403-AIY
+inc N-1403-AIY
+get R-0010-FLH
+inc R-0010-FLH
+get V-1623-KOO
+inc V-1623-KOO
+get Z-1403-CDC
+inc Z-1403-CDC
+get B-9887-YKI
+inc B-9887-YKI
+get P-9887-WPG
+inc P-9887-WPG
+get F-9247-QCK
+inc F-9247-QCK
+get B-9247-YHS
+inc B-9247-YHS
+get J-1403-INI
+inc J-1403-INI
+get L-4292-RMX
+inc L-4292-RMX
+get R-6458-FIR
+inc R-6458-FIR
+get R-9247-SWM
+inc R-9247-SWM
+get V-4832-XAT
+inc V-4832-XAT
+get H-4832-ZUV
+inc H-4832-ZUV
+get N-6678-NTF
+inc N-6678-NTF
+get L-6678-RJJ
+inc L-6678-RJJ
+get F-6458-DNP
+inc F-6458-DNP
+get X-4292-THZ
+inc X-4292-THZ
+get L-9887-EUO
+inc L-9887-EUO
+get T-1623-OES
+inc T-1623-OES
+get X-1403-GSG
+inc X-1403-GSG
+get D-9247-URO
+inc D-9247-URO
+get N-0010-NQP
+inc N-0010-NQP
+get B-0010-LVN
+inc B-0010-LVN
+get D-1623-UOY
+inc D-1623-UOY
+get V-4292-XWF
+inc V-4292-XWF
+get H-5065-MGC
+inc H-5065-MGC
+get V-1403-KIK
+inc V-1403-KIK
+get R-1623-STW
+inc R-1623-STW
+get R-5065-SQI
+inc R-5065-SQI
+get X-6678-TEL
+inc X-6678-TEL
+get P-1623-WJC
+inc P-1623-WJC
+get P-6458-JXV
+inc P-6458-JXV
+get B-6458-LSX
+inc B-6458-LSX
+get H-1403-MDM
+inc H-1403-MDM
+get H-6678-ZOR
+inc H-6678-ZOR
+get P-4832-JUH
+inc P-4832-JUH
+get R-4832-FFD
+inc R-4832-FFD
+get N-9247-ACU
+inc N-9247-ACU
+get N-6458-NNZ
+inc N-6458-NNZ
+get Z-6458-PID
+inc Z-6458-PID
+get X-9887-GPQ
+inc X-9887-GPQ
+get T-4292-BMJ
+inc T-4292-BMJ
+get D-4832-HAF
+inc D-4832-HAF
+get D-5065-ULK
+inc D-5065-ULK
+get V-9887-KFU
+inc V-9887-KFU
+get F-4292-DHL
+inc F-4292-DHL
+get progress bar
+c downloader progress bar
+use downloader
