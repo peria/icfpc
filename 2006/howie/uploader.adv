@@ -1,0 +1,431 @@
+e
+e
+n
+get battery
+get buff F-6678-DYP
+inc F-6678-DYP
+get olive-green R-4292-FWH
+inc R-4292-FWH
+get D-4832-HUX
+inc D-4832-HUX
+get P-1623-WEU
+get X-9887-GKK
+inc X-9887-GKK
+get H-9887-MUQ
+c battery H-9887-MUQ
+get T-4292-BHD
+c P-1623-WEU T-4292-BHD
+get flax D-4292-HRJ
+inc D-4292-HRJ
+get yellow Z-1623-COC
+c yellow Z-1623-COC P-1623-WEU
+get X-0010-TVP
+inc X-0010-TVP
+get forest-green F-6678-DYP
+inc F-6678-DYP
+get sky-blue N-1623-ATY
+inc N-1623-ATY
+get H-6678-ZJL
+inc H-6678-ZJL
+get sienna T-6678-BEN
+inc T-6678-BEN
+get D-5065-UGE
+inc D-5065-UGE
+get sea-green N-1623-ATY
+inc N-1623-ATY
+get ochre D-4292-HRJ
+inc D-4292-HRJ
+get cream Z-1623-COC
+inc cream Z-1623-COC
+get powder-blue T-6678-BEN
+inc T-6678-BEN
+get gold N-4832-NFF
+inc N-4832-NFF
+get V-0010-XLT
+get bronze J-9247-ICW
+inc J-9247-ICW
+get selective-yellow N-4832-NFF
+get peach-puff F-6678-DYP
+get bright-violet N-4832-NFF
+inc bright-violet N-4832-NFF
+get moccasin N-4832-NFF
+inc moccasin N-4832-NFF
+get royal-blue J-9247-ICW
+c yellow Z-1623-COC royal-blue J-9247-ICW
+c yellow Z-1623-COC V-0010-XLT
+get R-4292-FWH
+inc R-4292-FWH
+get N-6458-NIT
+inc N-6458-NIT
+get J-9887-IFM
+inc J-9887-IFM
+get olive-drab N-1623-ATY
+inc N-1623-ATY
+get F-4292-DCF
+inc F-4292-DCF
+get gray30 X-9247-GHU
+inc X-9247-GHU
+get V-9887-KAO
+inc V-9887-KAO
+get steel-blue N-4832-NFF
+inc steel-blue N-4832-NFF
+get N-1623-ATY
+inc N-1623-ATY
+get X-9247-GHU
+inc X-9247-GHU
+get low-carb N-4832-NFF
+inc low-carb N-4832-NFF
+get P-5065-WBG
+inc P-5065-WBG
+get L-6458-RXX
+inc L-6458-RXX
+get eggplant Z-1623-COC
+c battery eggplant Z-1623-COC
+c battery yellow Z-1623-COC
+c battery F-6678-DYP
+get camouflage-green J-9247-ICW
+c battery camouflage-green J-9247-ICW
+c battery N-4832-NFF
+s
+w
+w
+get downloader
+inc downloader
+get uploader
+c uploader battery
+e
+e
+e
+get gray60 Z-4292-PRV
+get pale-carmine D-9887-UUE
+inc pale-carmine D-9887-UUE
+get pale-cornflower-blue D-9887-UUE
+inc pale-cornflower-blue D-9887-UUE
+get imported D-9887-UUE
+inc imported D-9887-UUE
+get gray90 Z-4292-PRV
+get sepia Z-4292-PRV
+c gray90 Z-4292-PRV sepia Z-4292-PRV
+get gray30 D-9887-UUE
+inc gray30 D-9887-UUE
+get robin-egg-blue Z-4292-PRV
+c gray60 Z-4292-PRV robin-egg-blue Z-4292-PRV
+get slate-blue D-9887-UUE
+inc slate-blue D-9887-UUE
+get rosy-brown D-9887-UUE
+inc rosy-brown D-9887-UUE
+get gray50 Z-4292-PRV
+inc gray50 Z-4292-PRV
+get misty-rose Z-4292-PRV
+inc misty-rose Z-4292-PRV
+get cinnamon Z-9887-CUG
+inc cinnamon Z-9887-CUG
+get saffron N-9247-AWO
+inc saffron N-9247-AWO
+get indigo V-4292-XRX
+inc indigo V-4292-XRX
+get pale-sandy-brown R-4832-FAV
+inc pale-sandy-brown R-4832-FAV
+get momemtum-preserving Z-0010-PGL
+inc momemtum-preserving Z-0010-PGL
+get swamp-green V-4292-XRX
+inc swamp-green V-4292-XRX
+get pale-pink R-1623-SOQ
+inc pale-pink R-1623-SOQ
+get cream R-1623-SOQ
+inc cream R-1623-SOQ
+get royal-blue B-9247-YCM
+inc royal-blue B-9247-YCM
+get burgundy J-1403-IIC
+inc burgundy J-1403-IIC
+get blue Z-0010-PGL
+inc blue Z-0010-PGL
+get pink Z-0010-PGL
+inc pink Z-0010-PGL
+get moss-green F-4832-DFT
+inc moss-green F-4832-DFT
+get pine-green B-9247-YCM
+inc pine-green B-9247-YCM
+get floating R-4832-FAV
+inc floating R-4832-FAV
+get russet R-4832-FAV
+inc russet R-4832-FAV
+get lavender-blush D-9887-UUE
+inc lavender-blush D-9887-UUE
+get old-gold N-9247-AWO
+inc old-gold N-9247-AWO
+get pear N-9247-AWO
+inc pear N-9247-AWO
+get pastel-pink D-9887-UUE
+inc pastel-pink D-9887-UUE
+get heliotrope D-9887-UUE
+inc heliotrope D-9887-UUE
+get persian-blue Z-4292-PRV
+get emerald Z-4292-PRV
+inc emerald Z-4292-PRV
+get violet-red Z-4292-PRV
+get blaze-orange Z-4292-PRV
+inc blaze-orange Z-4292-PRV
+get RS232 adapter
+c RS232 adapter gray90 Z-4292-PRV
+c RS232 adapter violet-red Z-4292-PRV
+get jade D-9887-UUE
+inc jade D-9887-UUE
+get steel-blue D-9887-UUE
+c RS232 adapter steel-blue D-9887-UUE
+c RS232 adapter persian-blue Z-4292-PRV
+c RS232 adapter gray60 Z-4292-PRV
+c uploader RS232 adapter
+s
+get tea-green T-9887-OKW
+inc tea-green T-9887-OKW
+get chartreuse N-5065-ALO
+get dim-gray X-6458-TNF
+get scarlet J-9247-IWC
+c scarlet J-9247-IWC dim-gray X-6458-TNF
+c N-5065-ALO scarlet J-9247-IWC
+get mustard D-4292-HMN
+get turquoise N-4832-NAJ
+get turquoise F-6678-DTT
+c N-5065-ALO turquoise F-6678-DTT
+get celadon T-9887-OKW
+inc celadon T-9887-OKW
+get burnt-orange T-9887-OKW
+c mustard D-4292-HMN burnt-orange T-9887-OKW
+c N-5065-ALO mustard D-4292-HMN
+c N-5065-ALO turquoise N-4832-NAJ
+get cadet-blue T-9887-OKW
+c N-5065-ALO cadet-blue T-9887-OKW
+get pastel-green F-6678-DTT
+c N-5065-ALO pastel-green F-6678-DTT
+get prussian-blue X-6458-TNF
+inc prussian-blue X-6458-TNF
+get magenta X-6458-TNF
+inc magenta X-6458-TNF
+get safety-orange F-6678-DTT
+inc safety-orange F-6678-DTT
+get imported B-5065-YQM
+inc imported B-5065-YQM
+get puce X-6458-TNF
+inc puce X-6458-TNF
+get water-logged F-6678-DTT
+inc water-logged F-6678-DTT
+get thistle-colored X-6458-TNF
+inc thistle-colored X-6458-TNF
+get gamboge T-9887-OKW
+c N-5065-ALO T-9887-OKW
+get sky-blue T-9887-OKW
+c N-5065-ALO T-9887-OKW
+get navy-blue MOSFET
+inc navy-blue MOSFET
+get olive-green N-5065-ALO
+get pastel-pink Z-4832-PUL
+get seashell D-1403-UXS
+inc seashell D-1403-UXS
+get peach-yellow D-1403-UXS
+inc peach-yellow D-1403-UXS
+get crimson V-0010-XGX
+get cyan J-9247-IWC
+inc cyan J-9247-IWC
+get puce H-0010-ZBZ
+inc puce H-0010-ZBZ
+get chocolate-colored D-1403-UXS
+c Z-4832-PUL D-1403-UXS
+c Z-4832-PUL V-0010-XGX
+c Z-4832-PUL olive-green N-5065-ALO
+get pale-brown V-9247-KRE
+inc pale-brown V-9247-KRE
+get heliotrope D-1403-UXS
+inc heliotrope D-1403-UXS
+get crimson MOSFET
+c crimson MOSFET Z-4832-PUL
+c crimson MOSFET N-5065-ALO
+c uploader MOSFET
+n
+n
+get old X-1623-GTO
+inc old X-1623-GTO
+get corn V-0010-XBD
+inc corn V-0010-XBD
+get blue-violet P-4832-JFJ
+inc blue-violet P-4832-JFJ
+get gamboge X-0010-TLX
+inc gamboge X-0010-TLX
+get denim D-4292-HHR
+inc denim D-4292-HHR
+get low-carb D-5065-UVM
+inc low-carb D-5065-UVM
+get pear V-9247-KMI
+inc pear V-9247-KMI
+get ultramarine J-9247-IRG
+inc ultramarine J-9247-IRG
+get pink D-4292-HHR
+inc pink D-4292-HHR
+get discounted L-6458-RNH
+inc discounted L-6458-RNH
+get flax D-4292-HHR
+inc flax D-4292-HHR
+get cinnamon J-9247-IRG
+inc cinnamon J-9247-IRG
+get lemon F-9887-QAE
+inc lemon F-9887-QAE
+get low-carb X-1623-GTO
+inc low-carb X-1623-GTO
+get amethyst J-9247-IRG
+inc amethyst J-9247-IRG
+get reverse-chirality J-9247-IRG
+inc reverse-chirality J-9247-IRG
+get lemon T-9887-OFC
+inc lemon T-9887-OFC
+get honeydew B-4292-LWV
+inc honeydew B-4292-LWV
+get white F-9887-QAE
+inc white F-9887-QAE
+get black B-4292-LWV
+inc black B-4292-LWV
+get spring-green V-9247-KMI
+inc spring-green V-9247-KMI
+get pale-goldenrod V-0010-XBD
+inc pale-goldenrod V-0010-XBD
+get sangria X-1623-GTO
+inc sangria X-1623-GTO
+get lawn-green N-1623-AJI
+inc lawn-green N-1623-AJI
+get imitation R-1403-SXU
+inc imitation R-1403-SXU
+get sapphire X-1623-GTO
+inc sapphire X-1623-GTO
+get sea-green Z-4832-PPP
+inc sea-green Z-4832-PPP
+get gray10 F-9887-QAE
+inc gray10 F-9887-QAE
+get sandy-brown Z-1623-CEK
+inc sandy-brown Z-1623-CEK
+get gray90 R-4292-FMP
+inc gray90 R-4292-FMP
+get sturdy V-9887-KPW
+inc sturdy V-9887-KPW
+get camouflage-green J-6458-VDL
+inc camouflage-green J-6458-VDL
+get sturdy J-6458-VDL
+inc sturdy J-6458-VDL
+get wisteria X-9247-GWE
+inc wisteria X-9247-GWE
+get persian-blue F-9887-QAE
+inc persian-blue F-9887-QAE
+get sturdy Z-1623-CEK
+inc sturdy Z-1623-CEK
+get pastel-pink X-1623-GTO
+inc pastel-pink X-1623-GTO
+get sapphire R-1403-SXU
+inc sapphire R-1403-SXU
+get heliotrope J-6458-VDL
+inc heliotrope J-6458-VDL
+get mustard Z-4832-PPP
+inc mustard Z-4832-PPP
+get wisteria X-6458-TIJ
+inc wisteria X-6458-TIJ
+get coral Z-4832-PPP
+inc coral Z-4832-PPP
+get gray80 X-1623-GTO
+inc gray80 X-1623-GTO
+get ivory X-1623-GTO
+inc ivory X-1623-GTO
+get raw-umber T-0010-BQH
+inc raw-umber T-0010-BQH
+get foreign V-9247-KMI
+inc foreign V-9247-KMI
+get imaginary T-0010-BQH
+inc imaginary T-0010-BQH
+get snow X-1623-GTO
+get prussian-blue T-0010-BQH
+c snow X-1623-GTO prussian-blue T-0010-BQH
+get gray-tea-green T-0010-BQH
+inc gray-tea-green T-0010-BQH
+get miniature V-9247-KMI
+inc miniature V-9247-KMI
+get steel-blue V-9247-KMI
+inc steel-blue V-9247-KMI
+get indigo T-0010-BQH
+inc indigo T-0010-BQH
+get EPROM burner
+c EPROM burner snow X-1623-GTO
+get brass X-1623-GTO
+inc brass X-1623-GTO
+get old-gold T-0010-BQH
+inc old-gold T-0010-BQH
+get foreign T-0010-BQH
+c EPROM burner foreign T-0010-BQH
+c uploader EPROM burner
+n
+get moccasin N-4292-NWT
+get gray-tea-green L-4832-RPN
+get pale-chestnut T-9247-OHI
+inc pale-chestnut T-9247-OHI
+get pale-cornflower-blue V-6458-XDJ
+inc pale-cornflower-blue V-6458-XDJ
+get misty-rose T-9247-OHI
+inc misty-rose T-9247-OHI
+get sangria N-4292-NWT
+get jade P-1403-WSU
+c jade P-1403-WSU sangria N-4292-NWT
+get yellow-green P-6678-JEZ
+c yellow-green P-6678-JEZ jade P-1403-WSU
+get crimson P-6678-JEZ
+c crimson P-6678-JEZ gray-tea-green L-4832-RPN
+c crimson P-6678-JEZ moccasin N-4292-NWT
+get scarlet Z-5065-CGQ
+c crimson P-6678-JEZ scarlet Z-5065-CGQ
+get organic T-9247-OHI
+inc organic T-9247-OHI
+get bright-turquoise J-1623-ITM
+c crimson P-6678-JEZ bright-turquoise J-1623-ITM
+get mint-green X-4832-TKP
+c crimson P-6678-JEZ mint-green X-4832-TKP
+get denim T-9247-OHI
+inc denim T-9247-OHI
+get gray30 X-4832-TKP
+inc gray30 X-4832-TKP
+get gray60 T-9247-OHI
+inc gray60 T-9247-OHI
+get azure H-6458-ZXL
+c azure H-6458-ZXL crimson P-6678-JEZ
+c azure H-6458-ZXL yellow-green P-6678-JEZ
+get carmine D-6678-HJX
+get cornflower-blue D-6678-HJX
+get tan D-6678-HJX
+c tan D-6678-HJX cornflower-blue D-6678-HJX
+get pale-mauve L-4832-RPN
+c tan D-6678-HJX pale-mauve L-4832-RPN
+get robin-egg-blue D-6678-HJX
+inc robin-egg-blue D-6678-HJX
+get sandy-brown P-1403-WSU
+inc sandy-brown P-1403-WSU
+get cadet-blue H-9247-MMG
+get pale-brown P-1403-WSU
+inc pale-brown P-1403-WSU
+get gray40 L-4832-RPN
+c gray40 L-4832-RPN H-9247-MMG
+c gray40 L-4832-RPN carmine D-6678-HJX
+get cream H-9247-MMG
+c gray40 L-4832-RPN H-9247-MMG
+get status LED
+c status LED gray40 L-4832-RPN
+get black D-6678-HJX
+c status LED black D-6678-HJX
+get periwinkle D-6678-HJX
+c status LED periwinkle D-6678-HJX
+get violet D-6678-HJX
+c status LED violet D-6678-HJX
+c status LED tan D-6678-HJX
+get old-lace D-6678-HJX
+inc old-lace D-6678-HJX
+get navy-blue D-6678-HJX
+c status LED navy-blue D-6678-HJX
+get burnt-sienna D-6678-HJX
+inc burnt-sienna D-6678-HJX
+get peppered D-6678-HJX
+c status LED peppered D-6678-HJX
+c status LED azure H-6458-ZXL
+c uploader status LED
+use uploader
