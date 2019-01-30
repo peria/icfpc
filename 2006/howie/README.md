@@ -27,6 +27,7 @@
 | EPM | 20 | EPROM burner を合成する |
 | LED | 20 | status LED を合成する |
 | UPL | 5 | uploader でプログラムを upload する |
+| MSI | 20 | 博物館へ移動する |
 
 コマンド
 -------
@@ -73,7 +74,7 @@ downloader を作るときは display を最初に作ってから downloader を
 
 プログラムを読むとこの adventure のプログラムであることが分かる。コメントを読んでいくと `incinerate` は実はゴミ箱に荷物を送り込んでいて破壊してない(復旧できるはず)ということや `break`、`whistle`、`hum`、`speak` といった隠しコマンドがあることがわかる。
 
-次に一旦 downloader を無かったことにして uploader を作り、[gc.rml](./gc.rml) を改造した [gc2.rml](./gc2.rml) を upload する。変更点は
+次に一旦 downloader を無かったことにして uploader を作り、[gc.rml](./gc.rml) を改造した [gc2.rml](./gc2.rml) を upload する。[変更点](https://github.com/peria/icfpc/commit/586790aec2f23910e181d3f7e53621d37043d34e#diff-c1d34f318491eb9eb36c38a67b382491)は
 
 - 持てる荷物を増やす
 - `hum` で博物館へ移動する様にする
