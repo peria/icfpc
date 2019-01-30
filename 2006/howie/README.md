@@ -24,6 +24,9 @@
 | BTU | 20 | battery を合成する |
 | 232 | 20 | RS232 adapber を合成する |
 | MOS | 20 | MOSFET を合成する |
+| EPM | 20 | EPROM burner を合成する |
+| LED | 20 | status LED を合成する |
+| UPL | 5 | uploader でプログラムを upload する |
 
 コマンド
 -------
@@ -45,8 +48,8 @@
 
 |Street\Avenue| |Ridgewood |Dorchester| Blackstone | Harper |
 |-------------|-|--------- |----------| ---------- | ------ |
-|52nd Street  | | X | progress bar | manual | ? |
-|53th Street  | | X | display | battery | ? |
+|52nd Street  | | X | progress bar | manual | LED |
+|53th Street  | | X | display | battery | EPROM burner |
 |54th Street  | | downloader / uploader | USB cable | textbook | RS232 |
 |54th place   | | X | power cord | jumper shunt | MOSFET |
 
@@ -69,3 +72,10 @@ downloader を作るときは display を最初に作ってから downloader を
 そして戻って downloader を拾い合成する。あとは上の地図に従って progress bar, USB cable, power cord, jumper shunt を作りそれぞれ downloader と合成することで downloader が治るのでこれを使うと [gc.rml](./gc.rml) というプログラムをダウンロードすることができる。
 
 プログラムを読むとこの adventure のプログラムであることが分かる。コメントを読んでいくと `incinerate` は実はゴミ箱に荷物を送り込んでいて破壊してない(復旧できるはず)ということや `break`、`whistle`、`hum`、`speak` といった隠しコマンドがあることがわかる。
+
+次に一旦 downloader を無かったことにして uploader を作り、[gc.rml](./gc.rml) を改造した [gc2.rml](./gc2.rml) を upload する。変更点は
+
+- 持てる荷物を増やす
+- `hum` で博物館へ移動する様にする
+
+というあたり。
