@@ -19,8 +19,9 @@
 | DSP | 20 | display を合成する |
 | PGB | 5 | progress bar を入手する(合成の必要なし) |
 | PWR | 20 | power cord を合成する |
-| JMP | 20 | jumper shunt を作る |
+| JMP | 20 | jumper shunt を合成する |
 | DNL | 5 | downloader を使う |
+| BTU | 20 | battery を合成する |
 
 コマンド
 -------
@@ -40,12 +41,12 @@
 -------
 最初の部屋を出ると世界中で色々ものを作るのでマップと作れるものリスト。
 
-|Street\Avenue| |Ridgewood |Dorchester| Blackstone |
-|-------------|-|--------- |----------| ---------- |
-|52nd Street  | | X | progress bar | |
-|53th Street  | | X | display | |
-|54th Street  | | downloader uploader | USB cable | textbook |
-|54th place   | | X | power cord | jumper shunt |
+|Street\Avenue| |Ridgewood |Dorchester| Blackstone | Harper |
+|-------------|-|--------- |----------| ---------- | ------ |
+|52nd Street  | | X | progress bar | manual | ? |
+|53th Street  | | X | display | battery | ? |
+|54th Street  | | downloader / uploader | USB cable | textbook | ? |
+|54th place   | | X | power cord | jumper shunt | ? |
 
 downloader を作るときは display を最初に作ってから downloader を取らないと持てる荷物の枠が足りなくなる。
 
