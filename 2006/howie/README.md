@@ -23,6 +23,7 @@
 | DNL | 5 | downloader を使う |
 | BTU | 20 | battery を合成する |
 | 232 | 20 | RS232 adapber を合成する |
+| MOS | 20 | MOSFET を合成する |
 
 コマンド
 -------
@@ -47,7 +48,7 @@
 |52nd Street  | | X | progress bar | manual | ? |
 |53th Street  | | X | display | battery | ? |
 |54th Street  | | downloader / uploader | USB cable | textbook | RS232 |
-|54th place   | | X | power cord | jumper shunt | ? |
+|54th place   | | X | power cord | jumper shunt | MOSFET |
 
 downloader を作るときは display を最初に作ってから downloader を取らないと持てる荷物の枠が足りなくなる。
 
