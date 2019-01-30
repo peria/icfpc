@@ -404,7 +404,7 @@ fun process (c : command) : datum =
             | SomeItems { item', items' } => [
                 case item_equals (item, item') of
                   True { } => [
-                    case itemlist_length (items) >= 6 of
+                    case itemlist_length (items) >= 1000 of
                       True { } =>
                         return failed_command ("take",
                                                describe_item (item),
@@ -484,8 +484,17 @@ fun process (c : command) : datum =
     ]
   | Whistle { } =>
       return success_command ("whistle", NoData { })
-  | Hum { } =>
+  | Hum { } => [
+      case room_from_name ("Museum of Science and Industry") of
+        NoRoom { } => return success_command ("hum", NoData { })
+      | SomeRoom { r } => [
+          do move_self_to_room (r).
+          return success_command ("hum", NoData { }).
+        ]
+    ]
+      (*
       return success_command ("hum", NoData { })
+       *)
   | Speak { s } =>
       (*
         XXX Note that due to a "feature" (according to the developers upstairs)
