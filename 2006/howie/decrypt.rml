@@ -96,14 +96,11 @@ type condition =
     (* 'condition' is what's left after 'missing'
       is fixed;         'missing' *)
   | Broken { condition, kindlist }.
-extern kind_name : kind -> string.
 extern kind_condition : kind -> condition.
 extern item_condition : item -> condition.
 extern item_matches_kind : (item, kind) -> bool.
-(* Replace the current condition with the given one: *)
 extern fix_item : (item, condition) -> ().
 
-(* Navigation primitives: *)
 fun direction_tostring (d : direction) : string =
   case d of
     North { } => return "north"
@@ -111,12 +108,8 @@ fun direction_tostring (d : direction) : string =
   | South { } => return "south"
   | West { } => return "west".
 
-(* Special room names... see their uses below. *)
 let INVENTORY = "Inventory" ^ SERIALNO.
-let TRASH = "Trash Heap".
-let MUSEUM = "Museum of Science and Industry".
 
-(* Formatting functions *)
 fun success_command (command : string, details : datum) : datum =
   return Assoc { "success",
                  Assoc { "command",
@@ -148,7 +141,7 @@ fun describe_condition (c : condition) : datum = [
     fun describe_kind (k : kind) : datum = [
       return Assoc { "kind",
                      Assoc { "name",
-                             Atom { kind_name (k) },
+                             Atom { "" },
                      Assoc { "condition",
                              describe_condition (kind_condition (k)),
                      NoData { } } },
@@ -173,31 +166,11 @@ fun describe_condition (c : condition) : datum = [
                      NoData { } } },
              NoData { } }
 ].
-fun describe_items_in_pile (items : itemlist) : datum =
-  case items of
-    NoItems { } =>
-      return NoData { }
-  | SomeItems { item, items } =>
-      return Seq { Assoc { "item",
-                           Assoc { "name", Atom { item_name (item) },
-                           Assoc { "description", Atom { item_description (item) },
-                           Assoc { "adjectives", stringlist_to_datum ("adjective",
-                                                                      item_adjectives (item)),
-                           Assoc { "condition", describe_condition (item_condition (item)),
-                           Assoc { "piled_on", describe_items_in_pile (items),
-                           NoData { } } } } } },
-                   NoData { } },
-              NoData { } }.
-fun describe_items_in_room (items : itemlist) : datum =
-  case items of
-    NoItems { } =>
-      return NoData { }
-  | SomeItems { item', items' } =>
-      return describe_items_in_pile (items).
+
 fun describe_item (item : item) : datum = [
   return Assoc { "item",
-                 Assoc { "name", Atom { item_name (item) },
-                 Assoc { "description", Atom { item_description (item) },
+                 Assoc { "name", Atom { "" },
+                 Assoc { "description", Atom { "" },
                  Assoc { "adjectives", stringlist_to_datum ("adjective",
                                                             item_adjectives (item)),
                  Assoc { "condition", describe_condition (item_condition (item)),
@@ -205,43 +178,6 @@ fun describe_item (item : item) : datum = [
                  NoData { } } } } } },
           NoData { } }
 ].
-fun describe_items_in_inventory (items : itemlist) : datum =
-  case items of
-    NoItems { } =>
-      return NoData { }
-  | SomeItems { item, items } => [
-      return Seq { describe_item (item),
-             describe_items_in_inventory (items) }.
-    ].
-fun describe_room (room : room) : datum =
-  return Assoc { "room", Assoc { "name",
-                                 Atom { room_name (room) },
-                         Assoc { "description",
-                                 Atom { room_description (room) },
-                         Assoc { "items",
-                                 describe_items_in_room (room_items (room)),
-                         NoData { } } } },
-         NoData { } }.
-
-fun hide_item (item : item) : datum =
-  (* XXX a big hack -- let's hope we are never audited! *)
-  case room_from_name (TRASH) of
-    NoRoom { } =>
-      return failed_command ("incinerate",
-                             describe_item (item),
-                             "internal error (report for maintenance!)")
-  | SomeRoom { trash } => [
-      do move_item_to_room (item, trash).
-      return success_command ("incinerate", describe_item (item))
-  ].
-fun hide_items (items : itemlist) = [
-  case items of
-    NoItems { } => return
-  | SomeItems { item, items } => [
-      do hide_item (item).
-      do hide_items (items)
-    ]
-  ].
 
 fun combine_items (big : item, small : item, flipped : bool) : datum =
   case item_condition (big) of
@@ -261,7 +197,6 @@ fun combine_items (big : item, small : item, flipped : bool) : datum =
          | SomeKinds { kind, kinds } => [
             case item_matches_kind (small, kind) of
               True { } => [
-                do hide_item (small).
                 let missing = append_kindlists (acc, kinds).
                 (* We maintain an invariant that the "missing" list is
                    always non-empty. *)
@@ -289,35 +224,11 @@ fun combine_items (big : item, small : item, flipped : bool) : datum =
       | False { } => return combine_items (small, big, True { })
     ].
 
-(*
-  Main handler: all robots must define a function "process" of type
-
-     command -> datum
-
-  The resulting data will be sent downstream to the Censory Engine and
-  finally to the robot perception systems. In addition to the
-  resulting perceptions, non-passive robots may also affect the world
-  using the library calls above. This function will be called at
-  each time step where the robot consciousness has issued a valid command.
-*)
 fun process (c : command) : datum =
   case c of
-    Go { d } => [
-      let r1 = here ().
-      case neighbor (r1, d) of
-        NoRoom { } => [
-          let s = direction_tostring (d).
-          return failed_command ("go",
-                                 Atom { s },
-                                 "there is no way " ^ s ^ " from here").
-        ]
-      | SomeRoom { r2 } => [
-          do move_self_to_room (r2).
-          return success_command ("go", describe_room (r2)).
-        ]
-    ]
+    Go { d } =>
+      return success_command ("go", Atom { "" })
   | Take { item } => [
-      (* XXX hack to make inventory work *)
       case room_from_name (INVENTORY) of
         NoRoom { } =>
           return failed_command ("take",
@@ -327,8 +238,6 @@ fun process (c : command) : datum =
         case item_portable (item) of
           True { } => [
             let items = room_items (inventory).
-            (* Treat list of items as an ordered list to force GC robots to
-               pick things up in order. *)
             case room_items (here ()) of
               NoItems { } =>
                return failed_command ("take", describe_item (item),
@@ -350,63 +259,17 @@ fun process (c : command) : datum =
                                  "it's impossible to do so").
       ]
     ]
-  | Incinerate { item } => [
-      return hide_item (item)
-    ]
-  | Combine { item1, item2 } => [
+  | Incinerate { item } =>
+      return success_command ("incinerate", describe_item (item))
+  | Combine { item1, item2 } =>
       return combine_items (item1, item2, False { })
-    ]
-  | Break { item } => [
-      (*
-       XXX Do garbage robots ever need to break anything?
-       *)
-      return failed_command ("break", describe_item (item),
-                             "you can't bring yourself to do it")
-  ]
-  | Drop { item } => [
-      (*
-       XXX Do garbage robots ever need to drop anything?
-      do move_item_to_room (item, here ()).
+  | Break { item } =>
+      return success_command ("break", describe_item (item))
+  | Drop { item } =>
       return success_command ("drop", describe_item (item))
-       *)
-      return failed_command ("drop", describe_item (item),
-                             "you can't bring yourself to part with it")
-    ]
-  | Use { item } => [
-      case item_condition (item) of
-          Pristine { } => [
-            case item_name (item) = "keypad" of
-              True { } => [
-                case room_name (here ()) = "Room With a Door" of
-                  True { } => [
-                    (* XXX Testing only!  Remove this code in production robots! *)
-                    case room_from_name ("54th Street and Ridgewood Court") of
-                      NoRoom { } => return failed_command ("use",
-                                                           describe_item (item),
-                                            "internal error (report for maintenance!)")
-                    | SomeRoom { r } => [
-                        do move_self_to_room (r).
-                        return success_command ("use", Seq { describe_item (item),
-                            Atom { "You unlock and open the door. Passing through, "
-                                   ^ "you find yourself on the streets of Chicago. "
-                                   ^ "Seeing no reason you should ever go back, you "
-                                   ^ "allow the door to close behind you. " } }).
-                      ]
-                  ]
-                | False { } => [
-                    return failed_command ("use", describe_item (item),
-                                           "you see no way to use it in this room")
-                  ]
-              ]
-            | False { } => [
-                return failed_command ("use", describe_item (item),
-                                       "nothing interesting happens")
-              ]
-          ]
-        | Broken { c, m } =>
-            return failed_command ("use", describe_item (item),
-                                   "the " ^ (item_name (item)) ^ " is broken")
-    ]
+  | Use { item } =>
+      return failed_command ("use", describe_item (item),
+                             "nothing interesting happens")
   | Whistle { } =>
       return success_command ("whistle", NoData { })
   | Hum { } => [
@@ -417,9 +280,6 @@ fun process (c : command) : datum =
           return success_command ("hum", NoData { }).
         ]
     ]
-      (*
-      return success_command ("hum", NoData { })
-       *)
   | Speak { s } => [
       case room_from_name("Rotunda") of 
         NoRoom { } => return success_command ("speak", Atom { s })
@@ -427,7 +287,6 @@ fun process (c : command) : datum =
         case room_items (room) of
           NoItems { } => return success_command ("speak", Atom { s })
         | SomeItems { item, items } => [
-          (* item == blueprint *)
           let content = item_description (item).
           let index = 0.
           case string_charat (content, index) = string_charat(s, 0) of
@@ -451,7 +310,7 @@ fun process (c : command) : datum =
       ]
     ]
   | LookAround { } =>
-      return success_command ("look", describe_room (here ()))
+      return success_command ("look", Atom { "" })
   | ShowInventory { } => [
       return failed_command ("show", NoData { }, "")
   ]
