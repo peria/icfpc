@@ -1,5 +1,5 @@
 (*
- * gc.rml - robot mind source for garbage collector (model 3)
+ * gc2.rml - robot mind source for garbage collector (model 3)
  *
  * Maps robot consciousness into world engine (i.e. implements lower brain
  * functions). Carries out motor functions by appropriate calls to system
@@ -404,16 +404,9 @@ fun process (c : command) : datum =
             | SomeItems { item', items' } => [
                 case item_equals (item, item') of
                   True { } => [
-                    case itemlist_length (items) >= 1000 of
-                      True { } =>
-                        return failed_command ("take",
-                                               describe_item (item),
-                                               "you can't carry any more items")
-                    | False { } => [
-                        do move_item_to_room (item, inventory).
-                        return success_command ("take", describe_item (item))
-                      ]
-                    ]
+                    do move_item_to_room (item, inventory).
+                    return success_command ("take", describe_item (item))
+                  ]
                 | False { } => (* Not the top item *)
                     return failed_command ("take", describe_item (item),
                       "there is another item on top of it (take the other item first)")
