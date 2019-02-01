@@ -1,3 +1,4 @@
-EOM
-hum
-l
+speak l
+speak m
+speak n
+
