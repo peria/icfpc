@@ -183,6 +183,7 @@ fun direction_tostring (d : direction) : string =
 (* Special room names... see their uses below. *)
 let INVENTORY = "Inventory" ^ SERIALNO.
 let TRASH = "Trash Heap".
+let MUSEUM = "Museum of Science and Industry".
 
 (* Formatting functions *)
 fun success_command (command : string, details : datum) : datum =
@@ -478,7 +479,7 @@ fun process (c : command) : datum =
   | Whistle { } =>
       return success_command ("whistle", NoData { })
   | Hum { } => [
-      case room_from_name ("Museum of Science and Industry") of
+      case room_from_name (MUSEUM) of
         NoRoom { } => return success_command ("hum", NoData { })
       | SomeRoom { r } => [
           do move_self_to_room (r).
@@ -488,14 +489,36 @@ fun process (c : command) : datum =
       (*
       return success_command ("hum", NoData { })
        *)
-  | Speak { s } =>
-      (*
-        XXX Note that due to a "feature" (according to the developers upstairs)
-        of the command parser, all spoken words appear in lower case.  There
-        haven't been any problem reports from field (yet) as most other functions
-        are case insensitive.
-       *)
-      return success_command ("speak", Atom { s })
+  | Speak { s } => [
+      case room_from_name("Rotunda") of 
+        NoRoom { } => return success_command ("speak", Atom { s })
+      | SomeRoom { room } => [
+        case room_items (room) of
+          NoItems { } => return success_command ("speak", Atom { s })
+        | SomeItems { item, items } => [
+          (* item == blueprint *)
+          let content = item_description (item).
+          let index = 0.
+          case string_charat (content, index) = string_charat(s, 0) of
+            False { } =>
+              return success_command ("speak", Atom { s })
+          | True { } => [
+            case room_from_name (INVENTORY) of
+              NoRoom { } =>
+                return success_command ("speak", Atom { s })
+            | SomeRoom { inventory } => [
+              case room_items (inventory) of
+                NoItems { } =>
+                  return success_command ("speak", Atom { s })
+              | SomeItems { uploader, is } => [
+                do move_item_to_room (uploader, here ()).
+                return success_command ("speak", Atom { s })
+	      ]
+            ]
+          ]
+        ]
+      ]
+    ]
   | LookAround { } =>
       return success_command ("look", describe_room (here ()))
   | ShowInventory { } => [
