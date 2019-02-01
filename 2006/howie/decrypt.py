@@ -19,34 +19,26 @@ def main():
 
 
   rml = None
-  with open('gc2.rml') as f:
+  with open('decrypt.rml') as f:
     rml = f.read().split('\n')
 
   room = 'Rotunda'  # blueprint
   #room = 'Room With a Door'  # manifesto
 
   print 'Ready...'
-
   #plain = 'most enlightening.'
   plain = ''
   for i in xrange(len(plain), 1000):
-    rml[502] = 'let index = %d.' % i
+    rml[379] = '          let index = %d.' % i
 
-    # upload edited gc2.rml
+    # upload edited RML
     umix.stdin.write('\n'.join(rml) + '\n')
-    print '\n'.join(rml)
-    while umix.stdout.readline().strip() != '':
-      pass
-    while True:
-      l = umix.stdout.readline().strip()
-      if l == '':
-        break
 
     p = None
-    for c in 'abcdefghijklmnopqrstuvwxyz.#':
-      umix.stdin.write('speak "%s"\n' % c)
+    for c in 'abcdefghijklmnopqrstuvwxyz#':
+      umix.stdin.write('speak %s\n' % c)
       output = ''
-      while output.find('You speak') < 0 and output.find('your thoughts') < 0:
+      while output.find('You speak the words') < 0 and output.find('your thoughts') < 0:
         output = umix.stdout.readline().strip()
       print c, '#', output
       if output.find('You speak') >= 0:
