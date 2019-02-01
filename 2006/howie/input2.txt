@@ -1,7 +1,3 @@
-speak l
-speak m
-speak n
-get uploader
 
 
 

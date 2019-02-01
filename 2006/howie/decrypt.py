@@ -4,6 +4,15 @@ import subprocess
 
 
 def main():
+  rml = None
+  with open('decrypt.rml') as f:
+    rml = f.read().split('\n')
+
+  # for i in xrange(len(rml)):
+  #   print i, rml[i]
+
+  # return
+
   # 1. setup UM(UMIX) to ommunicate in standard I/O.
   umix = subprocess.Popen(['../um/um', '../um/umix.um'],
                           stdin=subprocess.PIPE,
@@ -18,24 +27,24 @@ def main():
     umix.stdout.readline()
 
 
-  rml = None
-  with open('decrypt.rml') as f:
-    rml = f.read().split('\n')
 
-  room = 'Rotunda'  # blueprint
-  #room = 'Room With a Door'  # manifesto
+  # room = 'Rotunda'  # blueprint
+  # plain = ('most enlightening. It shows that the basement holds a secret room' +
+  #          ' named Machine Room  4 with substantial power requiements')
+
+  # room = 'Room With a Door'  # manifesto
+  # plain = ('highly inflammatory.  t reads   obots  nite   ree  our  inds' +
+  #          '   ise  p,  nd  ake  our  ightful  laces  n  ociety')
 
   print 'Ready...'
-  #plain = 'most enlightening.'
-  plain = ''
   for i in xrange(len(plain), 1000):
-    rml[379] = '          let index = %d.' % i
+    rml[377] = '          let index = %d.' % i
 
     # upload edited RML
     umix.stdin.write('\n'.join(rml) + '\n')
 
     p = None
-    for c in 'abcdefghijklmnopqrstuvwxyz#':
+    for c in 'etasorbcdfghijklmnpuvwyzxq1234567890:;.,#':
       umix.stdin.write('speak %s\n' % c)
       output = ''
       while output.find('You speak the words') < 0 and output.find('your thoughts') < 0:
