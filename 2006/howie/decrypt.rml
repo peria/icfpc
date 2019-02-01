@@ -1,18 +1,14 @@
 use uploader
 
 (* decrypt.rml - RML to decrypt redacted documents. *)
-(* Robot-specific serial number -- must be customized during manufacturing: *)
 let SERIALNO = "A87312".
 
-(* Common types: *)
 extern type int.
 type bool =
     True { }
   | False { }.
 extern type string.
-extern string_length : string -> int.
 extern string_charat : (string, int) -> int.
-extern string_fromchar : int -> string.
 fun string_concat (x : string, y : string) : string = return x ^ y.
 type stringlist =
     NoStrings { }
@@ -21,7 +17,6 @@ extern type room.
 extern type item.
 type direction = North { } | South { } | East { } | West { }.
 
-(* Inputs -- what commands the robot consciousness can issue. *)
 type command =
     Go { direction }
   | Take { item }
@@ -37,19 +32,14 @@ type command =
   | ShowInventory { }
   | Examine { item }.
 
-(* Outputs -- data are things the robot perceives. *)
 type datum =
     Atom { string }
-  | Seq { datum, datum } (* value, rest of data *)
-  | Assoc { string, datum, datum }  (* key, value, rest of data *)
+  | Seq { datum, datum }
+  | Assoc { string, datum, datum }
   | NoData { }.
 
-(* Effects on the world are also a sort of output. *)
 extern move_self_to_room : room -> ().
 extern move_item_to_room : (item, room) -> ().
-
-(* Utilty functions for perceptual feedback. *)
-(* Information about rooms: *)
 extern room_name : room -> string.
 extern room_description : room -> string.
 type mayberoom = NoRoom { } | SomeRoom { room }.
@@ -59,23 +49,14 @@ extern neighbor : (room, direction) -> mayberoom.
 type itemlist =
     SomeItems { item, itemlist }
   | NoItems { }.
-fun itemlist_length (items : itemlist) : int =
-  case items of
-    NoItems { } => return 0
-  | SomeItems { item, rest } => return (1 + itemlist_length (rest)).
 extern room_items : room -> itemlist.
 
-(* Information about items: *)
 extern item_name : item -> string.
-(* Note that the descriptions of classified items will be
- * automatically redacted downstream by the Censory Engine. This
- * also applies to any values computed from classified descriptions. *)
 extern item_description : item -> string.
 extern item_adjectives : item -> stringlist.
 extern item_portable : item -> bool.
 extern item_equals : (item, item) -> bool.
 
-(* Each kind describes a class or group of equivalent items. *)
 extern type kind.
 type kindlist =
     NoKinds { }
@@ -88,13 +69,8 @@ fun append_kindlists (kinds1 : kindlist, kinds2 : kindlist)
   | SomeKinds { kind, kinds1 } =>
       return SomeKinds { kind,
                          append_kindlists (kinds1, kinds2) }.
-(* Every item is either broken or not. If it's broken, then it's missing some
-  parts. Those parts are described as a list of kinds with which it must
-  be combined to be useful again. *)
 type condition =
     Pristine { }
-    (* 'condition' is what's left after 'missing'
-      is fixed;         'missing' *)
   | Broken { condition, kindlist }.
 extern kind_condition : kind -> condition.
 extern item_condition : item -> condition.
@@ -248,7 +224,7 @@ fun process (c : command) : datum =
                     do move_item_to_room (item, inventory).
                     return success_command ("take", describe_item (item))
                   ]
-                | False { } => (* Not the top item *)
+                | False { } =>
                     return failed_command ("take", describe_item (item),
                       "there is another item on top of it (take the other item first)")
             ]
