@@ -31,4 +31,7 @@ class UM {
   int pc_;                  // Program counter;
   Platter registers_[8]{};  // General purpose
   std::vector<Memory> memory_;
+
+  int num_free_ = 0;
+  int num_alloc_ = 0;
 };

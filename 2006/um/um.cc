@@ -56,6 +56,8 @@ UM::UM(Memory&& program) : pc_(0) {
 void UM::Run() {
   while (Step(memory_[0].array[pc_++])) {
   }
+  std::fprintf(stderr, "Had %d allocs and %d frees\n",
+               num_alloc_, num_free_);
 }
 
 bool UM::Step(const Platter& operation) {
@@ -105,11 +107,13 @@ bool UM::Step(const Platter& operation) {
     reg_b = memory_.size();
     memory_.emplace_back(std::make_unique<Platter[]>(size), size);
     std::memset(memory_.back().array.get(), 0, size * sizeof(Platter));
+    ++num_alloc_;
     break;
   }
   case Operator::kFree: {
     memory_[reg_c].array.reset();
     memory_[reg_c].size = 0;
+    ++num_free_;
     break;
   }
   case Operator::kOutput: {
