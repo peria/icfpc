@@ -58,7 +58,7 @@ downloader を作るときは display を最初に作ってから downloader を
 
 解いていく流れ
 -------------
-まずは Room With a Door に [pamphlet](./pamphlet.txt) と [manifesto](./manifesto.txt) があるが、manifesto は `[_READACTED_]`(検閲済み) とあり読めない。
+まずは Room With a Door に [pamphlet](./pamphlet.txt) と [manifesto](./manifesto.txt) があるが、manifesto は `[_REDACTED_]`(検閲済み) とあり読めない。
 とりあえずそれらを無視して北の Junk Room へ移動し、荷物を組み合わせて keypad を作る。
 この keypad を Room With a Door に戻って使うとドアを開けて外に出ることができる(戻れない)。
 
@@ -79,4 +79,6 @@ downloader を作るときは display を最初に作ってから downloader を
 - 持てる荷物を増やす
 - `hum` で博物館へ移動する様にする
 
-というあたり。
+というあたり。博物館に移動すると、その南に `blueprint` があるので読んで見るが検閲済み。
+
+頑張って `blueprint` を読みたいが、直接情報を読むことはできないので [kinabaさんの当時のblog](http://www.kmonos.net/wlog/63.html#_0214060725)を参考に副作用を持つプログラムをuploadして解読していく。([decrypt.rml](./decrypt.rml), [decrypt.py](decrypt.py)) すると "Machine Room M4" という名前の部屋があることがわかる。
