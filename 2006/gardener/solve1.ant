@@ -1,0 +1,15 @@
+/bin/umodem solve1.ant STOP
+Puzzle 1: Simple
+NNNNNNN
+NNNWENN
+8 8
+ - - - - - - - -
+ -0>0< - - - - -
+ - - - - - # - -
+ - - - - - - - -
+ - - - - - - $ -
+ - - - -0v - - -
+ -1^ - -0^ - - -
+ - - - - - - - -
+STOP
+./antomaton solve1.ant
