@@ -29,7 +29,7 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 | [`gardener`](gardener/) | mathemantica | ANTWO | Antomaton で実装 |
 | [`bbarker`](bbarker/) | plinko | BLACK | 条件付きあみだくじを作る |
 | [`yang`](yang/) | U+262F | BLNCE | 極小 VM アセンブラ BALANCE で実装 |
-| [`knr`](knr/) ||||
+| [`knr`](knr/) | X3.159-1989 |||
 
 ちなみにそれぞれのユーザーアカウントをハックできる条件をいくつか。
 
@@ -41,3 +41,4 @@ INTRO.LOG=200@999999|35e6f52e9bc951917c73af391e35e1d
 - `gardener` : `hmonk` で 1 問解くとメールが来る
 - `bbarker` : `gardener` の `.history` に書いている
 - `yang` : `bbarekr` で 000 を解いてランキングを見る、`howie` で部屋を出る
+- `knr` : `howie` で ”Machine Room M4" のnoteを見る 
