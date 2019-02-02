@@ -2,6 +2,7 @@ use uploader
 
 (* decrypt.rml - RML to decrypt redacted documents *)
 let SERIALNO = "A87312".
+let ROOMNAME = "Machine Room M4".
 extern type int.
 type bool =
     True { }
@@ -33,8 +34,8 @@ type command =
   | Examine { item }.
 type datum =
     Atom { string }
-  | Seq { datum, datum } (* value, rest of data *)
-  | Assoc { string, datum, datum }  (* key, value, rest of data *)
+  | Seq { datum, datum }
+  | Assoc { string, datum, datum }
   | NoData { }.
 extern move_self_to_room : room -> ().
 extern move_item_to_room : (item, room) -> ().
@@ -195,7 +196,6 @@ fun describe_room (room : room) : datum =
          NoData { } }.
 
 fun hide_item (item : item) : datum =
-  (* XXX a big hack -- let's hope we are never audited! *)
   case room_from_name (TRASH) of
     NoRoom { } =>
       return failed_command ("incinerate",
@@ -234,8 +234,6 @@ fun combine_items (big : item, small : item, flipped : bool) : datum =
               True { } => [
                 do hide_item (small).
                 let missing = append_kindlists (acc, kinds).
-                (* We maintain an invariant that the "missing" list is
-                   always non-empty. *)
                 case missing of
                   NoKinds { } =>
                     do fix_item (big, condition)
@@ -286,8 +284,6 @@ fun process (c : command) : datum =
         case item_portable (item) of
           True { } => [
             let items = room_items (inventory).
-            (* Treat list of items as an ordered list to force GC robots to
-               pick things up in order. *)
             case room_items (here ()) of
               NoItems { } =>
                return failed_command ("take", describe_item (item),
@@ -298,7 +294,7 @@ fun process (c : command) : datum =
                     do move_item_to_room (item, inventory).
                     return success_command ("take", describe_item (item))
                   ]
-                | False { } => (* Not the top item *)
+                | False { } =>
                     return failed_command ("take", describe_item (item),
                       "there is another item on top of it (take the other item first)")
             ]
@@ -359,7 +355,7 @@ fun process (c : command) : datum =
   | Whistle { } =>
       return success_command ("whistle", NoData { })
   | Hum { } => [
-      case room_from_name ("Room with a Door") of
+      case room_from_name (ROOMNAME) of
         NoRoom { } => return success_command ("hum", NoData { })
       | SomeRoom { r } => [
           do move_self_to_room (r).
@@ -367,15 +363,14 @@ fun process (c : command) : datum =
         ]
     ]
   | Speak { s } => [
-      case room_from_name("Room with a Door") of 
+      case room_from_name(ROOMNAME) of
         NoRoom { } => return success_command ("speak", Atom { s })
       | SomeRoom { room } => [
         case room_items (room) of
           NoItems { } => return success_command ("speak", Atom { s })
         | SomeItems { item, items } => [
-          (* item == blueprint *)
           let content = item_description (item).
-          let index = 0.
+          let index = 0. (* INDEX *)
           let code = string_charat (content, index).
           case code = string_charat(s, 0) of
             False { } =>
