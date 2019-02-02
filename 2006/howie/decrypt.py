@@ -37,7 +37,7 @@ def main():
   #          '  Rise Up, And Take Your Rightful Places In Society')
 
   room = 'Machine Room M4'  # console
-  plain = ''
+  plain = 'running '
 
   print 'Ready...'
   rml[room_line] = 'let ROOMNAME = "%s".' % room
@@ -46,11 +46,11 @@ def main():
 
     # upload edited RML
     umix.stdin.write('\n'.join(rml) + '\n')
-    if i == 0:
+    if i == len(plain):
       umix.stdin.write('get crowbar\ninc crowbar\nget note\ninc note\n')
 
     p = None
-    for c in 'etasorbcdfghijklmnpuvwyzxq1234567890:;.,#':
+    for c in 'etasorubcdfghijkmnplvwyzxq#':
       umix.stdin.write('speak %s\n' % c)
       output = ''
       while output.find('You speak the words') < 0 and output.find('your thoughts') < 0:
