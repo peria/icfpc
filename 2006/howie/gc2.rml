@@ -1,3 +1,4 @@
+use uploader
 (*
  * gc2.rml - robot mind source for garbage collector (model 3)
  *
@@ -476,46 +477,24 @@ fun process (c : command) : datum =
             return failed_command ("use", describe_item (item),
                                    "the " ^ (item_name (item)) ^ " is broken")
     ]
-  | Whistle { } =>
-      return success_command ("whistle", NoData { })
+  | Whistle { } => [
+      case room_from_name ("Machine Room M4") of
+        NoRoom { } => return success_command ("whistle", NoData { })
+      | SomeRoom { r } => [
+          do move_self_to_room (r).
+          return success_command ("whistle", NoData { }).
+        ]
+    ]
   | Hum { } => [
-      case room_from_name ("Room With a Door") of
+      case room_from_name (MUSEUM) of
         NoRoom { } => return success_command ("hum", NoData { })
       | SomeRoom { r } => [
           do move_self_to_room (r).
           return success_command ("hum", NoData { }).
         ]
     ]
-  | Speak { s } => [
-      case room_from_name("Room With a Door") of 
-        NoRoom { } => return success_command ("speak", Atom { s })
-      | SomeRoom { room } => [
-        case room_items (room) of
-          NoItems { } => return success_command ("speak", Atom { s })
-        | SomeItems { item, items } => [
-          (* item == blueprint *)
-          let content = item_description (item).
-          let index = 0.
-          case string_charat (content, index) = string_charat(s, 0) of
-            False { } =>
-              return success_command ("speak", Atom { s })
-          | True { } => [
-            case room_from_name (INVENTORY) of
-              NoRoom { } =>
-                return success_command ("speak", Atom { s })
-            | SomeRoom { inventory } => [
-              case room_items (inventory) of
-                NoItems { } =>
-                  return success_command ("speak", Atom { s })
-              | SomeItems { uploader, is } => [
-                do move_item_to_room (uploader, here ()).
-                return success_command ("speak", Atom { s })
-	      ]
-            ]
-          ]
-        ]
-      ]
-    ]
+  | Speak { s } =>
+      return success_command ("speak", Atom { s })
   | LookAround { } =>
       return success_command ("look", describe_room (here ()))
   | ShowInventory { } => [
@@ -532,3 +511,4 @@ fun process (c : command) : datum =
   | Examine { item } => [
       return success_command ("examine", describe_item (item)).
   ].
+EOM
