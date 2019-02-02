@@ -8,11 +8,12 @@ def main():
   with open('decrypt.rml') as f:
     rml = f.read().split('\n')
 
-  # for i in xrange(len(rml)):
-  #   print i, rml[i]
-  # return
+  index_line = None
+  for i in xrange(len(rml)):
+    if rml[i].find('INDEX') >= 0:
+      index_line = i
+      break
 
-  index_line = 372
   room_line = 4
 
   # 1. setup UM(UMIX) to ommunicate in standard I/O.
@@ -37,7 +38,7 @@ def main():
   #          '  Rise Up, And Take Your Rightful Places In Society')
 
   room = 'Machine Room M4'  # console
-  plain = 'running '
+  plain = 'running UMIX, the operating system of c'
 
   print 'Ready...'
   rml[room_line] = 'let ROOMNAME = "%s".' % room
@@ -50,7 +51,7 @@ def main():
       umix.stdin.write('get crowbar\ninc crowbar\nget note\ninc note\n')
 
     p = None
-    for c in 'etasorubcdfghijkmnplvwyzxq#':
+    for c in 'eatiosnrhldcumpfgywbvkjxqz#':
       umix.stdin.write('speak %s\n' % c)
       output = ''
       while output.find('You speak the words') < 0 and output.find('your thoughts') < 0:

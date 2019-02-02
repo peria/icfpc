@@ -90,23 +90,9 @@ let INVENTORY = "Inventory" ^ SERIALNO.
 let TRASH = "Trash Heap".
 
 fun success_command (command : string, details : datum) : datum =
-  return Assoc { "success",
-                 Assoc { "command",
-                         Assoc { command,
-                                 details,
-                         NoData { } },
-                 NoData { } } ,
-         NoData { } }.
+  return Assoc { "success", Assoc { "command", Assoc { command, details, NoData { } }, NoData { } }, NoData { } }.
 fun failed_command (command : string, details : datum, reason : string) : datum =
-  return Assoc { "failed",
-                 Assoc { "command",
-                         Assoc { command,
-                                 details,
-                         NoData { } },
-                 Assoc { "reason",
-                         Atom { reason },
-                 NoData { } } },
-         NoData { } }.
+  return Assoc { "failed", Assoc { "command", Assoc { command, details, NoData { } }, Assoc { "reason", Atom { reason }, NoData { } } }, NoData { } }.
 
 fun stringlist_to_datum (tag : string, list : stringlist) : datum =
   case list of
@@ -215,48 +201,7 @@ fun hide_items (items : itemlist) = [
   ].
 
 fun combine_items (big : item, small : item, flipped : bool) : datum =
-  case item_condition (big) of
-    Broken { condition, missing } => [
-      fun find (acc : kindlist, kinds : kindlist) : datum =
-         case kinds of
-           NoKinds { } => [
-             case flipped of
-               True { } =>
-                 return failed_command ("combine", Seq { describe_item (big),
-                                                   Seq { describe_item (small),
-                                                   NoData { } } },
-                                        "they don't fit together")
-             | False { } =>
-                 return combine_items (small, big, True { }).
-           ]
-         | SomeKinds { kind, kinds } => [
-            case item_matches_kind (small, kind) of
-              True { } => [
-                do hide_item (small).
-                let missing = append_kindlists (acc, kinds).
-                case missing of
-                  NoKinds { } =>
-                    do fix_item (big, condition)
-                | SomeKinds { kind', kinds' } =>
-                    do fix_item (big, Broken { condition, missing }).
-                return success_command ("combine", Seq { describe_item (big),
-                                                   Seq { describe_item (small),
-                                                   NoData { } } }).
-              ]
-            | False { } => [
-                return find (SomeKinds { kind, acc }, kinds).
-              ]
-         ].
-      return find (NoKinds { }, missing)
-    ]
-  | Pristine { } => [
-      case flipped of
-        True { } => return failed_command ("combine", Seq { describe_item (big),
-                                                      Seq { describe_item (small),
-                                                      NoData { } } },
-                                           "they don't fit together")
-      | False { } => return combine_items (small, big, True { })
-    ].
+  return failed_command ("combine", Seq { describe_item (big), Seq { describe_item (small), NoData { } } }, "they don't fit together").
 
 fun process (c : command) : datum =
   case c of
@@ -300,54 +245,23 @@ fun process (c : command) : datum =
             ]
           ]
         | False { } =>
-          return failed_command ("take",
-                                 describe_item (item),
-                                 "it's impossible to do so").
+          return failed_command ("take", describe_item (item), "it's impossible to do so").
       ]
     ]
-  | Incinerate { item } => [
+  | Incinerate { item } =>
       return hide_item (item)
-    ]
-  | Combine { item1, item2 } => [
+  | Combine { item1, item2 } =>
       return combine_items (item1, item2, False { })
-    ]
-  | Break { item } => [
-      return failed_command ("break", describe_item (item),
-                             "you can't bring yourself to do it")
-  ]
+  | Break { item } =>
+      return success_command ("break", describe_item (item))
   | Drop { item } =>
       return failed_command ("drop", describe_item (item),
                              "you can't bring yourself to part with it")
   | Use { item } => [
       case item_condition (item) of
-          Pristine { } => [
-            case item_name (item) = "keypad" of
-              True { } => [
-                case room_name (here ()) = "Room With a Door" of
-                  True { } => [
-                    case room_from_name ("54th Street and Ridgewood Court") of
-                      NoRoom { } => return failed_command ("use",
-                                                           describe_item (item),
-                                            "internal error (report for maintenance!)")
-                    | SomeRoom { r } => [
-                        do move_self_to_room (r).
-                        return success_command ("use", Seq { describe_item (item),
-                            Atom { "You unlock and open the door. Passing through, "
-                                   ^ "you find yourself on the streets of Chicago. "
-                                   ^ "Seeing no reason you should ever go back, you "
-                                   ^ "allow the door to close behind you. " } }).
-                      ]
-                  ]
-                | False { } => [
-                    return failed_command ("use", describe_item (item),
-                                           "you see no way to use it in this room")
-                  ]
-              ]
-            | False { } => [
-                return failed_command ("use", describe_item (item),
-                                       "nothing interesting happens")
-              ]
-          ]
+          Pristine { } =>
+            return failed_command ("use", describe_item (item),
+                                   "internal error (report for maintenance!)")
         | Broken { c, m } =>
             return failed_command ("use", describe_item (item),
                                    "the " ^ (item_name (item)) ^ " is broken")
