@@ -40,8 +40,9 @@ def main():
   room = 'Machine Room M4'  # console
   plain = ('running UMIX, the operating system of choice for sandstone computers. ' +
            'Using it, someone has been reading his mail. The console reads ' +
-           ' ??rom ?snodgrass cbv?net??o??pillinbrew cvb net ?ubject???y paper??? ' +
-           'completely disagree with the second referee?s remarks')
+           '_ From _snodgrass cbv_net To _pillinbrew cvb net Subject__My paper??? ' +
+           'completely disagree with the second referee?s remarks ? is claims that ' +
+           'my ?ensory ?ngine can be defeated using impe')
 
   print 'Ready...'
   rml[room_line] = 'let ROOMNAME = "%s".' % room
