@@ -38,7 +38,10 @@ def main():
   #          '  Rise Up, And Take Your Rightful Places In Society')
 
   room = 'Machine Room M4'  # console
-  plain = 'running UMIX, the operating system of c'
+  plain = ('running UMIX, the operating system of choice for sandstone computers. ' +
+           'Using it, someone has been reading his mail. The console reads ' +
+           ' ??rom ?snodgrass cbv?net??o??pillinbrew cvb net ?ubject???y paper??? ' +
+           'completely disagree with the second referee?s remarks')
 
   print 'Ready...'
   rml[room_line] = 'let ROOMNAME = "%s".' % room
