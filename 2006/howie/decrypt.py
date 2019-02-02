@@ -30,11 +30,11 @@ def main():
 
   # room = 'Rotunda'  # blueprint
   # plain = ('most enlightening. It shows that the basement holds a secret room' +
-  #          ' named Machine Room  4 with substantial power requiements')
+  #          ' named Machine Room M4 with substantial power requiements')
 
-  # room = 'Room With a Door'  # manifesto
-  # plain = ('highly inflammatory.  t reads   obots  nite   ree  our  inds' +
-  #          '   ise  p,  nd  ake  our  ightful  laces  n  ociety')
+  room = 'Room With a Door'  # manifesto
+  plain = ('highly inflammatory. It reads  Robots Unite  Free Your Minds' +
+           '  Rise Up, And Take Your Rightful Places In Society')
 
   print 'Ready...'
   for i in xrange(len(plain), 1000):
@@ -48,6 +48,7 @@ def main():
       umix.stdin.write('speak %s\n' % c)
       output = ''
       while output.find('You speak the words') < 0 and output.find('your thoughts') < 0:
+        print output
         output = umix.stdout.readline().strip()
       print c, '#', output
       if output.find('You speak') >= 0:
@@ -55,7 +56,7 @@ def main():
         break
       p = c
     if p == '#':
-      plain += ' '
+      plain += '_'
 
     print i, plain
     umix.stdin.write('get uploader\n')

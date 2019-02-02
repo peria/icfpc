@@ -1,6 +1,8 @@
 howie
 xyzzy
 adventure
+get pamphlet
+inc pamphlet
 n
 get bolt
 get spring
