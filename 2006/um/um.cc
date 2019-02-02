@@ -54,8 +54,7 @@ UM::UM(Memory&& program) : pc_(0) {
 }
 
 void UM::Run() {
-  while (Step(memory_[0].array[pc_++])) {
-  }
+  while (Step(memory_[0].array[pc_++])) {  }
   std::fprintf(stderr, "Had %d allocs and %d frees\n",
                num_alloc_, num_free_);
 }
@@ -76,11 +75,11 @@ bool UM::Step(const Platter& operation) {
     break;
   }
   case Operator::kIndex: {
-    reg_a = memory_[reg_b].array[reg_c];
+    reg_a = memory(reg_b).array[reg_c];
     break;
   }
   case Operator::kAmend: {
-    memory_[reg_a].array[reg_b] = reg_c;
+    memory(reg_a).array[reg_b] = reg_c;
     break;
   }
   case Operator::kAdd: {
@@ -111,8 +110,7 @@ bool UM::Step(const Platter& operation) {
     break;
   }
   case Operator::kFree: {
-    memory_[reg_c].array.reset();
-    memory_[reg_c].size = 0;
+    memory(reg_c).reset();
     ++num_free_;
     break;
   }
@@ -131,12 +129,12 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kLoad: {
     if (reg_b) {
-      size_t size = memory_[reg_b].size;
-      memory_[0].array.reset(new Platter[size]);
-      memory_[0].size = size;
+      size_t size = memory(reg_b).size;
+      Memory& program = memory_[0];
+      program.resize(size);
 
-      Platter* src = memory_[reg_b].array.get();
-      Platter* dst = memory_[0].array.get();
+      Platter* src = memory(reg_b).array.get();
+      Platter* dst = program.array.get();
       std::memcpy(dst, src, size * sizeof(Platter));
     }
     pc_ = reg_c;

@@ -13,6 +13,15 @@ struct Memory {
   Memory(size_t s) : array(std::make_unique<Platter[]>(s)), size(s) {}
   Platter* get() const { return array.get(); }
 
+  void reset() {
+    array.reset();
+    size = 0;
+  }
+  void resize(size_t s) {
+    array.reset(new Platter[s]);
+    size = s;
+  }
+
   void ConvertEndian();
 
   std::unique_ptr<Platter[]> array;
@@ -26,6 +35,10 @@ class UM {
 
   void Run();
   bool Step(const Platter& operation);
+
+  Memory& memory(Platter slot) {
+    return memory_[slot];
+  }
 
  private:
   int pc_;                  // Program counter;
