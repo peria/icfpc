@@ -28,6 +28,7 @@
 | LED | 20 | status LED を合成する |
 | UPL | 5 | uploader でプログラムを upload する |
 | MSI | 20 | 博物館へ移動する |
+| CON | 20 | [console](./console.txt) を解読する |
 
 コマンド
 -------
@@ -82,3 +83,6 @@ downloader を作るときは display を最初に作ってから downloader を
 というあたり。博物館に移動すると、その南に `blueprint` があるので読んで見るが検閲済み。
 
 頑張って `blueprint` を読みたいが、直接情報を読むことはできないので [kinabaさんの当時のblog](http://www.kmonos.net/wlog/63.html#_0214060725)を参考に副作用を持つプログラムをuploadして解読していく。([decrypt.rml](./decrypt.rml), [decrypt.py](decrypt.py)) すると "Machine Room M4" という名前の部屋があることがわかる。
+
+なので次は Machine Room M4 に行くと `console` という検閲済みのものがあるのでこれも頑張って[解読する](./console.txt)。(ちなみに `note` に `knr` のパスワードが書かれているが、そのままでは通らない。)
+するとこの世界 (adventure) の外 (umix) のメールやり取りが見える。曰く `adventure` に `"sequent-sequel"` というオプションをつけて起動できることが分かる。
