@@ -33,20 +33,29 @@
 コマンド
 -------
 
-- `help` は簡単なコマンドリストと説明
-- `go` は移動。`n`、`e`、`s`、`w` を引数に取るが、`go` が無くても四方の文字だけで移動できる。
+- `help` は簡単なコマンドリストと説明。
+- `go` は `n`、`e`、`s`、`w` を引数に取り東西南北へ移動する。ちなみに `go` が無くても四方の文字だけでも移動できる。
 - `take`、`get`、`grab` は手元にある重なった荷物の一番上のものを取る
 - `drop` は持ってる荷物から1つ指定して足元の荷物スタックに置く。ただし改造したものは置けない。
-- `incinerate`、`inc` アイテムを破壊する。state-of-the-art DVNUL-9000 incinerator という装備をしているらしい。
+- `incinerate`、`inc` アイテムをゴミ箱に入れる。物語が進めばゴミ箱から取り出すことも可能になる。
 - `combine`、`c` はアイテムの修復。 `combine radio with transistor` という感じに使う。
-- `use` はアイテムの機能があれば使う
+- `use` はアイテムの機能があれば使う。
 - `examine`、`ex`、`x`、`look`、`l` はアイテムやら周りの状況やらを見る
 - `inventory`、`show`、`inv`、`i` は持ってる荷物を表示する
 - `quit`、`exit` はゲーム終了
+- (隠し) `break` はアイテムを破壊する。戻ってこない。
+- (隠し) `whistle` 笛を吹いて自分を応援。
+- (隠し) `hum` 鼻歌を歌って自分を応援。
+- (隠し) `speak` 引数にした文字列を喋る。周囲の反応があるかはどうなんだろう。
 
-世界地図
--------
-最初の部屋を出ると世界中で色々ものを作るのでマップと作れるものリスト。
+解いていく流れ
+-------------
+まずは Room With a Door に [pamphlet](./pamphlet.txt) と [manifesto](./manifesto.txt) があるが、manifesto は `[_REDACTED_]`(検閲済み) とあり読めない。
+とりあえずそれらを無視して北の Junk Room へ移動し、荷物を組み合わせて keypad を作る。
+この keypad を Room With a Door に戻って使うとドアを開けて外に出ることができる(戻れない)。
+
+### 世界地図
+ちなみに外の世界の地図と、各エリア(実は全部部屋)で作れるものリスト。
 
 |Street\Avenue| |Ridgewood |Dorchester| Blackstone | Harper |
 |-------------|-|--------- |----------| ---------- | ------ |
@@ -55,34 +64,30 @@
 |54th Street  | | downloader / uploader | USB cable | textbook | RS232 |
 |54th place   | | X | power cord | jumper shunt | MOSFET |
 
-downloader を作るときは display を最初に作ってから downloader を取らないと持てる荷物の枠が足りなくなる。
+出たところ (54th Street and Ridgewood Avenue) に [note](./note.txt) があるので読んでみると
 
-解いていく流れ
--------------
-まずは Room With a Door に [pamphlet](./pamphlet.txt) と [manifesto](./manifesto.txt) があるが、manifesto は `[_REDACTED_]`(検閲済み) とあり読めない。
-とりあえずそれらを無視して北の Junk Room へ移動し、荷物を組み合わせて keypad を作る。
-この keypad を Room With a Door に戻って使うとドアを開けて外に出ることができる(戻れない)。
+- 2つ便利なものを残してるらしい。多分 downloader と uploader。
+- 科学博物館 (the Museum of Science and Industry) で blueprint を見つけなければならない。
+- 読めない場合は Censory Engine が行動ではなく視覚を邪魔してるらしい。
 
-出たところ 54th Street and Ridgewood Avenue の足元に [note](./note.txt) があるので読んでみると
-- 2つ便利なもの (downloader, uploader) を残してるらしい
-- 科学博物館 (the Museum of Science and Industry) で blueprint を見つけなければならないっぽい
-- 読めない場合は Censory Engine が行動ではなく視覚を邪魔してるらしい (この微妙な違いが後で重要になる)
+ということが分かる。
 
-という方針が分かる。
+まずは上の地図に従って display, progress bar, USB cable, power cord, jumper shunt を作りそれぞれ downloader と合成することで downloader を修復できる。これを使うと [gc.rml](./gc.rml) というプログラムをダウンロードすることができる。
+プログラムを読むとこの adventure のプログラム (の一部) であることが分かる。また、`break`、`whistle`、`hum`、`speak` といった隠しコマンドがあることがわかる。
 
-まずは 53th Street and Dorchester Avenue まで行き display を作る。
-そして戻って downloader を拾い合成する。あとは上の地図に従って progress bar, USB cable, power cord, jumper shunt を作りそれぞれ downloader と合成することで downloader が治るのでこれを使うと [gc.rml](./gc.rml) というプログラムをダウンロードすることができる。
-
-プログラムを読むとこの adventure のプログラムであることが分かる。コメントを読んでいくと `incinerate` は実はゴミ箱に荷物を送り込んでいて破壊してない(復旧できるはず)ということや `break`、`whistle`、`hum`、`speak` といった隠しコマンドがあることがわかる。
-
-次に一旦 downloader を無かったことにして uploader を作り、[gc.rml](./gc.rml) を改造した [gc2.rml](./gc2.rml) を upload する。[変更点](https://github.com/peria/icfpc/commit/586790aec2f23910e181d3f7e53621d37043d34e#diff-c1d34f318491eb9eb36c38a67b382491)は
+次に一旦 downloader を無かったことにして同様に EPROM burner, MOSFET, RS232, status LED を合成して uploader を修復し、[gc.rml](./gc.rml) を改造した [gc2.rml](./gc2.rml) を upload する。[変更点](https://github.com/peria/icfpc/commit/586790aec2f23910e181d3f7e53621d37043d34e#diff-c1d34f318491eb9eb36c38a67b382491)は
 
 - 持てる荷物を増やす
 - `hum` で博物館へ移動する様にする
 
 というあたり。博物館に移動すると、その南に `blueprint` があるので読んで見るが検閲済み。
+頑張って `blueprint` を読みたいが、直接情報を読むことはできないし、検閲済みデータを使った演算結果も検閲済みになるので、[kinabaさんの当時のblog](http://www.kmonos.net/wlog/63.html#_0214060725)を参考に副作用を持つプログラムをuploadして解読していく。
+今回は「`speak` する文字が、現在いる部屋の一番上に積んでいるアイテムの n 文字目(プログラム内 `index` で管理)であれば uploader を置く」というプログラムを作り、適当な順番に文字を `speak` する形にした。ヒットするまでは検閲済みな反応が返るが、ヒットすると uploader がプログラムのチェック対象になるので「youは x を叫んだが…」みたいな普通の反応になるので特定できる、という形にした。なお細かいことではあるが大文字は直接判定できなさそうなことが書いてあったので大文字用プログラムでは `string_charat()` に 32 (0x20) を足して小文字化するプログラムに変更した。
 
-頑張って `blueprint` を読みたいが、直接情報を読むことはできないので [kinabaさんの当時のblog](http://www.kmonos.net/wlog/63.html#_0214060725)を参考に副作用を持つプログラムをuploadして解読していく。([decrypt.rml](./decrypt.rml), [decrypt.py](decrypt.py)) すると "Machine Room M4" という名前の部屋があることがわかる。
+出来上がったものが [decrypt.py](decrypt.py) と [decrypt.rml](./decrypt.rml)。すると "Machine Room M4" という名前の部屋があることがわかる。
 
-なので次は Machine Room M4 に行くと `console` という検閲済みのものがあるのでこれも頑張って[解読する](./console.txt)。(ちなみに `note` に `knr` のパスワードが書かれているが、そのままでは通らない。)
-するとこの世界 (adventure) の外 (umix) のメールやり取りが見える。曰く `adventure` に `"sequent-sequel"` というオプションをつけて起動できることが分かる。
+Machine Room M4 に行くと `console` というやはり検閲済みのものがあるのでこれも[解読してみる](./console.txt)。(ちなみに `note` に `knr` のパスワードが書かれているが、そのままでは通らない。)
+するとこの世界 (adventure) の外 (umix) のメールやり取りが見え、`adventure` に `sequent-sequel` というオプションをつけて起動できることが分かる。
+
+# 後編
+`sequent-sequel` をつけて立ち上げると後編に入る。後編は前編で入れなかった博物館の中から始まる。
