@@ -103,9 +103,28 @@ bool UM::Step(const Platter& operation) {
   }
   case Operator::kAlloc: {
     const size_t size = reg_c;
-    reg_b = memory_.size();
-    memory_.emplace_back(std::make_unique<Platter[]>(size), size);
-    std::memset(memory_.back().array.get(), 0, size * sizeof(Platter));
+    if (memory_.size() < kMaxSlots) {
+      reg_b = memory_.size();
+      memory_.emplace_back(size);
+    } else {
+      while (next_ < memory_.size() && memory_[next_].active)
+        ++next_;
+      if (next_ >= memory_.size()) {
+        next_ = 1;
+        while (next_ < memory_.size() && memory_[next_].active)
+          ++next_;
+      }
+
+      if (next_ >= memory_.size()) {
+        reg_b = memory_.size();
+        memory_.emplace_back(size);
+      } else {
+        reg_b = next_;
+        memory_[next_].resize(size);
+      }
+    }
+
+    std::memset(memory(reg_b).get(), 0, size * sizeof(Platter));
     ++num_alloc_;
     break;
   }
