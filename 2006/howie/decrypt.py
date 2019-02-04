@@ -24,67 +24,66 @@ def main():
   with open('decrypt.rml') as f:
     rml = f.read().split('\n')
 
-  index_line = None
+  room_line = 4
+  case_line = None
   for i in xrange(len(rml)):
-    if rml[i].find('INDEX') >= 0:
-      index_line = i
+    if rml[i].find('CASE') >= 0:
+      case_line = i
       break
 
-  room_line = 4
-
-  # room = 'Rotunda'  # blueprint
-  # plain = ('most enlightening. It shows that the basement holds a secret room' +
-  #          ' named Machine Room M4 with substantial power requiements')
-
-  # room = 'Room With a Door'  # manifesto
-  # plain = ('highly inflammatory. It reads  Robots Unite  Free Your Minds' +
-  #          '  Rise Up, And Take Your Rightful Places In Society')
-
-  room = 'Machine Room M4'  # console
-  plain = ('running UMIX, the operating system of choice for sandstone computers. ' +
-           'Using it, someone has been reading his mail. The console reads ' +
-           '_ From _snodgrass cbv_net To _pillinbrew cvb net Subject__My paper??? ' +
-           'completely disagree with the second referee?s remarks ? is claims that ' +
-           'my ?ensory ?ngine can be defeated using imperat')
+  # room, length, items = ('Rotunda', 130, [])  # blueprint
+  # room, length, items = ('Room With a Door', 120, [])  # manifesto
+  room, length, items = ('Machine Room M4', 1110, ['crowbar', 'note'])  # console
 
   rml[room_line] = 'let ROOMNAME = "%s".' % room
-  umix = None
-  runs = 0
-  for i in xrange(len(plain), 1000):
-    rml[index_line] = '          let index = %d.' % i
+  umix = setup_umix()
 
-    if umix is None or runs >= 5:
-      if umix:
-        print 'reboot umix'
-        umix.terminate()
+  # Upload RML
+  umix.stdin.write('\n'.join(rml) + '\n')
 
-      umix = setup_umix()
-      runs = 0
+  for item in items:
+    umix.stdin.write('get %s\ninc %s\n' % (item, item))
 
-
-    # upload edited RML
-    umix.stdin.write('\n'.join(rml) + '\n')
-    if runs == 0:
-      umix.stdin.write('get crowbar\ninc crowbar\nget note\ninc note\n')
-
+  plain = ''
+  for i in xrange(length):
     p = None
-    for c in 'eatiosnrhldcumpfgywbvkjxqz#':
-      umix.stdin.write('speak %s\n' % c)
+    for c in 'eatiosnrhldcumpfgywbvkjxqz1234567890!"$%&\'()=|@;:,./?<>_':
+      umix.stdin.write('speak %s\n' % ('x' * i + c))
+
       output = ''
       while output.find('You speak the words') < 0 and output.find('your thoughts') < 0:
         output = umix.stdout.readline().strip()
-      print c, '#', output
       if output.find('You speak') >= 0:
         plain += p
         break
       p = c
-    if p == '#':
+    if p == '_':
       plain += '_'
 
-    print i, plain
+    print '[%d] %s' % (i, plain)
     umix.stdin.write('get uploader\n')
-    runs += 1
 
+  rml[case_line] = '          let code = string_charat (content, index) + 32.'
+  umix.stdin.write('\n'.join(rml) + '\n')
+  for i in xrange(length):
+    if plain[i] != '_':
+      continue
+
+    p = None
+    for c in 'EATIOSNRHLDCUMPFGYWBVKJXQZ_':
+      umix.stdin.write('speak %s\n' % ('x' * i + c))
+      output = ''
+      while output.find('You speak the words') < 0 and output.find('your thoughts') < 0:
+        output = umix.stdout.readline().strip()
+      if output.find('You speak') >= 0:
+        plain = plain[:i] + p + plain[i+1:]
+        break
+      p = c
+    if p == '_':
+      plain = plain[:i] + ' ' + plain[i+1:]
+
+    print '[%d] %s' % (i, plain)
+    umix.stdin.write('get uploader\n')
 
 if __name__ == '__main__':
   main()

@@ -284,9 +284,9 @@ fun process (c : command) : datum =
           NoItems { } => return success_command ("speak", Atom { s })
         | SomeItems { item, items } => [
           let content = item_description (item).
-          let index = 0. (* INDEX *)
-          let code = string_charat (content, index).
-          case code = string_charat(s, 0) of
+          let index = string_length(s) - 1.
+          let code = string_charat (content, index). (* CASE *)
+          case code = string_charat(s, index) of
             False { } =>
               return success_command ("speak", Atom { s })
           | True { } => [
@@ -300,7 +300,7 @@ fun process (c : command) : datum =
               | SomeItems { uploader, is } => [
                 do move_item_to_room (uploader, here ()).
                 return success_command ("speak", Atom { s })
-	      ]
+              ]
             ]
           ]
         ]
