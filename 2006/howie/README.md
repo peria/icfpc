@@ -21,7 +21,7 @@
 | PWR | 20 | power cord を合成する |
 | JMP | 20 | jumper shunt を合成する |
 | DNL | 5 | downloader を使う |
-| BTU | 20 | battery を合成する |
+| BTY | 20 | battery を合成する |
 | 232 | 20 | RS232 adapber を合成する |
 | MOS | 20 | MOSFET を合成する |
 | EPM | 20 | EPROM burner を合成する |
