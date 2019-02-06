@@ -28,7 +28,7 @@
 | LED | 20 | status LED を合成する |
 | UPL | 5 | uploader でプログラムを upload する |
 | MSI | 20 | 博物館へ移動する |
-| CON | 20 | [console](./console.txt) を解読する |
+| CON | 200 | [console](./console.txt) を解読する |
 
 コマンド
 -------
