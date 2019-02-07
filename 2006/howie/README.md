@@ -29,6 +29,12 @@
 | UPL | 5 | uploader でプログラムを upload する |
 | MSI | 20 | 博物館へ移動する |
 | CON | 200 | [console](./console.txt) を解読する |
+| RCC | 60 | race car を合成する |
+| PSG | 60 | pousse game を合成する |
+| PKG | 60 | package robot を合成する |
+| ROB | 60 | roober を合成する |
+| FSM | 60 | finite-state machine を合成する |
+| CDX | 60 | codex を合成する |
 
 コマンド
 -------
@@ -91,3 +97,4 @@ Machine Room M4 に行くと `console` というやはり検閲済みのもの�
 
 # 後編
 `sequent-sequel` をつけて立ち上げると後編に入る。後編は前編で入れなかった博物館の中から始まる。
+という程のこともなく、6つの部屋でそれぞれアイテムを修復していくだけの作業である。依存関係が難しそうに見えるけど実はそんなに大変ではない。ボーナス得点。
