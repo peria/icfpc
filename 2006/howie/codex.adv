@@ -1,0 +1,61 @@
+n
+get violet B-4832-LFH
+inc violet B-4832-LFH
+get moss-green J-0010-VLV
+inc moss-green J-0010-VLV
+get swamp-green X-9247-GCY
+get scarlet F-1403-QIO
+inc scarlet F-1403-QIO
+get honeydew X-9247-GCY
+inc honeydew X-9247-GCY
+get lavender J-0010-VLV
+inc lavender J-0010-VLV
+get cornflower-blue X-9247-GCY
+inc cornflower-blue X-9247-GCY
+get burgundy B-4832-LFH
+inc burgundy B-4832-LFH
+get azure X-9247-GCY
+inc azure X-9247-GCY
+get purple J-0010-VLV
+inc purple J-0010-VLV
+get safety-orange J-0010-VLV
+inc safety-orange J-0010-VLV
+get camouflage-green J-0010-VLV
+inc camouflage-green J-0010-VLV
+get cornflower-blue B-4832-LFH
+inc cornflower-blue B-4832-LFH
+get peach-puff X-9247-GCY
+inc peach-puff X-9247-GCY
+get gamboge X-9247-GCY
+inc gamboge X-9247-GCY
+get lawn-green B-4832-LFH
+inc lawn-green B-4832-LFH
+get hypoallergenic X-9247-GCY
+inc hypoallergenic X-9247-GCY
+get seashell B-4832-LFH
+inc seashell B-4832-LFH
+get ochre J-0010-VLV
+inc ochre J-0010-VLV
+get pear X-9247-GCY
+get cadet-blue F-1403-QIO
+inc cadet-blue F-1403-QIO
+get pale-sandy-brown B-4832-LFH
+inc pale-sandy-brown B-4832-LFH
+get slate-blue F-1403-QIO
+inc slate-blue F-1403-QIO
+get midnight-blue X-9247-GCY
+inc midnight-blue X-9247-GCY
+get burnt-sienna B-4832-LFH
+inc burnt-sienna B-4832-LFH
+get domestic X-9247-GCY
+get rotating X-9247-GCY
+inc rotating X-9247-GCY
+get brass B-4832-LFH
+inc brass B-4832-LFH
+get gargantuan B-4832-LFH
+get codex
+c codex gargantuan B-4832-LFH
+c codex domestic X-9247-GCY
+c codex pear X-9247-GCY
+c codex swamp-green X-9247-GCY
+inc  codex

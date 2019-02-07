@@ -1,0 +1,38 @@
+n
+get cadet-blue H-1623-MEU
+get magenta H-1623-MEU
+inc magenta H-1623-MEU
+get beige P-9887-WKK
+inc beige P-9887-WKK
+get ivory P-9887-WKK
+inc ivory P-9887-WKK
+get bisque P-9887-WKK
+inc bisque P-9887-WKK
+get plum H-1623-MEU
+c cadet-blue H-1623-MEU plum H-1623-MEU
+#inc plum H-1623-MEU
+get pastel-pink H-1623-MEU
+#inc pastel-pink H-1623-MEU
+get peach-orange H-1623-MEU
+#inc peach-orange H-1623-MEU
+get wheat-colored H-1623-MEU
+inc wheat-colored H-1623-MEU
+get lavender H-1623-MEU
+inc lavender H-1623-MEU
+get black P-9887-WKK
+inc black P-9887-WKK
+get viridian H-1623-MEU
+inc viridian H-1623-MEU
+get lime-green H-1623-MEU
+inc lime-green H-1623-MEU
+get chocolate-colored H-1623-MEU
+inc chocolate-colored H-1623-MEU
+get midnight-blue P-9887-WKK
+inc midnight-blue P-9887-WKK
+get linen-colored H-1623-MEU
+inc linen-colored H-1623-MEU
+get race car
+c race car cadet-blue H-1623-MEU
+c race car pastel-pink H-1623-MEU
+c race car peach-orange H-1623-MEU
+inc race car
