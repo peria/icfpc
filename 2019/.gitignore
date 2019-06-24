@@ -1,3 +1,4 @@
 *.o
 *~
 wrappers
+third_party/
