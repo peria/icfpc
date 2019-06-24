@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "booster.h"
+#include "desc_parser.h"
 #include "point.h"
 
 namespace {
@@ -28,5 +29,7 @@ Map::Map(const std::string& desc_file) {
   assert (*p == '#');
   Polygons obstacles = parse<Polygons>(++p);
   assert (*p == '#');
-  std::vector<Booster> boosters = parse<std::vector<Booster>>(++p);
+  std::vector<BoosterPos> boosters = parse<std::vector<BoosterPos>>(++p);
+
+  // TODO: Reconstruct the map.
 }

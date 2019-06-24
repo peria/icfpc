@@ -1,10 +1,20 @@
 #pragma once
 
-enum Booster {
+#include <cstdint>
+
+#include "point.h"
+
+enum class Booster : uint8_t {
   kManipulator,
   kFastWheel,
   kDrill,
+  kSpawn,
+  kCloning,
   kBeacon,  // will be the target point of teleport.
-  kClone,
   N,
+};
+
+struct BoosterPos {
+  Booster booster;
+  Point pos;
 };
