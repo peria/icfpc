@@ -29,6 +29,8 @@ char cellToChar(int cell) {
   }
   if (cell & CellType::kNonWrapped)
     return c;
+  if (c == '.')
+    c = ' ';
   return std::tolower(c);
 }
 

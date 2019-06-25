@@ -13,6 +13,8 @@ Wrapper::Wrapper(Game& g, const Point& p, int id, int birth)
   manipulators.emplace_back(Point{1, 1});
   manipulators.emplace_back(Point{1, 0});
   manipulators.emplace_back(Point{1, -1});
+
+  moveAndPaint(pos);
 }
 
 void Wrapper::takeAction(const ActionCommand& cmd) {
@@ -32,7 +34,7 @@ void Wrapper::takeAction(const ActionCommand& cmd) {
     action_history.emplace_back(
         new MoveInfo(cmd.action, is_fast_wheel_active, is_drill_active));
     int id = static_cast<int>(cmd.action) - static_cast<int>(Action::kMoveUp);
-    static constexpr Point dp[] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    static constexpr Point dp[] = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
     Point p = pos + dp[id];
     assert(map.isInside(p) &&
            (is_drill_active || (map(p) & CellType::kObstacle) == 0));
@@ -52,13 +54,11 @@ void Wrapper::takeAction(const ActionCommand& cmd) {
     action_history.emplace_back(new TurnInfo(cmd.action));
     if (cmd.action == Action::kTurnCW) {
       for (auto& m : manipulators) {
-        m.x = m.y;
-        m.y = -m.x;
+        m = Point{m.y, -m.x};
       }
     } else {
       for (auto& m : manipulators) {
-        m.x = -m.y;
-        m.y = m.x;
+        m = Point{-m.y, m.x};
       }
     }
     moveAndPaint(pos);
