@@ -22,4 +22,3 @@ class Game {
 };
 
 std::ostream& operator<<(std::ostream&, const Game&);
-

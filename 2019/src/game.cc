@@ -102,7 +102,7 @@ Game::Game(const std::string& desc, const std::string& buy) {
   // Buy boosters
   for (char c : buy) {
     Booster b = charToBooster(c);
-    assert (isPortableBooster(b));
+    assert(isPortableBooster(b));
     ++num_boosters[static_cast<int>(b)];
   }
 

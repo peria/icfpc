@@ -6,7 +6,7 @@
 #include "solver.h"
 
 // https://tanakh.hatenablog.com/entry/20091028
-#include "cmdline.h"
+#include "third_party/cmdline/cmdline.h"
 
 std::string readFile(const std::string& filepath);
 
