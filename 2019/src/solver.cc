@@ -1,9 +1,11 @@
 #include "solver.h"
 
+#include <iostream>
+
 #include "game.h"
 
-Solver::Solver(const std::string& desc_file, const std::string& buy_file)
-  : game(desc_file, buy_file) {
+Solver::Solver(const std::string& desc, const std::string& buy)
+  : game(desc, buy) {
 }
 
 std::string Solver::solve() {

@@ -6,7 +6,7 @@
 
 class Game {
 public:
-  Game(const std::string& desc_file, const std::string& buy_file="");
+  Game(const std::string& desc, const std::string& buy="");
 
   Map map;
   // wrapper

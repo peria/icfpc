@@ -1,5 +1,5 @@
 CXX=clang++
-CXXFLAGS=-O2 -std=c++14 -W -Wall
+CXXFLAGS=-O2 -std=c++14 -W -Wall -Wno-sign-compare
 CXXFLAGS+=-I. -Ithird_party/tanakh
 
 LDFLAGS=
@@ -11,9 +11,9 @@ OBJS=$(SRCS:%.cc=$(BUILD_DIR)/%.o)
 
 .PHONY: all dirs clean
 
-all: dirs wrappers
+all: dirs solver
 
-wrappers: wrappers_main.cc $(OBJS)
+solver: solver_main.cc $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(BUILD_DIR)/%.o: %.cc %.h

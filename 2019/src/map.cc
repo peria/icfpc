@@ -1,35 +1,30 @@
 #include "map.h"
 
-#include <cassert>
-#include <string>
 #include <vector>
-#include <fstream>
-
-#include "booster.h"
-#include "desc_parser.h"
-#include "point.h"
 
 namespace {
 
-using Polygon = std::vector<Point>;
-using Polygons = std::vector<Polygon>;
+char cellToChar(int cell) {
+  if (cell & CellType::kObstacle)
+    return '#';
+  if (cell & CellType::kNonWrapped) {
+    return '.';
+  }
+  return ' ';
+}
 
 }  // namespace
 
-Map::Map(const std::string& desc_file) {
-  std::string desc;
-  {
-    std::ifstream ifs(desc_file);
-    ifs >> desc;
-  }
-  const char* p = desc.data();
-  Polygon map_polygon = parse<Polygon>(p);
-  assert (*p == '#');
-  Point init_point = parse<Point>(++p);
-  assert (*p == '#');
-  Polygons obstacles = parse<Polygons>(++p);
-  assert (*p == '#');
-  std::vector<BoosterPos> boosters = parse<std::vector<BoosterPos>>(++p);
+Map::Map(const int width, const int height, CellType value)
+  : kWidth(width), kHeight(height), data_(width * height, value) {}
 
-  // TODO: Reconstruct the map.
+std::ostream& operator<<(std::ostream& os, const Map& map) {
+  for (int y = map.kHeight - 1; y >= 0; --y) {
+    for (int x = 0; x < map.kWidth; ++x) {
+      os << cellToChar(map(x, y));
+    }
+    os << "\n";
+  }
+  return os;
 }
+

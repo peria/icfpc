@@ -1,4 +1,4 @@
 *.o
 *~
-wrappers
 third_party/
+solver

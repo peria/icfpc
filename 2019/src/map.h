@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <ostream>
 
 // Bit flags
 enum CellType {
@@ -13,7 +15,7 @@ enum CellType {
   kCloning = 1 << 5,
   kBeacon = 1 << 6,
   kResetBeacon = 1 << 7,  // Can't be taken
-  kObstacke = 1 << 8,
+  kObstacle = 1 << 8,
 
   // Takable boosters
   kBoosters = kManipulator | kFastWheel | kDrill | kCloning | kBeacon,
@@ -21,5 +23,18 @@ enum CellType {
 
 class Map {
 public:
-  Map(const std::string& desc_file);
+  using T = int;
+  Map() = default;
+  Map(const int width, const int height, CellType value = CellType::kObstacle);
+
+  T& operator()(int x, int y) { return data_[x * kHeight + y]; }
+  const T& operator()(int x, int y) const { return data_[x * kHeight + y]; }
+
+  int kWidth = 0;
+  int kHeight = 0;
+
+private:
+  std::vector<T> data_;
 };
+
+std::ostream& operator<<(std::ostream&, const Map&);

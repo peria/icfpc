@@ -2,6 +2,8 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <cstring>
+#include <iostream>
 #include <vector>
 
 #include "point.h"
@@ -36,9 +38,11 @@ Polygon parse(const char*& p) {
 template<>
 Polygons parse(const char*& p) {
   Polygons polygons;
-  polygons.emplace_back(parse<Polygon>(p));
-  while (*p == ';') {
-    polygons.emplace_back(parse<Polygon>(++p));
+  if (*p == '(') {
+    polygons.emplace_back(parse<Polygon>(p));
+    while (*p == ';') {
+      polygons.emplace_back(parse<Polygon>(++p));
+    }
   }
   return polygons;
 }
@@ -63,9 +67,11 @@ BoosterPos parse(const char*& p) {
 template<>
 std::vector<BoosterPos> parse(const char*& p) {
   std::vector<BoosterPos> booster_pos;
-  booster_pos.emplace_back(parse<BoosterPos>(p));
-  while (*p == ';') {
-    booster_pos.emplace_back(parse<BoosterPos>(++p));
+  if (*p && std::strchr("BFLXCR", *p)) {
+    booster_pos.emplace_back(parse<BoosterPos>(p));
+    while (*p == ';') {
+      booster_pos.emplace_back(parse<BoosterPos>(++p));
+    }
   }
   return booster_pos;
 }

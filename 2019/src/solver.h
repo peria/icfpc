@@ -6,7 +6,7 @@
 
 class Solver {
  public:
-  Solver(const std::string& desc_file, const std::string& buy_file);
+  Solver(const std::string& desc, const std::string& buy="");
 
   std::string solve();
 
