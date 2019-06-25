@@ -110,6 +110,27 @@ Game::Game(const std::string& desc, const std::string& buy) {
   wrappers.emplace_back(*this, init_point, 0, 0);
 }
 
+void Game::pickUpBooster(const Point& pos) {
+  if ((map(pos) & CellType::kBoosters) == 0)
+    return;
+  if (map(pos) & CellType::kManipulator) {
+    map(pos) &= ~CellType::kManipulator;
+    ++num_boosters[static_cast<int>(Booster::kManipulator)];
+  } else if (map(pos) & CellType::kFastWheel) {
+    map(pos) &= ~CellType::kFastWheel;
+    ++num_boosters[static_cast<int>(Booster::kFastWheel)];
+  } else if (map(pos) & CellType::kDrill) {
+    map(pos) &= ~CellType::kDrill;
+    ++num_boosters[static_cast<int>(Booster::kDrill)];
+  } else if (map(pos) & CellType::kCloning) {
+    map(pos) &= ~CellType::kCloning;
+    ++num_boosters[static_cast<int>(Booster::kCloning)];
+  } else if (map(pos) & CellType::kBeacon) {
+    map(pos) &= ~CellType::kBeacon;
+    ++num_boosters[static_cast<int>(Booster::kBeacon)];
+  }
+}
+
 std::ostream& operator<<(std::ostream& os, const Game& game) {
   const Map& map = game.map;
   std::string str(map.toString());

@@ -28,6 +28,10 @@ class Wrapper {
   const int birth_time;
 
  private:
+  // Process tasks that need to be done before actions.
   void beforeAction();
+  // Process tasks that need to be done after actions.
   void afterAction();
+  void moveAndPaint(const Point& p);
+  void useBoosterAction(Action a);
 };

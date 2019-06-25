@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cassert>
 #include <vector>
 #include <ostream>
 
@@ -16,10 +17,10 @@ enum CellType {
   kSpawn = 1 << 4,
   kCloning = 1 << 5,
   kBeacon = 1 << 6,
-  kResetBeacon = 1 << 7,  // Can't be taken
+  kSetBeacon = 1 << 7,  // Can't be taken
   kObstacle = 1 << 8,
 
-  // Takable boosters
+  // Portable boosters
   kBoosters = kManipulator | kFastWheel | kDrill | kCloning | kBeacon,
 };
 
@@ -37,6 +38,20 @@ class Map {
   }
   bool isInside(int x, int y) const {
     return 0 <= x && x < kWidth && 0 <= y && y < kHeight;
+  }
+  bool isInside(const Point& p) const { return isInside(p.x, p.y); }
+
+  // Wrap the point.
+  void wrap(const Point& p) {
+    assert(isInside(p));
+    int& c = (*this)(p);
+    if (c & CellType::kNonWrapped) {
+      c &= ~CellType::kNonWrapped;
+    }
+    // Drill breaks the obstacle.
+    if (c & CellType::kObstacle) {
+      c &= ~CellType::kObstacle;
+    }
   }
 
   std::string toString() const;

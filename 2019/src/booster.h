@@ -12,6 +12,7 @@ enum class Booster : uint8_t {
   kBeacon = 4,  // will be the target point of teleport.
   NumPortable = 5,
   kSpawn = 6,
+  kInvalid = 255,
 };
 
 bool isPortableBooster(const Booster& booster);

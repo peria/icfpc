@@ -1,6 +1,26 @@
 #include "action.h"
 
 #include <cassert>
+#include <iostream>
+
+Booster actionToBooster(Action a) {
+  switch (a) {
+  case Action::kAddManipulator:
+    return Booster::kManipulator;
+  case Action::kUseFastWheel:
+    return Booster::kFastWheel;
+  case Action::kUseDrill:
+    return Booster::kDrill;
+  case Action::kUseBeacon:
+    return Booster::kBeacon;
+  case Action::kUseCloning:
+    return Booster::kCloning;
+  default:
+    std::cerr << "Trying to use unknown booster in action: "
+              << static_cast<int>(a) << "\n";
+    return Booster::kInvalid;
+  }
+}
 
 ActionInfo::ActionInfo(Action a) : action(a) {}
 
@@ -25,8 +45,8 @@ UseBoosterInfo::UseBoosterInfo(Action a) : ActionInfo(a) {
 AddManipulatorInfo::AddManipulatorInfo(const Point& p)
     : UseBoosterInfo(Action::kAddManipulator), pos(p) {}
 
-TeleportInfo::TeleportInfo(const Point& p)
-    : ActionInfo(Action::kTeleport), pos(p) {}
+TeleportInfo::TeleportInfo(const Point& old_p, const Point& new_p)
+    : ActionInfo(Action::kTeleport), old_pos(old_p), new_pos(new_p) {}
 
 ActionCommand::ActionCommand(Action a) : action(a) {}
 

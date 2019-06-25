@@ -21,6 +21,8 @@ enum class Action : std::uint8_t {
   kTeleport,        // T(x,y)
 };
 
+Booster actionToBooster(Action a);
+
 struct ActionInfo {
   const Action action;
 
@@ -34,7 +36,7 @@ struct ActionInfo {
 
   // Downcast to delived structs.
   template <typename T>
-  T& As() const {
+  T& As() {
     return *dynamic_cast<T*>(this);
   }
   template <typename T>
@@ -72,9 +74,10 @@ struct AddManipulatorInfo final : public UseBoosterInfo {
 };
 
 struct TeleportInfo final : public ActionInfo {
-  TeleportInfo(const Point& p);
+  TeleportInfo(const Point& old_p, const Point& new_p);
   bool doesTeleport() const { return true; }
-  const Point pos;
+  const Point old_pos;
+  const Point new_pos;
 };
 
 struct ActionCommand {

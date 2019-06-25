@@ -15,6 +15,8 @@ class Game {
  public:
   Game(const std::string& desc, const std::string& buy = "");
 
+  void pickUpBooster(const Point& pos);
+
   Map map;
   std::vector<Wrapper> wrappers;
   Boosters num_boosters;

@@ -24,7 +24,7 @@ char cellToChar(int cell) {
     c = 'C';
   } else if (cell & CellType::kBeacon) {
     c = 'R';
-  } else if (cell & CellType::kResetBeacon) {
+  } else if (cell & CellType::kSetBeacon) {
     c = '+';
   }
   if (cell & CellType::kNonWrapped)
