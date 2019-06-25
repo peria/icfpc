@@ -107,7 +107,7 @@ Game::Game(const std::string& desc, const std::string& buy) {
   }
 
   // Wrapper
-  wrappers.emplace_back(init_point, 0);
+  wrappers.emplace_back(*this, init_point, 0, 0);
 }
 
 std::ostream& operator<<(std::ostream& os, const Game& game) {
