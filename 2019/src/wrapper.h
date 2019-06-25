@@ -1,6 +1,6 @@
 #pragma once
 
 class Wrapper {
-public:
+ public:
   Wrapper();
 };

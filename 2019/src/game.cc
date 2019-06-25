@@ -33,7 +33,7 @@ void fillPolygon(const Polygon& polygon, CellType value, Map& map) {
   }
   for (int x = 0; x < map.kWidth; ++x) {
     auto& xlines = vertical_lines[x];
-    assert (xlines.size() % 2 == 0);
+    assert(xlines.size() % 2 == 0);
     sort(xlines.begin(), xlines.end());
     for (int i = 0; i < xlines.size(); i += 2) {
       for (int y = xlines[i]; y < xlines[i + 1]; ++y) {
@@ -48,13 +48,14 @@ void fillPolygon(const Polygon& polygon, CellType value, Map& map) {
 Game::Game(const std::string& desc, const std::string& buy) {
   const char* ptr = desc.data();
   Polygon map_polygon = parse<Polygon>(ptr);
-  assert (*ptr == '#');
+  assert(*ptr == '#');
   Point init_point = parse<Point>(++ptr);
-  assert (*ptr == '#');
+  assert(*ptr == '#');
   Polygons obstacles = parse<Polygons>(++ptr);
-  assert (*ptr == '#');
+  assert(*ptr == '#');
   std::vector<BoosterPos> boosters = parse<std::vector<BoosterPos>>(++ptr);
 
+  // Map
   int height = 0;
   int width = 0;
   for (auto& p : map_polygon) {
@@ -66,4 +67,32 @@ Game::Game(const std::string& desc, const std::string& buy) {
   for (auto& obst : obstacles) {
     fillPolygon(obst, CellType::kObstacle, map);
   }
+  // Booster
+  for (auto& booster_pos : boosters) {
+    const Booster& b = booster_pos.booster;
+    const Point& pos = booster_pos.pos;
+    switch (b) {
+    case Booster::kManipulator:
+      map(pos) |= CellType::kManipulator;
+      break;
+    case Booster::kFastWheel:
+      map(pos) |= CellType::kFastWheel;
+      break;
+    case Booster::kDrill:
+      map(pos) |= CellType::kDrill;
+      break;
+    case Booster::kCloning:
+      map(pos) |= CellType::kCloning;
+      break;
+    case Booster::kBeacon:
+      map(pos) |= CellType::kBeacon;
+      break;
+    default:
+      std::cerr << "Unknown booster type: " << static_cast<int>(b) << "\n";
+      assert(false);
+    }
+    ++num_boosters[static_cast<int>(b)];
+  }
+
+  // Wrapper
 }

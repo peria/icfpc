@@ -4,6 +4,8 @@
 #include <vector>
 #include <ostream>
 
+#include "point.h"
+
 // Bit flags
 enum CellType {
   kNone = 0,
@@ -22,18 +24,22 @@ enum CellType {
 };
 
 class Map {
-public:
+ public:
   using T = int;
   Map() = default;
   Map(const int width, const int height, CellType value = CellType::kObstacle);
 
   T& operator()(int x, int y) { return data_[x * kHeight + y]; }
   const T& operator()(int x, int y) const { return data_[x * kHeight + y]; }
+  T& operator()(const Point& p) { return data_[p.x * kHeight + p.y]; }
+  const T& operator()(const Point& p) const {
+    return data_[p.x * kHeight + p.y];
+  }
 
   int kWidth = 0;
   int kHeight = 0;
 
-private:
+ private:
   std::vector<T> data_;
 };
 

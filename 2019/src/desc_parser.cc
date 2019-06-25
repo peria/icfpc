@@ -14,18 +14,18 @@ using Polygon = std::vector<Point>;
 using Polygons = std::vector<Polygon>;
 }  // namespace
 
-template<>
+template <>
 Point parse(const char*& p) {
-  assert (*p == '(');
+  assert(*p == '(');
   int x = std::strtol(++p, const_cast<char**>(&p), 10);
-  assert (*p == ',');
+  assert(*p == ',');
   int y = std::strtol(++p, const_cast<char**>(&p), 10);
-  assert (*p == ')');
+  assert(*p == ')');
   ++p;
   return {x, y};
 }
 
-template<>
+template <>
 Polygon parse(const char*& p) {
   Polygon polygon;
   polygon.emplace_back(parse<Point>(p));
@@ -35,7 +35,7 @@ Polygon parse(const char*& p) {
   return polygon;
 }
 
-template<>
+template <>
 Polygons parse(const char*& p) {
   Polygons polygons;
   if (*p == '(') {
@@ -47,16 +47,28 @@ Polygons parse(const char*& p) {
   return polygons;
 }
 
-template<>
+template <>
 BoosterPos parse(const char*& p) {
   Booster b;
   switch (*p) {
-  case 'B': b = Booster::kManipulator; break;
-  case 'F': b = Booster::kFastWheel; break;
-  case 'L': b = Booster::kDrill; break;
-  case 'X': b = Booster::kSpawn; break;
-  case 'C': b = Booster::kCloning; break;
-  case 'R': b = Booster::kBeacon; break;
+  case 'B':
+    b = Booster::kManipulator;
+    break;
+  case 'F':
+    b = Booster::kFastWheel;
+    break;
+  case 'L':
+    b = Booster::kDrill;
+    break;
+  case 'X':
+    b = Booster::kSpawn;
+    break;
+  case 'C':
+    b = Booster::kCloning;
+    break;
+  case 'R':
+    b = Booster::kBeacon;
+    break;
   default:
     assert(false);
   };
@@ -64,7 +76,7 @@ BoosterPos parse(const char*& p) {
   return {b, pos};
 }
 
-template<>
+template <>
 std::vector<BoosterPos> parse(const char*& p) {
   std::vector<BoosterPos> booster_pos;
   if (*p && std::strchr("BFLXCR", *p)) {

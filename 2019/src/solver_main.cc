@@ -16,15 +16,15 @@ int main(int argc, char* argv[]) {
   options.add<std::string>("desc", 'd', "Task file to solve. .desc", true);
   options.add<std::string>("sol", 's', "Solution file to output. .sol", true);
   // Optional
-  options.add<std::string>("buy", 'b', "Additional boosters to use in. .buy", false);
+  options.add<std::string>("buy", 'b', "Additional boosters to use in. .buy",
+                           false);
   options.add("help", 'h', "Print help");
 
   if (!options.parse(argc, argv) || options.exist("help")) {
-    std::cerr << options.error_full()
-              << options.usage();
+    std::cerr << options.error_full() << options.usage();
     return 0;
   }
-  
+
   std::string desc = readFile(options.get<std::string>("desc"));
   std::string buy;
   if (options.exist("buy")) {
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
   Solver solver(desc, buy);
   std::string commands = solver.solve();
-  
+
   std::ofstream ofs(options.get<std::string>("sol"));
   ofs << commands;
 

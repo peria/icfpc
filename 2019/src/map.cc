@@ -16,7 +16,7 @@ char cellToChar(int cell) {
 }  // namespace
 
 Map::Map(const int width, const int height, CellType value)
-  : kWidth(width), kHeight(height), data_(width * height, value) {}
+    : kWidth(width), kHeight(height), data_(width * height, value) {}
 
 std::ostream& operator<<(std::ostream& os, const Map& map) {
   for (int y = map.kHeight - 1; y >= 0; --y) {
@@ -27,4 +27,3 @@ std::ostream& operator<<(std::ostream& os, const Map& map) {
   }
   return os;
 }
-

@@ -1,4 +1,4 @@
 #pragma once
 
-template<typename T>
+template <typename T>
 T parse(const char*&);
