@@ -67,6 +67,7 @@ Game::Game(const std::string& desc, const std::string& buy) {
   for (auto& obst : obstacles) {
     fillPolygon(obst, CellType::kObstacle, map);
   }
+
   // Booster
   for (auto& booster_pos : boosters) {
     const Booster& b = booster_pos.booster;
@@ -87,12 +88,45 @@ Game::Game(const std::string& desc, const std::string& buy) {
     case Booster::kBeacon:
       map(pos) |= CellType::kBeacon;
       break;
+    case Booster::kSpawn:
+      map(pos) |= CellType::kSpawn;
+      break;
     default:
       std::cerr << "Unknown booster type: " << static_cast<int>(b) << "\n";
       assert(false);
     }
+    if (isPortableBooster(b)) {
+      ++num_boosters[static_cast<int>(b)];
+    }
+  }
+  // Buy boosters
+  for (char c : buy) {
+    Booster b = charToBooster(c);
+    assert (isPortableBooster(b));
     ++num_boosters[static_cast<int>(b)];
   }
 
   // Wrapper
+  wrappers.emplace_back(init_point, 0);
+}
+
+std::ostream& operator<<(std::ostream& os, const Game& game) {
+  const Map& map = game.map;
+  std::string str(map.toString());
+  for (auto& w : game.wrappers) {
+    int x = w.pos.x;
+    int y = w.pos.y;
+    int dy = map.kHeight - 1 - y;
+    str[dy * (map.kWidth + 1) + x] = '@';
+    for (auto& m : w.manipulators) {
+      int mx = x + m.x;
+      int my = y + m.y;
+      int dmy = map.kHeight - 1 - my;
+      if (map.isInside(mx, my) && str[dmy * (map.kWidth + 1) + mx] != '#') {
+        str[dmy * (map.kWidth + 1) + mx] = 'o';
+      }
+    }
+  }
+  os << str;
+  return os;
 }

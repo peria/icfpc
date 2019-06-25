@@ -6,7 +6,7 @@ LDFLAGS=
 
 BUILD_DIR=build
 
-SRCS=booster.cc game.cc map.cc point.cc solver.cc desc_parser.cc
+SRCS=booster.cc game.cc map.cc point.cc solver.cc desc_parser.cc wrapper.cc
 OBJS=$(SRCS:%.cc=$(BUILD_DIR)/%.o)
 
 .PHONY: all dirs clean

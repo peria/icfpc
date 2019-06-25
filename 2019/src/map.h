@@ -35,6 +35,9 @@ class Map {
   const T& operator()(const Point& p) const {
     return data_[p.x * kHeight + p.y];
   }
+  bool isInside(int x, int y) const { return 0 <= x && x < kWidth && 0 <= y && y < kHeight; }
+
+  std::string toString() const;
 
   int kWidth = 0;
   int kHeight = 0;

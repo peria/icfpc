@@ -14,6 +14,9 @@ enum class Booster : uint8_t {
   kSpawn = 6,
 };
 
+bool isPortableBooster(const Booster& booster);
+Booster charToBooster(const char c);
+
 struct BoosterPos {
   Booster booster;
   Point pos;
