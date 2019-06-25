@@ -27,7 +27,7 @@ Wrappy を使いつつ、もう 1 つ別のパズルを解いて block-chain も
 |   block 0       |    block 1        |      block 2      |   ...
 | 出題   | 提出    |   出題    |  提出 |   出題    |  提出  |   ...
 |-----------------|-------------------|-------------------|-------
-| puzzle => task -+   puzzle => task -+   puzzle => task -+   puzzle
-| task   => sol   +-> task   => sol   +-> task   => sol   +-> task
+| puzzle => task-\    puzzle => task-\    puzzle => task-\    puzzle
+| task   => sol   \-> task   => sol   \-> task   => sol   \-> task
 ```
 
