@@ -27,7 +27,7 @@ class Game {
 
   // Runs every wrappers in time line. (=valid mode)
   // TODO: Implement
-  void runFromInit(GameInitializer&);
+  void replayFromInit(GameInitializer&);
 
   Map map;
   std::vector<Wrapper> wrappers;

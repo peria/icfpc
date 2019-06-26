@@ -22,7 +22,7 @@ void Wrapper::takeAction(const ActionCommand& cmd) {
 
   switch (cmd.action) {
   case Action::kDoNothing:
-    action_history.emplace_back(new NopInfo());
+    last_action.reset(new NopInfo());
     break;
   case Action::kMoveUp:
   case Action::kMoveDown:
@@ -31,7 +31,7 @@ void Wrapper::takeAction(const ActionCommand& cmd) {
     bool is_fast_wheel_active = (time_fast_wheel > 0);
     bool is_drill_active = (time_drill > 0);
     Map& map = game.map;
-    action_history.emplace_back(
+    last_action.reset(
         new MoveInfo(cmd.action, is_fast_wheel_active, is_drill_active));
     int id = static_cast<int>(cmd.action) - static_cast<int>(Action::kMoveUp);
     static constexpr Point dp[] = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
@@ -51,7 +51,7 @@ void Wrapper::takeAction(const ActionCommand& cmd) {
   }
   case Action::kTurnCW:
   case Action::kTurnCCW:
-    action_history.emplace_back(new TurnInfo(cmd.action));
+    last_action.reset(new TurnInfo(cmd.action));
     if (cmd.action == Action::kTurnCW) {
       for (auto& m : manipulators) {
         m = Point{m.y, -m.x};
@@ -67,7 +67,7 @@ void Wrapper::takeAction(const ActionCommand& cmd) {
   case Action::kUseDrill:
   case Action::kUseBeacon:
   case Action::kUseCloning: {
-    action_history.emplace_back(new UseBoosterInfo(cmd.action));
+    last_action.reset(new UseBoosterInfo(cmd.action));
     int booster_id = static_cast<int>(actionToBooster(cmd.action));
     assert(game.num_boosters[booster_id]);
     --game.num_boosters[booster_id];
@@ -80,7 +80,7 @@ void Wrapper::takeAction(const ActionCommand& cmd) {
     assert(find(manipulators.begin(), manipulators.end(), p) ==
            manipulators.end());
 
-    action_history.emplace_back(new AddManipulatorInfo(p));
+    last_action.reset(new AddManipulatorInfo(p));
     int manip_id = static_cast<int>(Booster::kManipulator);
     assert(game.num_boosters[manip_id]);
     --game.num_boosters[manip_id];
@@ -100,7 +100,7 @@ void Wrapper::takeAction(const ActionCommand& cmd) {
   case Action::kTeleport:
     const Point& p = cmd.As<ActionCommandWithPos>().pos;
     assert(game.map(p) & CellType::kSetBeacon);
-    action_history.emplace_back(new TeleportInfo(pos, p));
+    last_action.reset(new TeleportInfo(pos, p));
     pos = p;
     break;
   }
@@ -110,22 +110,21 @@ void Wrapper::takeAction(const ActionCommand& cmd) {
 
 void Wrapper::beforeAction() {
   // Pick up items based on the last action.
-  if (action_history.size() == 0)
+  if (!last_action)
     return;
 
-  const auto& last_action = *action_history.back();
-  if (last_action.doesMove() || last_action.doesTeleport()) {
+  if (last_action->doesMove() || last_action->doesTeleport()) {
     game.pickUpBooster(pos);
   }
-  if (last_action.doesMove() &&
-      last_action.As<MoveInfo>().is_fast_wheel_active) {
-    if (last_action.action == Action::kMoveUp) {
+  if (last_action->doesMove() &&
+      last_action->As<MoveInfo>().is_fast_wheel_active) {
+    if (last_action->action == Action::kMoveUp) {
       game.pickUpBooster(pos + Point{0, -1});
-    } else if (last_action.action == Action::kMoveDown) {
+    } else if (last_action->action == Action::kMoveDown) {
       game.pickUpBooster(pos + Point{0, 1});
-    } else if (last_action.action == Action::kMoveLeft) {
+    } else if (last_action->action == Action::kMoveLeft) {
       game.pickUpBooster(pos + Point{1, 0});
-    } else if (last_action.action == Action::kMoveRight) {
+    } else if (last_action->action == Action::kMoveRight) {
       game.pickUpBooster(pos + Point{-1, 0});
     }
   }

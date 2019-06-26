@@ -13,12 +13,13 @@ class Wrapper {
   Wrapper(Game& game, const Point& p, int index, int birth_time);
 
   void takeAction(const ActionCommand& cmd);
+  void replayHistory(const ActionCommand& cmd);
 
   Game& game;
   Point pos;
   // Relative position of manipulators from the wrapper.
   std::vector<Point> manipulators;
-  std::vector<std::unique_ptr<ActionInfo>> action_history;
+  std::unique_ptr<ActionInfo> last_action;
 
   // Remained time durations for some boosters.
   int time_fast_wheel = 0;
@@ -28,6 +29,8 @@ class Wrapper {
   const int birth_time;
 
  private:
+  // Process actual action
+  void doAction(const ActionCommand& cmd);
   // Process tasks that need to be done before actions.
   void beforeAction();
   // Process tasks that need to be done after actions.
