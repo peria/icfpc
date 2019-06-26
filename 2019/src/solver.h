@@ -6,9 +6,10 @@
 
 class Solver {
  public:
-  Solver(const std::string& desc, const std::string& buy = "");
+  Solver(Game& game);
 
   std::string solve();
 
-  Game game;
+ private:
+  Game& game_;
 };

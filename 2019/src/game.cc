@@ -45,11 +45,12 @@ void fillPolygon(const Polygon& polygon, CellType value, Map& map) {
 
 }  // namespace
 
-Game::Game(const std::string& desc, const std::string& buy) {
+GameInitializer::GameInitializer(const std::string& desc,
+                                 const std::string& buy) {
   const char* ptr = desc.data();
   Polygon map_polygon = parse<Polygon>(ptr);
   assert(*ptr == '#');
-  Point init_point = parse<Point>(++ptr);
+  wrapper_initial_pos = parse<Point>(++ptr);
   assert(*ptr == '#');
   Polygons obstacles = parse<Polygons>(++ptr);
   assert(*ptr == '#');
@@ -68,7 +69,7 @@ Game::Game(const std::string& desc, const std::string& buy) {
     fillPolygon(obst, CellType::kObstacle, map);
   }
 
-  // Booster
+  // Booster (Count and put in map)
   for (auto& booster_pos : boosters) {
     const Booster& b = booster_pos.booster;
     const Point& pos = booster_pos.pos;
@@ -99,15 +100,17 @@ Game::Game(const std::string& desc, const std::string& buy) {
       ++num_boosters[static_cast<int>(b)];
     }
   }
-  // Buy boosters
+  // Additional boosters
   for (char c : buy) {
     Booster b = charToBooster(c);
     assert(isPortableBooster(b));
     ++num_boosters[static_cast<int>(b)];
   }
+}
 
-  // Wrapper
-  wrappers.emplace_back(*this, init_point, 0, 0);
+Game::Game(const GameInitializer& initializer)
+    : map(initializer.map), num_boosters(initializer.num_boosters) {
+  wrappers.emplace_back(*this, initializer.wrapper_initial_pos, 0, 0);
 }
 
 void Game::pickUpBooster(const Point& pos) {

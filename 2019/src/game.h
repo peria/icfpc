@@ -9,14 +9,19 @@
 #include "map.h"
 #include "wrapper.h"
 
-// TODO: Construct Game with this class.
-class GameInitializer;
+struct GameInitializer {
+  GameInitializer(const std::string& desc, const std::string& buy = "");
+
+  Map map;
+  Point wrapper_initial_pos;
+  std::array<int, static_cast<int>(Booster::NumPortable)> num_boosters;
+};
 
 class Game {
   using Boosters = std::array<int, static_cast<int>(Booster::NumPortable)>;
 
  public:
-  Game(const std::string& desc, const std::string& buy = "");
+  Game(const GameInitializer& initializer);
 
   void pickUpBooster(const Point& pos);
 

@@ -31,7 +31,9 @@ int main(int argc, char* argv[]) {
     buy = readFile(options.get<std::string>("buy"));
   }
 
-  Solver solver(desc, buy);
+  GameInitializer initializer(desc, buy);
+  Game game(initializer);
+  Solver solver(game);
   std::string commands = solver.solve();
 
   std::ofstream ofs(options.get<std::string>("sol"));
