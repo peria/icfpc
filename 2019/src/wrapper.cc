@@ -17,7 +17,36 @@ Wrapper::Wrapper(Game& g, const Point& p, int id, int birth)
   moveAndPaint(pos);
 }
 
-void Wrapper::takeAction(const ActionCommand& cmd) {
+void Wrapper::takeAction(const ActionCommand* cmd) {
+  history.emplace_back(cmd);
+  doAction(*cmd);
+}
+
+bool Wrapper::replayAction(int time) {
+  if (time < birth_time)
+    return true;
+
+  int time_old = time - birth_time;
+  if (time_old >= history.size())
+    return false;
+
+  doAction(*history[time_old]);
+  return true;
+}
+
+void Wrapper::reset(const Point& init_pos) {
+  pos = init_pos;
+  manipulators.clear();
+  manipulators.emplace_back(Point{1, 1});
+  manipulators.emplace_back(Point{1, 0});
+  manipulators.emplace_back(Point{1, -1});
+  moveAndPaint(pos);
+  last_action.reset();
+  time_fast_wheel = 0;
+  time_drill = 0;
+}
+
+void Wrapper::doAction(const ActionCommand& cmd) {
   beforeAction();
 
   switch (cmd.action) {

@@ -12,13 +12,19 @@ class Wrapper {
  public:
   Wrapper(Game& game, const Point& p, int index, int birth_time);
 
-  void takeAction(const ActionCommand& cmd);
-  void replayHistory(const ActionCommand& cmd);
+  void takeAction(const ActionCommand* cmd);
+  // Returns false if |time| needs access of unknown history.
+  bool replayAction(int time);
+
+  // Initializes everything other than history.
+  void reset(const Point& init_pos);
 
   Game& game;
   Point pos;
+
   // Relative position of manipulators from the wrapper.
   std::vector<Point> manipulators;
+  std::vector<std::unique_ptr<const ActionCommand>> history;
   std::unique_ptr<ActionInfo> last_action;
 
   // Remained time durations for some boosters.
@@ -26,7 +32,6 @@ class Wrapper {
   int time_drill = 0;
 
   const int index;
-  const int birth_time;
 
  private:
   // Process actual action
@@ -37,4 +42,6 @@ class Wrapper {
   void afterAction();
   void moveAndPaint(const Point& p);
   void useBoosterAction(Action a);
+
+  const int birth_time;
 };

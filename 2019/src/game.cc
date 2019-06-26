@@ -50,7 +50,7 @@ GameInitializer::GameInitializer(const std::string& desc,
   const char* ptr = desc.data();
   Polygon map_polygon = parse<Polygon>(ptr);
   assert(*ptr == '#');
-  wrapper_initial_pos = parse<Point>(++ptr);
+  wrapper_pos = parse<Point>(++ptr);
   assert(*ptr == '#');
   Polygons obstacles = parse<Polygons>(++ptr);
   assert(*ptr == '#');
@@ -110,7 +110,7 @@ GameInitializer::GameInitializer(const std::string& desc,
 
 Game::Game(const GameInitializer& initializer)
     : map(initializer.map), num_boosters(initializer.num_boosters) {
-  wrappers.emplace_back(*this, initializer.wrapper_initial_pos, 0, 0);
+  wrappers.emplace_back(*this, initializer.wrapper_pos, 0, 0);
 }
 
 void Game::pickUpBooster(const Point& pos) {
@@ -131,6 +131,23 @@ void Game::pickUpBooster(const Point& pos) {
   } else if (map(pos) & CellType::kBeacon) {
     map(pos) &= ~CellType::kBeacon;
     ++num_boosters[static_cast<int>(Booster::kBeacon)];
+  }
+}
+
+void Game::replayFromInit(GameInitializer& initializer) {
+  // Reset to the initial state.
+  map = initializer.map;
+  wrappers[0].reset(initializer.wrapper_pos);
+  for (int i = 0; i < num_boosters.size(); ++i)
+    num_boosters[i] = initializer.num_boosters[i];
+  time = 0;
+
+  // Run wrappers.
+  for (bool valid = true; valid;) {
+    for (auto& w : wrappers) {
+      valid = valid && w.replayAction(time);
+    }
+    ++time;
   }
 }
 

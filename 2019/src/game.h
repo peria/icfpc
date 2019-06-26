@@ -13,7 +13,7 @@ struct GameInitializer {
   GameInitializer(const std::string& desc, const std::string& buy = "");
 
   Map map;
-  Point wrapper_initial_pos;
+  Point wrapper_pos;
   std::array<int, static_cast<int>(Booster::NumPortable)> num_boosters;
 };
 
@@ -26,7 +26,6 @@ class Game {
   void pickUpBooster(const Point& pos);
 
   // Runs every wrappers in time line. (=valid mode)
-  // TODO: Implement
   void replayFromInit(GameInitializer&);
 
   Map map;

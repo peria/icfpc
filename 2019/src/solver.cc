@@ -20,7 +20,7 @@ std::string Solver::solve() {
     ActionCommand a = parse<ActionCommand>(p);
     std::cout << game_ << "\n";
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    w.takeAction(ActionCommand(a));
+    w.takeAction(new ActionCommand(a));
   }
   std::cout << game_ << "\n";
 
