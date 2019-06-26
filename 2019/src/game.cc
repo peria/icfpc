@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "booster.h"
-#include "desc_parser.h"
 #include "map.h"
+#include "parser.h"
 #include "point.h"
 
 namespace {

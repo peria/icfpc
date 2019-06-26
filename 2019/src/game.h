@@ -9,6 +9,9 @@
 #include "map.h"
 #include "wrapper.h"
 
+// TODO: Construct Game with this class.
+class GameInitializer;
+
 class Game {
   using Boosters = std::array<int, static_cast<int>(Booster::NumPortable)>;
 
@@ -16,6 +19,10 @@ class Game {
   Game(const std::string& desc, const std::string& buy = "");
 
   void pickUpBooster(const Point& pos);
+
+  // Runs every wrappers in time line. (=valid mode)
+  // TODO: Implement
+  void runFromInit(GameInitializer&);
 
   Map map;
   std::vector<Wrapper> wrappers;
