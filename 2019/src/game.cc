@@ -69,7 +69,7 @@ GameInitializer::GameInitializer(const std::string& desc,
     fillPolygon(obst, CellType::kObstacle, map);
   }
 
-  // Booster (Count and put in map)
+  // Booster
   for (auto& booster_pos : boosters) {
     const Booster& b = booster_pos.booster;
     const Point& pos = booster_pos.pos;
@@ -96,9 +96,9 @@ GameInitializer::GameInitializer(const std::string& desc,
       std::cerr << "Unknown booster type: " << static_cast<int>(b) << "\n";
       assert(false);
     }
-    if (isPortableBooster(b)) {
-      ++num_boosters[static_cast<int>(b)];
-    }
+  }
+  for (int i = 0; i < static_cast<int>(Booster::NumPortable); ++i) {
+    num_boosters[i] = 0;
   }
   // Additional boosters
   for (char c : buy) {
@@ -111,6 +111,9 @@ GameInitializer::GameInitializer(const std::string& desc,
 Game::Game(const GameInitializer& initializer)
     : map(initializer.map), num_boosters(initializer.num_boosters) {
   wrappers.emplace_back(*this, initializer.wrapper_pos, 0, 0);
+  for (int i = 0; i < static_cast<int>(Booster::NumPortable); ++i) {
+    num_boosters[i] = initializer.num_boosters[i];
+  }
 }
 
 void Game::pickUpBooster(const Point& pos) {
@@ -138,8 +141,9 @@ void Game::replayFromInit(GameInitializer& initializer) {
   // Reset to the initial state.
   map = initializer.map;
   wrappers[0].reset(initializer.wrapper_pos);
-  for (int i = 0; i < num_boosters.size(); ++i)
+  for (int i = 0; i < num_boosters.size(); ++i) {
     num_boosters[i] = initializer.num_boosters[i];
+  }
   time = 0;
 
   // Run wrappers.
@@ -168,6 +172,17 @@ std::ostream& operator<<(std::ostream& os, const Game& game) {
       }
     }
   }
-  os << str;
+
+  int t = game.time;
+  for (auto& w : game.wrappers) {
+    t = std::max(t, w.getTime());
+  }
+
+  os << "Time: " << t << "\n" << str << "Boosters:";
+  for (int i = 0; i < static_cast<int>(Booster::NumPortable); ++i) {
+    os << " " << ("BFLCR"[i]) << "(" << game.num_boosters[i] << ")";
+  }
+  os << "\n";
+
   return os;
 }

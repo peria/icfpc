@@ -16,8 +16,10 @@ int main(int argc, char* argv[]) {
   options.add<std::string>("desc", 'd', "Task file to solve. .desc", true);
   options.add<std::string>("sol", 's', "Solution file to output. .sol", true);
   // Optional
-  options.add<std::string>("buy", 'b', "Additional boosters to use in. .buy",
+  options.add<std::string>("buy", 'b', "Additional boosters to use. .buy",
                            false);
+  options.add<std::string>(
+      "buy-str", 0, "Additional boosters to use, in string directory.", false);
   options.add("help", 'h', "Print help");
 
   if (!options.parse(argc, argv) || options.exist("help")) {
@@ -29,6 +31,8 @@ int main(int argc, char* argv[]) {
   std::string buy;
   if (options.exist("buy")) {
     buy = readFile(options.get<std::string>("buy"));
+  } else if (options.exist("buy-str")) {
+    buy = options.get<std::string>("buy-str");
   }
 
   GameInitializer initializer(desc, buy);

@@ -18,11 +18,11 @@ std::string Solver::solve() {
       "ASSWWWDWWWDSSSFDWWWDSSSSEQDWWWDSSSSDSAQDSSSESSSSS");
   for (const char* p = commands.data(); *p;) {
     ActionCommand a = parse<ActionCommand>(p);
-    std::cout << game_ << "\n";
+    std::cout << "\x1b[2J\x1b[1;1H"  // CLS, LOCATE(1,1)
+              << game_ << "\n";
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     w.takeAction(new ActionCommand(a));
   }
-  std::cout << game_ << "\n";
 
   return "";
 }
