@@ -24,6 +24,8 @@ class Wrapper {
 
   int getTime() const { return birth_time + history.size(); }
 
+  std::string getCommand() const;
+
   // Relative position of manipulators from the wrapper.
   std::vector<Point> manipulators;
   std::vector<std::unique_ptr<const ActionCommand>> history;

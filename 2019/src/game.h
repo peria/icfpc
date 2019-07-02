@@ -28,6 +28,8 @@ class Game {
   // Runs every wrappers in time line. (=valid mode)
   void replayFromInit(GameInitializer&);
 
+  std::string getCommand() const;
+
   Map map;
   std::vector<Wrapper> wrappers;
   Boosters num_boosters;

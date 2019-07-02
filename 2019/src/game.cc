@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -153,6 +154,18 @@ void Game::replayFromInit(GameInitializer& initializer) {
     }
     ++time;
   }
+}
+
+std::string Game::getCommand() const {
+  std::ostringstream command;
+  bool first = true;
+  for (auto& w : wrappers) {
+    if (!first)
+      command << '#';
+    command << w.getCommand();
+    first = false;
+  }
+  return command.str();
 }
 
 std::ostream& operator<<(std::ostream& os, const Game& game) {

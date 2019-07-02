@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <sstream>
 #include <iostream>
 
 #include "action.h"
@@ -44,6 +45,59 @@ void Wrapper::reset(const Point& init_pos) {
   last_action.reset();
   time_fast_wheel = 0;
   time_drill = 0;
+}
+
+std::string Wrapper::getCommand() const {
+  std::ostringstream command;
+  for (auto& p : history) {
+    const auto& action = *p;
+    switch (action.action) {
+    case Action::kMoveUp:
+      command << 'W';
+      break;
+    case Action::kMoveDown:
+      command << 'S';
+      break;
+    case Action::kMoveLeft:
+      command << 'A';
+      break;
+    case Action::kMoveRight:
+      command << 'D';
+      break;
+    case Action::kDoNothing:
+      command << 'Z';
+      break;
+    case Action::kTurnCW:
+      command << 'E';
+      break;
+    case Action::kTurnCCW:
+      command << 'Q';
+      break;
+    case Action::kAddManipulator:
+      command << 'B';
+      break;
+    case Action::kUseFastWheel:
+      command << 'F';
+      break;
+    case Action::kUseDrill:
+      command << 'L';
+      break;
+    case Action::kUseBeacon:
+      command << 'R';
+      break;
+    case Action::kUseCloning:
+      command << 'C';
+      break;
+    case Action::kTeleport:
+      command << 'T';
+      break;
+    }
+    if (action.doesNeedPos()) {
+      auto& pos = action.As<ActionCommandWithPos>().pos;
+      command << '(' << pos.x << ',' << pos.y << ')';
+    }
+  }
+  return command.str();
 }
 
 void Wrapper::doAction(const ActionCommand& cmd) {
