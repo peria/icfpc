@@ -3,7 +3,7 @@
 # 問題セットアップ
 ## desc ファイルのパース
 
-[9cc](https://www.sigbus.info/compilerbook) の入り口の所だけ読んだのを何となく思い出しつつ、tokenizer と parser とをゴッチャにした形で実装。ただし地図データは Polygon (`vector<Point>') で出力される。
+[9cc](https://www.sigbus.info/compilerbook) の入り口の所だけ読んだのを何となく思い出しつつ、tokenizer と parser とをゴッチャにした形で実装。ただし地図データは Polygon (`vector<Point>`) で出力される。
 
 ## Polygon to grid
 
