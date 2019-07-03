@@ -21,4 +21,4 @@ Wrapper が居る所や Booster がある所という情報とともに wrap 済
 
 # 解法
 
-TBD
+- [初期実装](https://github.com/peria/icfpc/commit/77ec857d52bddab30ce9f48d70972ebcbec358e5): とりあえず最近傍の non wrapped な場所を探し、そこまでのルートを作る。ルートができてる間はそれに従って移動していくのでブレることもない。計算速度は爆速。
