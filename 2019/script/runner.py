@@ -82,9 +82,10 @@ def main():
     results = [future.result() for future in concurrent.futures.as_completed(futures)]
     results.sort(key=lambda x: x[0])
 
-    # |total| doesn't make sense to evaluate totally, but can be a metric.
+    # |total| doesn't make sense to evaluate precisely, but can be a metric.
     total = sum(r[1] for r in results)
     print('Total: {:7d}'.format(total))
+
 
 if __name__ == '__main__':
     main()
