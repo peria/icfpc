@@ -2,6 +2,7 @@
 
 import argparse
 import concurrent
+import concurrent.futures
 import os
 import subprocess
 import sys
@@ -18,8 +19,8 @@ INFINITY = 1e+9
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Runs a solver for all desc files.')
-    parser.add_argument('solver', help='binary to run',
-                        type=str)
+    parser.add_argument('solver', help='binary to run', type=str)
+    parser.add_argument('--name', help='name of the solver', type=str)
     parser.add_argument('--desc-dir',
                         help='path to the directory that contains .desc files',
                         default=_DEFAULT_DESC_DIR)
@@ -31,9 +32,11 @@ def parse_arguments():
                         help='path to a JSON file that contains all solvers\' results') 
 
     args = parser.parse_args()
+
+    if args.name is None:
+        args.name = os.path.basename(args.solver)
     if args.sol_dir is None:
-        solver_name = os.path.basename(args.solver)
-        args.sol_dir = os.path.join(_DEFAULT_SOL_BASE_DIR, solver_name)
+        args.sol_dir = os.path.join(_DEFAULT_SOL_BASE_DIR, args.name)
 
     return args
 
@@ -67,7 +70,7 @@ def run_solver(x, args):
     end_time = time.time()
 
     # In this game, smaller is better
-    score = eval_solution(sol_file)
+    score = int(eval_solution(sol_file))
     print('{} {:5d} {:.2f}sec'.format(problem_id, score, end_time - start_time))
     return (problem_id, score)
 
