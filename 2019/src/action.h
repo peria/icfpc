@@ -27,6 +27,7 @@ struct ActionInfo {
   const Action action;
 
   ActionInfo(Action a);
+  virtual ~ActionInfo() = default;
 
   virtual bool doesMove() const { return false; }
   virtual bool doesNothing() const { return false; }
@@ -84,6 +85,7 @@ struct ActionCommand {
   const Action action;
 
   ActionCommand(Action a);
+  virtual ~ActionCommand() = default;
 
   virtual bool doesNeedPos() const { return false; }
 
