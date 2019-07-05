@@ -3,6 +3,7 @@
 import argparse
 import concurrent
 import concurrent.futures
+import json
 import os
 import subprocess
 import sys
@@ -83,11 +84,19 @@ def main():
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
         futures = [executor.submit(run_solver, i, args) for i in range(1, 301)]
     results = [future.result() for future in concurrent.futures.as_completed(futures)]
+    # sort by problem name
     results.sort(key=lambda x: x[0])
 
-    # |total| doesn't make sense to evaluate precisely, but can be a metric.
-    total = sum(r[1] for r in results)
-    print('Total: {:7d}'.format(total))
+    if args.json:
+        try:
+            with open(args.json, 'r') as f:
+                db = json.load(f)
+        except:
+            db = dict()
+            
+        db[args.name] = [x[1] for x in results]
+        with open(args.json, 'w') as f:
+            json.dump(db, f)
 
 
 if __name__ == '__main__':
