@@ -1,6 +1,7 @@
 CXX=clang++
 CXXFLAGS=-std=c++14 -W -Wall -Wno-sign-compare
 CXXFLAGS+=-O2 -march=native
+#CXXFLAGS+=-O0 -g
 CXXFLAGS+=-I.
 
 LDFLAGS=
