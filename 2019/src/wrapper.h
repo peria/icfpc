@@ -10,6 +10,13 @@ class Game;
 
 class Wrapper {
  public:
+  enum class Direction : uint8_t {
+    kRight = 0,
+    kUp = 1,
+    kLeft = 2,
+    kDown = 3,
+  };
+
   Wrapper(Game& game, const Point& p, int index, int birth_time);
 
   void takeAction(const ActionCommand* cmd);
@@ -28,6 +35,7 @@ class Wrapper {
 
   // Relative position of manipulators from the wrapper.
   std::vector<Point> manipulators;
+  Direction direction = Direction::kRight;
   std::vector<std::unique_ptr<const ActionCommand>> history;
   std::unique_ptr<ActionInfo> last_action;
 

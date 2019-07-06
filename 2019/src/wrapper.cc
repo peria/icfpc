@@ -139,10 +139,12 @@ void Wrapper::doAction(const ActionCommand& cmd) {
       for (auto& m : manipulators) {
         m = Point{m.y, -m.x};
       }
+      direction = static_cast<Direction>((static_cast<int>(direction) + 3) % 4);
     } else {
       for (auto& m : manipulators) {
         m = Point{-m.y, m.x};
       }
+      direction = static_cast<Direction>((static_cast<int>(direction) + 1) % 4);
     }
     moveAndPaint(pos);
     break;
