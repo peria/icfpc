@@ -36,6 +36,16 @@ class Map {
   const T& operator()(const Point& p) const {
     return data_[p.x * kHeight + p.y];
   }
+
+  T get(int x, int y) const {
+    if (!isInside(x, y)) return CellType::kObstacle;
+    return operator()(x, y);
+  }
+  T get(const Point& p) const {
+    if (!isInside(p)) return CellType::kObstacle;
+    return operator()(p);
+  }
+
   bool isInside(int x, int y) const {
     return 0 <= x && x < kWidth && 0 <= y && y < kHeight;
   }
