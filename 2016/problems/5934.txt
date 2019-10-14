@@ -1,19 +1,11 @@
-
-    <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-    <html>
-        <head>
-            <title>Error: 429 Too Many Requests</title>
-            <style type="text/css">
-              html {background-color: #eee; font-family: sans;}
-              body {background-color: #fff; border: 1px solid #ddd;
-                    padding: 15px; margin: 15px;}
-              pre {background-color: #eee; border: 1px solid #ddd; padding: 5px;}
-            </style>
-        </head>
-        <body>
-            <h1>Error: 429 Too Many Requests</h1>
-            <p>Sorry, the requested URL <tt>&#039;http://2016sv.icfpcontest.org/api/blob/1ea37a359555b79998fba24e3c070ea5e3d7be15&#039;</tt>
-               caused an error:</p>
-            <pre>Rate limit exceeded (per-second limit).</pre>
-        </body>
-    </html>
+1
+4
+2028732617/33213848127,-14104935/299223857
+35078719769/33213848127,15581160/299223857
+31783563224/33213848127,313328792/299223857
+-1266423928/33213848127,283642697/299223857
+4
+2028732617/33213848127,-14104935/299223857 35078719769/33213848127,15581160/299223857
+2028732617/33213848127,-14104935/299223857 -1266423928/33213848127,283642697/299223857
+35078719769/33213848127,15581160/299223857 31783563224/33213848127,313328792/299223857
+-1266423928/33213848127,283642697/299223857 31783563224/33213848127,313328792/299223857

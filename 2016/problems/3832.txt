@@ -1,19 +1,27 @@
-
-    <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-    <html>
-        <head>
-            <title>Error: 429 Too Many Requests</title>
-            <style type="text/css">
-              html {background-color: #eee; font-family: sans;}
-              body {background-color: #fff; border: 1px solid #ddd;
-                    padding: 15px; margin: 15px;}
-              pre {background-color: #eee; border: 1px solid #ddd; padding: 5px;}
-            </style>
-        </head>
-        <body>
-            <h1>Error: 429 Too Many Requests</h1>
-            <p>Sorry, the requested URL <tt>&#039;http://2016sv.icfpcontest.org/api/blob/05a9ade9c00396f9cd04873b8bb0b294cdc9eb30&#039;</tt>
-               caused an error:</p>
-            <pre>Rate limit exceeded (per-hour limit).</pre>
-        </body>
-    </html>
+1
+12
+-377/1010,168/505
+-209/1010,1049/2020
+-41/2020,713/2020
+168/505,377/1010
+59/404,109/202
+631/2020,1467/2020
+59/202,109/101
+127/1010,1803/2020
+-123/2020,2139/2020
+-209/505,1049/1010
+-459/2020,881/1010
+-159/404,277/404
+12
+-377/1010,168/505 -159/404,277/404
+-41/2020,713/2020 -123/2020,2139/2020
+631/2020,1467/2020 59/202,109/101
+-41/2020,713/2020 631/2020,1467/2020
+-41/2020,713/2020 -159/404,277/404
+-377/1010,168/505 59/202,109/101
+-41/2020,713/2020 168/505,377/1010
+168/505,377/1010 -209/505,1049/1010
+-159/404,277/404 -123/2020,2139/2020
+631/2020,1467/2020 -123/2020,2139/2020
+-159/404,277/404 631/2020,1467/2020
+-209/505,1049/1010 -123/2020,2139/2020

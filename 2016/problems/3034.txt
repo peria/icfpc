@@ -1,19 +1,34 @@
-
-    <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-    <html>
-        <head>
-            <title>Error: 429 Too Many Requests</title>
-            <style type="text/css">
-              html {background-color: #eee; font-family: sans;}
-              body {background-color: #fff; border: 1px solid #ddd;
-                    padding: 15px; margin: 15px;}
-              pre {background-color: #eee; border: 1px solid #ddd; padding: 5px;}
-            </style>
-        </head>
-        <body>
-            <h1>Error: 429 Too Many Requests</h1>
-            <p>Sorry, the requested URL <tt>&#039;http://2016sv.icfpcontest.org/api/blob/945f3dcdd90ea964b786da3dadcadbbd3e00ab39&#039;</tt>
-               caused an error:</p>
-            <pre>Rate limit exceeded (per-hour limit).</pre>
-        </body>
-    </html>
+1
+15
+570/1973,-345/1973
+915/2663,0
+1748/2663,0
+1403/1973,-345/1973
+61/76,0
+942/1217,115/2434
+63/68,5/68
+841/866,145/866
+961/1106,145/1106
+1/2,1/2
+145/1106,145/1106
+25/866,145/866
+5/68,5/68
+275/1217,115/2434
+15/76,0
+16
+63/68,5/68 841/866,145/866
+1403/1973,-345/1973 61/76,0
+1/2,0 841/866,145/866
+570/1973,-345/1973 1/2,1/2
+15/76,0 1/2,1/2
+1/2,0 63/68,5/68
+15/76,0 61/76,0
+5/68,5/68 1/2,1/2
+1/2,0 1/2,1/2
+5/68,5/68 25/866,145/866
+570/1973,-345/1973 15/76,0
+1/2,0 5/68,5/68
+1/2,0 25/866,145/866
+1403/1973,-345/1973 1/2,1/2
+61/76,0 1/2,1/2
+63/68,5/68 1/2,1/2

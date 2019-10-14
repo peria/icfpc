@@ -1,19 +1,27 @@
-
-    <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-    <html>
-        <head>
-            <title>Error: 429 Too Many Requests</title>
-            <style type="text/css">
-              html {background-color: #eee; font-family: sans;}
-              body {background-color: #fff; border: 1px solid #ddd;
-                    padding: 15px; margin: 15px;}
-              pre {background-color: #eee; border: 1px solid #ddd; padding: 5px;}
-            </style>
-        </head>
-        <body>
-            <h1>Error: 429 Too Many Requests</h1>
-            <p>Sorry, the requested URL <tt>&#039;http://2016sv.icfpcontest.org/api/blob/315947dd4fe8dfd9d573ef91f06ee313b21996d7&#039;</tt>
-               caused an error:</p>
-            <pre>Rate limit exceeded (per-hour limit).</pre>
-        </body>
-    </html>
+1
+12
+7/26,17/26
+21/52,51/52
+4/13,63/52
+7/13,17/13
+11/52,75/52
+-1/52,35/26
+-3/26,41/26
+-1/4,5/4
+-2/13,53/52
+-5/13,12/13
+-3/52,41/52
+9/52,23/26
+12
+7/26,17/26 21/52,51/52
+-3/52,41/52 -1/4,5/4
+-3/52,41/52 11/52,75/52
+7/26,17/26 -3/26,41/26
+-1/4,5/4 -3/26,41/26
+21/52,51/52 11/52,75/52
+-3/52,41/52 -5/13,12/13
+-3/52,41/52 21/52,51/52
+-5/13,12/13 7/13,17/13
+21/52,51/52 -1/4,5/4
+-1/4,5/4 11/52,75/52
+7/13,17/13 11/52,75/52
