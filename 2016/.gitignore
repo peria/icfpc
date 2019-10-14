@@ -1,3 +1,4 @@
 *.o
 *~
 third_party/
+/problems/png
