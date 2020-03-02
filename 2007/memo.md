@@ -28,6 +28,6 @@
 - ビンゴ。以降メモの詳細は各prefixの2行目以降に書くことに。
 - 目次をもとにいくつか生成 ([structure](input/structure.md), [encodings](input/encodings.md), [list](input/list.md), [lookout](input/lookout.md), [charset](input/charset.md), [field](input/field.md), [notes](input/notes.md), [lsystems](input/lsystems.md), [security](input/security.md), [history](input/history.md))
 - [field](input/field.md) と [list](input/list.md) から apple のお絵かきを呼び出すやり方が何となくわかった気がするのであとで試す。引数無しで該当位置＆長さを呼び出す様に数値変換。
-- [appletree](input/appletree.md)を使うと原点ベースで林檎の木が描画される。ただし最後に適当な文字を付けてfinishさせないと通常のRed/Green Zoneに入って黒塗りされるので消えてしまう。
+- [appletree](input/apple.md)を使うと原点ベースで林檎の木が描画される。ただし最後に適当な文字を付けてfinishさせないと通常のRed/Green Zoneに入って黒塗りされるので消えてしまう。
 - つまりGreen Zoneに書かれている関数をRed ZoneにCopyして呼び出すことを繰り返して絵を描いていくのか。説明どおりではあるけどやってみないと意味がわからないな。
 - 位置の調整や[明るくなるprefix](input/light.md) はどう説明されるんだろ？
