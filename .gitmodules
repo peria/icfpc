@@ -16,3 +16,9 @@
 [submodule "third_party/stb"]
 	path = third_party/stb
 	url = https://github.com/nothings/stb.git
+[submodule "third_party/glog"]
+	path = third_party/glog
+	url = https://github.com/google/glog.git
+[submodule "third_party/gflags"]
+	path = third_party/gflags
+	url = https://github.com/gflags/gflags.git
