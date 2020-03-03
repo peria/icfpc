@@ -43,5 +43,5 @@ IIPIFFCPICCFPICICFPCICICIICIICIPPPxxxxxxxICIIC
 ```
 IIPIFFCPICCFPICICFPCICICIICIICIPPPxIIC
 ```
-でboolean（`P`:false、?:true）をセットすることができる。
+でboolean（`P`:false、?:true）をセットすることができる。結果が返ってくる関数の場合はBlue Zone (`IFPICFPPCFIPP`)の後ろに置かれるらしい。のでどうにかしてコピーしてくるかそのまま別関数に投げるかできるはず。
 - 位置の調整や[明るくなるprefix](input/light.md) はどう説明されるんだろ？
