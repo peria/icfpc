@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "pointer.h"
@@ -21,11 +22,14 @@ struct Expr {
   Expr() = default;
 };
 
-struct Atom final : Expr {
+struct Atom final : public Expr {
   explicit Atom(const std::string& name_) : name(name_) {}
   std::string ToString() const override { return name; }
   bool isAtom() const override { return true; }
+  bool hasAlias() const { return alias.has_value(); }
+
   const std::string name;
+  std::optional<std::string> alias;
 };
 
 struct Ap final : public Expr {

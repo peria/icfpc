@@ -21,10 +21,11 @@ class Galaxy {
   Pointer<Expr> eval(Pointer<Expr> expr);
   Pointer<Expr> tryEval(Pointer<Expr> expr);
   Pointer<Expr> evalCons(Pointer<Expr> y, Pointer<Expr> x);
-  Pointer<Expr> refer(const std::string& name,
-                      std::optional<Pointer<Expr>> = std::nullopt);
+  Pointer<Expr> refer(const std::string& name);
+  Pointer<Atom> define(const std::string& name, Pointer<Expr> definition=nullptr);
 
   int64_t valueOf(Pointer<Expr> expr);
 
-  std::unordered_map<std::string, Pointer<Expr>> definition_table_;
+  // table[name] := Atom(name, alias) --(evaluated)--> Expr(definition)
+  std::unordered_map<std::string, Pointer<Atom>> definition_table_;
 };

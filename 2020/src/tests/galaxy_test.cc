@@ -84,3 +84,11 @@ TEST(GalaxyTest, BasicOperations) {
       << "For input : " << test_case.input;
   }
 }
+
+TEST(GalaxyTest, Alias) {
+  Galaxy galaxy;
+  galaxy.process(":1117 = ap ap s ap ap c ap eq 0 1 ap ap b ap mul 2 ap ap b :1117 ap add -1");
+  // "pwr2" is an alias of ":1117".
+  auto expr = galaxy.process("ap pwr2 10");
+  EXPECT_EQ(valueOf(expr), 1024);
+}

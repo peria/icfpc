@@ -21,29 +21,33 @@ Galaxy::Galaxy(const std::string& filepath) {
 }
 
 void Galaxy::initBuiltins() {
+  // Built-in operations
   static const char* kBuiltinNames[] = {
       "neg", "i",   "nil", "isnil", "car",  "cdr", "t", "f", "add",
       "mul", "div", "lt",  "eq",    "cons", "s",   "c", "b",
   };
   for (auto name : kBuiltinNames) {
-    definition_table_[name] = Expr::Create(name);
+    define(name, Expr::Create(name));
+  }
+
+  // Aliases
+  static const char* kNameAliases[][2] = {
+    {":1117", "pwr2"},
+  };
+  for (auto name_alias : kNameAliases) {
+    define(name_alias[0]);
+    definition_table_[name_alias[0]]->alias = name_alias[1];
   }
 }
 
 Pointer<Expr> Galaxy::process(const std::string& line) {
   std::istringstream tokens(line);
   if (line.find('=') != std::string::npos) {
-    // Definition line.
     std::string identifier, equal;
     tokens >> identifier >> equal;
     // TODO: Work for "ap ap name x0 x1 = ....".
     CHECK_EQ(equal, "=");
-    CHECK(!definition_table_.count(identifier));
-    auto root = buildTree(tokens);
-    auto symbol = refer(identifier);
-    symbol->evaluated = root;
-    definition_table_[identifier] = symbol;
-    return symbol;
+    return define(identifier, buildTree(tokens));
   } else {
     return eval(buildTree(tokens));
   }
@@ -101,7 +105,6 @@ Pointer<Expr> Galaxy::tryEval(Pointer<Expr> expr) {
 
   if (!expr->isAp())
     return expr;
-
   auto ap = dynamic_pointer_cast<Ap>(expr);
   if (!ap->func || !ap->arg)
     return expr;
@@ -183,15 +186,26 @@ Pointer<Expr> Galaxy::evalCons(Pointer<Expr> a, Pointer<Expr> b) {
   return res;
 }
 
-Pointer<Expr> Galaxy::refer(const std::string& name,
-                            std::optional<Pointer<Expr>> def) {
+Pointer<Expr> Galaxy::refer(const std::string& name) {
   if (!definition_table_.count(name)) {
-    if (def)
-      definition_table_[name] = def.value();
-    else
-      definition_table_[name] = Expr::Create(name);
-    LOG_IF(INFO, name[0] != ':') << "New symbol: " << name;
+    auto atom = std::make_shared<Atom>(name);
+    definition_table_[name] = atom;
   }
+  auto symbol = definition_table_[name];
+  return symbol->evaluated ? symbol->evaluated : symbol;
+}
+
+Pointer<Atom> Galaxy::define(const std::string& name,
+                             Pointer<Expr> definition) {
+  if (!definition_table_.count(name))
+    definition_table_[name] = std::make_shared<Atom>(name);
+
+  auto symbol = definition_table_[name];
+  CHECK(!symbol->evaluated);
+  symbol->evaluated = definition;
+  if (symbol->hasAlias())
+    define(symbol->alias.value(), definition);
+
   return definition_table_[name];
 }
 

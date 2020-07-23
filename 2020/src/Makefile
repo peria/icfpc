@@ -30,7 +30,7 @@ galaxy: galaxy_main.o $(LIB_OBJS)
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-test: $(TEST_OBJS) $(LIB_OBJS) $(LIB_OBJS:.o=.h) $(GTEST_SRCS)
+test: $(TEST_OBJS) $(LIB_OBJS) $(LIB_OBJS:.o=.h)
 	$(CXX) $(CXXFLAGS) -o $@ $(TEST_OBJS) $(LIB_OBJS) $(GTEST_SRCS) $(LDFLAGS)
 
 clean:
