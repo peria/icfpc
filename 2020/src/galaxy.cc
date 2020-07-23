@@ -1,0 +1,200 @@
+#include "galaxy.h"
+
+#include <fstream>
+#include <memory>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <glog/logging.h>
+
+Galaxy::Galaxy() {
+  initBuiltins();
+}
+
+Galaxy::Galaxy(const std::string& filepath) {
+  initBuiltins();
+  std::ifstream ifs(filepath);
+  std::string line;
+  while (std::getline(ifs, line)) {
+    process(line);
+  }
+}
+
+void Galaxy::initBuiltins() {
+  static const char* kBuiltinNames[] = {
+      "neg", "i",   "nil", "isnil", "car",  "cdr", "t", "f", "add",
+      "mul", "div", "lt",  "eq",    "cons", "s",   "c", "b",
+  };
+  for (auto name : kBuiltinNames) {
+    definition_table_[name] = Expr::Create(name);
+  }
+}
+
+Pointer<Expr> Galaxy::process(const std::string& line) {
+  std::istringstream tokens(line);
+  if (line.find('=') != std::string::npos) {
+    // Definition line.
+    std::string identifier, equal;
+    tokens >> identifier >> equal;
+    // TODO: Work for "ap ap name x0 x1 = ....".
+    CHECK_EQ(equal, "=");
+    CHECK(!definition_table_.count(identifier));
+    auto root = buildTree(tokens);
+    auto symbol = refer(identifier);
+    symbol->evaluated = root;
+    definition_table_[identifier] = symbol;
+    return symbol;
+  } else {
+    return eval(buildTree(tokens));
+  }
+}
+
+Pointer<Expr> Galaxy::buildTree(std::istream& tokens) {
+  // Pseudo root. Actual root is root->func.
+  auto root = dynamic_pointer_cast<Ap>(Expr::Create("ap"));
+
+  std::string token;
+  std::stack<Pointer<Expr>> stack;
+  stack.push(root);
+  while (tokens >> token) {
+    CHECK_NE(token, "=");
+    auto expr = Expr::Create(token);
+    if (auto ap = dynamic_pointer_cast<Ap>(stack.top())) {
+      if (!ap->func) {
+        ap->func = expr;
+      } else if (!ap->arg) {
+        ap->arg = expr;
+        stack.pop();
+      } else {
+        CHECK(false) << "Top AP is fullfilled.";
+      }
+    }
+    if (expr->isAp()) {
+      stack.push(expr);
+    }
+  }
+  CHECK(!root->arg);
+  return root->func;
+}
+
+Pointer<Expr> Galaxy::eval(Pointer<Expr> expr) {
+  if (expr->evaluated)
+    return expr->evaluated;
+
+  Pointer<Expr> initial_expr = expr;
+  while (true) {
+    Pointer<Expr> result = tryEval(expr);
+    if (result == expr) {
+      initial_expr->evaluated = result;
+      return result;
+    }
+    expr = result;
+  }
+}
+
+Pointer<Expr> Galaxy::tryEval(Pointer<Expr> expr) {
+  if (expr->evaluated)
+    return expr->evaluated;
+
+  if (expr->isAtom())
+    return refer(dynamic_pointer_cast<Atom>(expr)->name);
+
+  if (!expr->isAp())
+    return expr;
+
+  auto ap = dynamic_pointer_cast<Ap>(expr);
+  if (!ap->func || !ap->arg)
+    return expr;
+
+  auto func = eval(ap->func);
+  auto x = ap->arg;
+  if (func->isAtom()) {
+    auto atom = dynamic_pointer_cast<Atom>(func);
+    if (atom->name == "neg")
+      return Expr::Create(-valueOf(x));
+    if (atom->name == "i")
+      return x;
+    if (atom->name == "nil")
+      return refer("t");
+    if (atom->name == "isnil")
+      return Ap::Create(
+          x, Ap::Create(refer("t"), Ap::Create(refer("t"), refer("f"))));
+    if (atom->name == "car")
+      return Ap::Create(x, refer("t"));
+    if (atom->name == "cdr")
+      return Ap::Create(x, refer("f"));
+  }
+
+  if (!func->isAp())
+    return expr;
+
+  auto ap2 = dynamic_pointer_cast<Ap>(func);
+  if (!ap2->func || !ap2->arg)
+    return expr;
+
+  auto func2 = eval(ap2->func);
+  auto y = ap2->arg;
+  if (func2->isAtom()) {
+    auto atom = dynamic_pointer_cast<Atom>(func2);
+    if (atom->name == "t")
+      return y;
+    if (atom->name == "f")
+      return x;
+    if (atom->name == "add")
+      return Expr::Create(valueOf(y) + valueOf(x));
+    if (atom->name == "mul")
+      return Expr::Create(valueOf(y) * valueOf(x));
+    if (atom->name == "div")
+      return Expr::Create(valueOf(y) / valueOf(x));
+    if (atom->name == "lt")
+      return (valueOf(y) < valueOf(x)) ? refer("t") : refer("f");
+    if (atom->name == "eq")
+      return (valueOf(y) == valueOf(x)) ? refer("t") : refer("f");
+    if (atom->name == "cons")
+      return evalCons(y, x);
+  }
+  if (!func2->isAp())
+    return expr;
+
+  auto ap3 = dynamic_pointer_cast<Ap>(func2);
+  if (!ap3->func || !ap3->arg)
+    return expr;
+
+  auto func3 = eval(ap3->func);
+  auto z = ap3->arg;
+  if (func3->isAtom()) {
+    auto atom = dynamic_pointer_cast<Atom>(func3);
+    if (atom->name == "s")
+      return Ap::Create(Ap::Create(z, x), Ap::Create(y, x));
+    if (atom->name == "c")
+      return Ap::Create(Ap::Create(z, x), y);
+    if (atom->name == "b")
+      return Ap::Create(z, Ap::Create(y, x));
+    if (atom->name == "cons")
+      return Ap::Create(Ap::Create(x, z), y);
+  }
+
+  return expr;
+}
+
+Pointer<Expr> Galaxy::evalCons(Pointer<Expr> a, Pointer<Expr> b) {
+  auto res = Ap::Create(Ap::Create(refer("cons"), eval(a)), eval(b));
+  res->evaluated = res;
+  return res;
+}
+
+Pointer<Expr> Galaxy::refer(const std::string& name,
+                            std::optional<Pointer<Expr>> def) {
+  if (!definition_table_.count(name)) {
+    if (def)
+      definition_table_[name] = def.value();
+    else
+      definition_table_[name] = Expr::Create(name);
+    LOG_IF(INFO, name[0] != ':') << "New symbol: " << name;
+  }
+  return definition_table_[name];
+}
+
+int64_t Galaxy::valueOf(Pointer<Expr> expr) {
+  return dynamic_pointer_cast<Number>(eval(expr))->value;
+}
