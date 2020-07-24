@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/static/css/jquery-ui.min.css" />
+  <link rel="stylesheet" href="/static/css/jquery-ui.structure.min.css" />
+  <link rel="stylesheet" href="/static/css/jquery-ui.theme.min.css" />
+  <link rel="stylesheet" href="/static/css/index.css" />
+  <title>ICFPC2020 Visualizer</title>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">ICFPC2020 Visualizer</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container container-main">
+    <div>
+      <!-- eval -->
+      <form>
+        <div class="form-group">
+          <label for="stmt-input">Execute statement</label>
+          <input type="text" class="form-control" id="stmt-input" placeholder="ap ap ap interact galaxy nil ap ap vec 0 0" />
+        </div>
+
+        <div class="form-group">
+          <label for="expr-stat">Expr statistics</label>
+          <div id="expr-stat"></div>
+        </div>
+
+        <div class="btn-toolbar" role="toolbar">
+          <div class="btn-group mr-2" role="group">
+            <button type="button" class="btn btn-warning" id="btn-setup-galaxy">Setup Galaxy</button>
+          </div>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary" id="btn-click-0-0">Click (0,0)</button>
+            <button type="button" class="btn btn-info active" id="btn-grid">Grid</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="picture">Picture</label>
+          <div><canvas id="picture" width="1500" height="800"></canvas></div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm">
+            <label for="scale-slider">Scale: <span id="scale-slider-value"></span></label>
+            <div id="scale-slider"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light footer">
+    <div class="container">
+      <p class="text-muted text-monospace">
+        <span>
+          <button type="button" class="btn btn-sm btn-primary" id="status-ready">READY</button>
+          <button type="button" class="btn btn-sm btn-danger" id="status-waiting">WAITING</button>
+        </span>
+        <span>X: <span id="logical-x"></span>, Y: <span id="logical-y"></span></span>
+      </p>
+    </div>
+  </nav>
+
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="/static/js/popper.min.js"></script>
+  <script src="/static/js/index.js"></script>
+</body>
+</html>
