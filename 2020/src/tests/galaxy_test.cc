@@ -85,6 +85,11 @@ TEST(GalaxyTest, BasicOperations) {
   }
 }
 
+TEST(GalaxyTest, ImplimentedOperations) {
+  Galaxy galaxy;
+  LOG(INFO) << galaxy.process("ap ap checkerboard 7 0")->ToString();
+}
+
 TEST(GalaxyTest, Alias) {
   Galaxy galaxy;
   galaxy.process(":1117 = ap ap s ap ap c ap eq 0 1 ap ap b ap mul 2 ap ap b :1117 ap add -1");

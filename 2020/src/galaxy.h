@@ -18,6 +18,7 @@ class Galaxy {
   void initBuiltins();
 
   Pointer<Expr> buildTree(std::istream& tokens);
+  Pointer<Expr> compile(Pointer<Expr> expr);
   Pointer<Expr> eval(Pointer<Expr> expr);
   Pointer<Expr> tryEval(Pointer<Expr> expr);
   Pointer<Expr> evalCons(Pointer<Expr> y, Pointer<Expr> x);

@@ -15,9 +15,9 @@ Pointer<Expr> Expr::Create(int64_t number) {
   return std::make_shared<Number>(number);
 }
 
-std::string Expr::ToString() const {
+std::string Expr::ToString(bool original) const {
   if (evaluated)
-    return evaluated->ToString();
+    return evaluated->ToString(original);
   return "";
 }
 
@@ -25,12 +25,12 @@ Pointer<Ap> Ap::Create(Pointer<Expr> f, Pointer<Expr> a) {
   return std::make_shared<Ap>(f, a);
 }
 
-std::string Ap::ToString() const {
+std::string Ap::ToString(bool original) const {
   std::ostringstream oss;
   oss << "ap";
   if (func)
-    oss << " " << func->ToString();
+    oss << " " << func->ToString(original);
   if (arg)
-    oss << " " << arg->ToString();
+    oss << " " << arg->ToString(original);
   return oss.str();
 }

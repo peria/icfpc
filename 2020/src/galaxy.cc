@@ -23,12 +23,19 @@ Galaxy::Galaxy(const std::string& filepath) {
 void Galaxy::initBuiltins() {
   // Built-in operations
   static const char* kBuiltinNames[] = {
-      "neg", "i",   "nil", "isnil", "car",  "cdr", "t", "f", "add",
-      "mul", "div", "lt",  "eq",    "cons", "s",   "c", "b",
+      "neg", "i", "nil", "isnil", "car", "cdr", "t", "f", "add",
+      "mul", "div", "lt",  "eq", "cons", "vec", "s", "c", "b",
+      // Compiled operations
+      "(", ",", ")",
   };
   for (auto name : kBuiltinNames) {
     define(name, Expr::Create(name));
   }
+  process("checkerboard = ap ap s ap ap b s ap ap c ap ap b c ap ap b ap c ap "
+          "c ap ap s ap ap b s ap ap b ap b ap ap s i i lt eq ap ap s mul i "
+          "nil ap ap s ap ap b s ap ap b ap b cons ap ap s ap ap b s ap ap b "
+          "ap b cons ap c div ap c ap ap s ap ap b b ap ap c ap ap b b add neg "
+          "ap ap b ap s mul div ap ap c ap ap b b checkerboard ap ap c add 2");
 
   // Aliases
   static const char* kNameAliases[][2] = {
@@ -55,7 +62,7 @@ Pointer<Expr> Galaxy::process(const std::string& line) {
 
 Pointer<Expr> Galaxy::buildTree(std::istream& tokens) {
   // Pseudo root. Actual root is root->func.
-  auto root = dynamic_pointer_cast<Ap>(Expr::Create("ap"));
+  auto root = std::make_shared<Ap>();
 
   std::string token;
   std::stack<Pointer<Expr>> stack;
@@ -63,7 +70,7 @@ Pointer<Expr> Galaxy::buildTree(std::istream& tokens) {
   while (tokens >> token) {
     CHECK_NE(token, "=");
     auto expr = Expr::Create(token);
-    if (auto ap = dynamic_pointer_cast<Ap>(stack.top())) {
+    if (auto ap = As<Ap>(stack.top())) {
       if (!ap->func) {
         ap->func = expr;
       } else if (!ap->arg) {
@@ -78,7 +85,13 @@ Pointer<Expr> Galaxy::buildTree(std::istream& tokens) {
     }
   }
   CHECK(!root->arg);
+  root->func = compile(root->func);
   return root->func;
+}
+
+Pointer<Expr> Galaxy::compile(Pointer<Expr> expr) {
+  // TODO: Make AST more human readable.
+  return expr;
 }
 
 Pointer<Expr> Galaxy::eval(Pointer<Expr> expr) {
@@ -101,18 +114,18 @@ Pointer<Expr> Galaxy::tryEval(Pointer<Expr> expr) {
     return expr->evaluated;
 
   if (expr->isAtom())
-    return refer(dynamic_pointer_cast<Atom>(expr)->name);
+    return refer(As<Atom>(expr)->name);
 
   if (!expr->isAp())
     return expr;
-  auto ap = dynamic_pointer_cast<Ap>(expr);
+  auto ap = As<Ap>(expr);
   if (!ap->func || !ap->arg)
     return expr;
 
   auto func = eval(ap->func);
   auto x = ap->arg;
   if (func->isAtom()) {
-    auto atom = dynamic_pointer_cast<Atom>(func);
+    auto atom = As<Atom>(func);
     if (atom->name == "neg")
       return Expr::Create(-valueOf(x));
     if (atom->name == "i")
@@ -131,14 +144,14 @@ Pointer<Expr> Galaxy::tryEval(Pointer<Expr> expr) {
   if (!func->isAp())
     return expr;
 
-  auto ap2 = dynamic_pointer_cast<Ap>(func);
+  auto ap2 = As<Ap>(func);
   if (!ap2->func || !ap2->arg)
     return expr;
 
   auto func2 = eval(ap2->func);
   auto y = ap2->arg;
   if (func2->isAtom()) {
-    auto atom = dynamic_pointer_cast<Atom>(func2);
+    auto atom = As<Atom>(func2);
     if (atom->name == "t")
       return y;
     if (atom->name == "f")
@@ -153,20 +166,20 @@ Pointer<Expr> Galaxy::tryEval(Pointer<Expr> expr) {
       return (valueOf(y) < valueOf(x)) ? refer("t") : refer("f");
     if (atom->name == "eq")
       return (valueOf(y) == valueOf(x)) ? refer("t") : refer("f");
-    if (atom->name == "cons")
+    if (atom->name == "cons" || atom->name == "vec")
       return evalCons(y, x);
   }
   if (!func2->isAp())
     return expr;
 
-  auto ap3 = dynamic_pointer_cast<Ap>(func2);
+  auto ap3 = As<Ap>(func2);
   if (!ap3->func || !ap3->arg)
     return expr;
 
   auto func3 = eval(ap3->func);
   auto z = ap3->arg;
   if (func3->isAtom()) {
-    auto atom = dynamic_pointer_cast<Atom>(func3);
+    auto atom = As<Atom>(func3);
     if (atom->name == "s")
       return Ap::Create(Ap::Create(z, x), Ap::Create(y, x));
     if (atom->name == "c")
@@ -210,5 +223,5 @@ Pointer<Atom> Galaxy::define(const std::string& name,
 }
 
 int64_t Galaxy::valueOf(Pointer<Expr> expr) {
-  return dynamic_pointer_cast<Number>(eval(expr))->value;
+  return As<Number>(eval(expr))->value;
 }
