@@ -7,6 +7,7 @@
 
 #include "httplib.h"
 
+#include "base.h"
 #include "galaxy.h"
 
 class Server {
@@ -19,6 +20,8 @@ class Server {
 
  private:
   void onLoadMain(const Request& req, Response& res);
+  void onClickPicture(const Request& req, Response& res);
+  void onLoadPicture(const Request& req, Response& res);
 
   static std::optional<std::string> readFile(std::filesystem::path file_path);
 

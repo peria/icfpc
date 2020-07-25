@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base.h"
 #include "expr.h"
 
 class Galaxy {
@@ -13,6 +14,7 @@ class Galaxy {
   Galaxy(const std::string& filepath);
 
   Pointer<Expr> process(const std::string& message);
+  std::string click(int64 x, int64 y);
 
  private:
   void initBuiltins();

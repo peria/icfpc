@@ -2,14 +2,14 @@
 
 #include <fstream>
 
-#include <glog/logging.h>
+#include "base.h"
 
 namespace {
 
 const char* kGalaxyTextPath = "../data/galaxy.txt";
 const char* kWwwPath = "../www";
 
-}
+}  // namespace
 
 Server::Server() : galaxy_(kGalaxyTextPath), www_path_(kWwwPath) {
   server_.set_mount_point("/static/", (www_path_ / "static").c_str());
@@ -18,7 +18,11 @@ Server::Server() : galaxy_(kGalaxyTextPath), www_path_(kWwwPath) {
       LOG(INFO) << req.path << " [" << res.status << "] : " << res.body;
   });
 
-  server_.Get("/", [this](const Request& req, Response& res) { this->onLoadMain(req, res); });
+  using Req = const Request;
+  using Res = Response;
+  server_.Get("/", [this](Req& req, Res& res) { this->onLoadMain(req, res); });
+  server_.Get("/click", [this](Req& req, Res& res) { this->onClickPicture(req, res); });
+  server_.Post("/picture", [this](Req& req, Res& res) { this->onLoadPicture(req, res); });
 }
 
 void Server::runLoop() {
@@ -27,6 +31,25 @@ void Server::runLoop() {
 }
 
 void Server::onLoadMain(const Request& req, Response& res) {
+  res.set_content(*readFile(www_path_ / "index.html"), "text/html");
+}
+
+void Server::onClickPicture(const Request& req, Response& res) {
+  if (!req.has_param("x") || !req.has_param("y")) {
+    res.status = 500;
+    return;
+  }
+
+  const int64 x = std::stoll(req.get_param_value("x"));
+  const int64 y = std::stoll(req.get_param_value("y"));
+  LOG(INFO) << "Click (" << x << ", " << y << ")";
+
+  std::string result = galaxy_.click(x, y);
+
+  res.set_content(result, "application/json");
+}
+
+void Server::onLoadPicture(const Request& req, Response& res) {
   res.set_content(*readFile(www_path_ / "index.html"), "text/html");
 }
 

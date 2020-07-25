@@ -60,6 +60,10 @@ Pointer<Expr> Galaxy::process(const std::string& line) {
   }
 }
 
+std::string Galaxy::click(int64 x, int64 y) {
+  return "{}";
+}
+
 Pointer<Expr> Galaxy::buildTree(std::istream& tokens) {
   // Pseudo root. Actual root is root->func.
   auto root = std::make_shared<Ap>();
@@ -90,7 +94,6 @@ Pointer<Expr> Galaxy::buildTree(std::istream& tokens) {
 }
 
 Pointer<Expr> Galaxy::compile(Pointer<Expr> expr) {
-  // TODO: Make AST more human readable.
   return expr;
 }
 
@@ -139,6 +142,8 @@ Pointer<Expr> Galaxy::tryEval(Pointer<Expr> expr) {
       return Ap::Create(x, refer("t"));
     if (atom->name == "cdr")
       return Ap::Create(x, refer("f"));
+    if (atom->name == "modem")
+      return Ap::Create(refer("dem"), Ap::Create(refer("mod"), x));
   }
 
   if (!func->isAp())
@@ -188,6 +193,8 @@ Pointer<Expr> Galaxy::tryEval(Pointer<Expr> expr) {
       return Ap::Create(z, Ap::Create(y, x));
     if (atom->name == "cons")
       return Ap::Create(Ap::Create(x, z), y);
+    if (atom->name == "interact")
+      return Ap::Create(Ap::Create(refer("f38"), z), Ap::Create(Ap::Create(z, y), x));
   }
 
   return expr;
