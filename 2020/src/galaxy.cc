@@ -7,6 +7,14 @@
 #include <string>
 #include <glog/logging.h>
 
+namespace {
+
+const char* kF38Impl = "ap ap ap if0 ap car x0 ( ap modem ap car ap cdr x0 , "
+  "ap multipledraw ap car ap cdr ap cdr x0 ) ap ap ap interact x2 ap modem ap "
+  "car ap cdr x0 ap send ap car ap cdr ap cdr x0";
+
+}  // namespace
+
 Galaxy::Galaxy() {
   initBuiltins();
 }
@@ -25,6 +33,7 @@ void Galaxy::initBuiltins() {
   static const char* kBuiltinNames[] = {
       "neg", "i", "nil", "isnil", "car", "cdr", "t", "f", "add",
       "mul", "div", "lt",  "eq", "cons", "vec", "s", "c", "b",
+      "f38", "interact",
       // Compiled operations
       "(", ",", ")",
   };
@@ -64,7 +73,7 @@ std::string Galaxy::click(int64 x, int64 y) {
   return "{}";
 }
 
-Pointer<Expr> Galaxy::buildTree(std::istream& tokens) {
+Pointer<Expr> Galaxy::buildTree(std::istream& tokens, LocalVarsMap&& local_vars) {
   // Pseudo root. Actual root is root->func.
   auto root = std::make_shared<Ap>();
 
@@ -73,7 +82,18 @@ Pointer<Expr> Galaxy::buildTree(std::istream& tokens) {
   stack.push(root);
   while (tokens >> token) {
     CHECK_NE(token, "=");
-    auto expr = Expr::Create(token);
+    Pointer<Expr> expr;
+    // TODO: Remove the hack for list expressions.
+    if (local_vars.count(token)) {
+      expr = local_vars[token];
+    } else if (token == "(" || token == ",") {
+      expr = Ap::Create(Ap::Create(refer("cons"), nullptr), nullptr);
+    } else if (token == ")") {
+      expr = refer("nil");
+    } else {
+      expr = Expr::Create(token);
+    }
+
     if (auto ap = As<Ap>(stack.top())) {
       if (!ap->func) {
         ap->func = expr;
@@ -173,6 +193,10 @@ Pointer<Expr> Galaxy::tryEval(Pointer<Expr> expr) {
       return (valueOf(y) == valueOf(x)) ? refer("t") : refer("f");
     if (atom->name == "cons" || atom->name == "vec")
       return evalCons(y, x);
+    if (atom->name == "f38") {
+      std::istringstream f38s(kF38Impl);
+      return buildTree(f38s, {{"x2", y}, {"x0", x}});
+    }
   }
   if (!func2->isAp())
     return expr;

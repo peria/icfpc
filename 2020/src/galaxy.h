@@ -17,9 +17,11 @@ class Galaxy {
   std::string click(int64 x, int64 y);
 
  private:
+  using LocalVarsMap = std::unordered_map<std::string, Pointer<Expr>>;
+
   void initBuiltins();
 
-  Pointer<Expr> buildTree(std::istream& tokens);
+  Pointer<Expr> buildTree(std::istream& tokens, LocalVarsMap&& local_vars = {});
   Pointer<Expr> compile(Pointer<Expr> expr);
   Pointer<Expr> eval(Pointer<Expr> expr);
   Pointer<Expr> tryEval(Pointer<Expr> expr);
