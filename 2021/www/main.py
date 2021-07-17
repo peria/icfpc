@@ -49,6 +49,7 @@ def get_common_context():
     navigations = [
         { 'path': path, 'title': title } for path, title in [
             ['/', 'Dashboard'],
+            ['https://github.com/peria/icfpc/tree/master/2021', 'Repository'],
             ['https://icfpcontest2021.github.io/', 'Contest'],
             ['https://poses.live/problems', 'Problems'],
             ['https://poses.live/teams', 'Ranking'],
