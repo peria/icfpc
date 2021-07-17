@@ -21,7 +21,8 @@ int main(int argc, char** argv) {
   Problem problem(argv[1]);
   std::unique_ptr<Solver> solver(new ZeroDislikes(problem));
   auto solution = solver->solve();
-  solution->saveFile(argv[2]);
+  if (solution)
+    solution->saveFile(argv[2]);
 
   return 0;
 }

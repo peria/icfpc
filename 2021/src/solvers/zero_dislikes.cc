@@ -23,7 +23,7 @@ std::unique_ptr<Solution> ZeroDislikes::solve() {
     return std::move(solution);
   }
   // Failed to assign
-  return std::move(solution);
+  return {};
 }
 
 bool ZeroDislikes::assign(int32 hole_vi,
