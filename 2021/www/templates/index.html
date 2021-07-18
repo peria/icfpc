@@ -36,8 +36,10 @@
             <td>{{problem.id}}</td>
             <td><img class="problem_img" src="/static/images/problems/{{problem.id}}.problem.png"></td>
             <td>{{problem.score}}</td>
-            {% for bonus in problem.bonuses %}
-            <td></td>
+            {% for solution in problem.solutions %}
+            {% if solution %}
+            <td><img class="problem_img" src="{{solution.img_src}}"></td>
+            {% endif %}
             {% endfor %}
           </tr>
           {% endfor %}

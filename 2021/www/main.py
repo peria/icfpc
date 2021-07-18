@@ -4,9 +4,14 @@ import flask
 import json
 import os
 import math
+import copy
+import visualize
 
 ROOT_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))  # 2021/
+WWW_DIR = os.path.join(ROOT_DIR, 'www')
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
+PROBLEMS_DIR = os.path.join(DATA_DIR, 'problems')
+SOLUTIONS_DIR = os.path.join(ROOT_DIR, 'solutions')
 
 MAX_PROBLEM_ID = 132
 
@@ -28,7 +33,7 @@ def index():
 def get_problems():
     '''Load problems and add other informmation on problems'''
     def get_problem(id):
-        json_filepath = os.path.join(DATA_DIR, 'problems', '{}.problem.json'.format(id))
+        json_filepath = os.path.join(PROBLEMS_DIR, '{}.problem.json'.format(id))
         with open(json_filepath, 'r') as f:
             problem = json.load(f)
         # Add some more information
@@ -42,7 +47,42 @@ def get_problems():
 
 def get_problem_context(problem):
     '''Set up jinja context for a problem.'''
+    solutions = get_solutions(problem['id'])
+    problem['solutions'] = [get_solution_context(problem, solution) for solution in solutions]
     return problem
+
+
+def get_solutions(id):
+    '''Load solutions information and add additional information'''
+    def get_solution(id, bonus=None):
+        json_filepath = os.path.join(SOLUTIONS_DIR, '{}.pose.json'.format(id))
+        if not os.path.exists(json_filepath):
+            return None
+        with open(json_filepath, 'r') as f:
+            solution = json.load(f)
+        # Add some more information
+        solution['id'] = id
+        solution['json_path'] = json_filepath
+        return solution
+
+    # TODO: Iterate over bonuses
+    solutions = [get_solution(id)]
+    return solutions
+
+
+def get_solution_context(problem, solution):
+    if solution is None:
+        return None
+    id = problem['id']
+    img_filepath = os.path.join(WWW_DIR, 'static', 'images', 'solutions', '{}.pose.png'.format(id))
+    json_filepath = solution['json_path']
+    if (not os.path.exists(img_filepath) or os.path.getctime(json_filepath) > os.path.getctime(img_filepath)):
+        visualize.visualize(problem, solution, img_filepath)
+    context = copy.deepcopy(solution)
+    context.update({
+        'img_src':'/static/images/solutions/{}.pose.png'.format(id),
+    })
+    return context
 
 
 def get_common_context():

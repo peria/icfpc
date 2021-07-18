@@ -4,6 +4,7 @@
 Draw picture of a problem into PNG file
 '''
 
+import copy
 import json
 import argparse
 import PIL
@@ -16,7 +17,7 @@ class Wall:
 
     def __init__(self, problem, solution=None):
         hole = problem['hole']
-        figure = problem['figure']
+        figure = copy.deepcopy(problem['figure'])
         if solution:
             figure.update(solution)
 
@@ -37,9 +38,24 @@ class Wall:
             colors = [(255, 0, 0), (255, 0, 0), (255, 0 ,0)]
         else:
             colors = [(0, 0, 255), (0, 255, 0), (255, 0, 0)]
+
+        vertices_orig = problem['figure']['vertices']
         for i, j in figure['edges']:
-            color = colors[1]
+            d2_orig = Wall.d2(vertices_orig[i], vertices_orig[j])
+            d2 = Wall.d2(vertices[i], vertices[j])
+            color = colors[self.judge(d2_orig, d2, problem['epsilon'])]
             self.line([vertices[i], vertices[j]], fill=color)
+
+    @staticmethod
+    def d2(u, v):
+        return (u[0] - v[0]) ** 2 + (u[1] - v[1]) ** 2
+
+    def judge(self, d2_orig, d2, epsilon):
+        if 10**6 * d2 < (10**6 - epsilon) * d2_orig:
+            return 0
+        if 10**6 * d2 > (10**6 + epsilon) * d2_orig:
+            return 2
+        return 1
 
     def polygon(self, vertices, **kwargs):
         self.draw_.polygon(list(map(self.convert_, vertices)), **kwargs)
