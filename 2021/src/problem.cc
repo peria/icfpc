@@ -17,6 +17,23 @@ Problem::Problem(const char* filepath) {
     vertices_next_to[i].insert(j);
     vertices_next_to[j].insert(i);
   }
+  for (auto&& edge : edges) {
+    int32 i = edge.first;
+    int32 j = edge.second;
+    edge_d2s.push_back(GetD2(vertices[i], vertices[j]));
+  }
+}
+
+bool Problem::isAllowedEdge(const Segment& s0, const Segment& s1) const {
+  if (!isAllowedD2(GetD2(s0), GetD2(s1)))
+    return false;
+  for (int32 i = 0; i < hole.size(); ++i) {
+    const Segment hs{hole[i], hole[(i + 1) % hole.size()]};
+    if (IsCrossed(hs, s1))
+      return false;
+  }
+  // Check if s1 goes through outside of the hole.
+  return true;
 }
 
 void Problem::parseJsonFile(const char* filepath) {

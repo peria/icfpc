@@ -1,63 +1,127 @@
 #include "solvers/zero_dislikes.h"
 
 #include <glog/logging.h>
+#include <cmath>
 #include <iostream>
 #include <vector>
 
 #include "base.h"
 
-std::unique_ptr<Solution> ZeroDislikes::solve() {
-  std::unique_ptr<Solution> solution(new Solution(problem_.vertices));
+ZeroDislikes::ZeroDislikes(const Problem& problem)
+    : Solver(problem), solution_(new Solution(problem)) {
+  const auto& vertices = problem.vertices;
+  const int32 nv = vertices.size();
+  const double rate = (1000000 + problem.epsilon) * 1e-6;
 
-  std::vector<int32> assigned_vertices(problem_.hole.size(), -1);
-  std::vector<bool> used_vertices(problem_.vertices.size(), false);
-  for (int i = 0; i < problem_.vertices.size(); ++i) {
-    if (!assign(0, i, assigned_vertices, used_vertices))
+  longests_.resize(nv, std::vector<double>(nv, 1e+30));
+  for (int32 i = 0; i < nv; ++i) {
+    longests_[i][i] = 0;
+    for (auto j : problem.vertices_next_to[i]) {
+      if (j < i)
+        continue;
+      double d = std::sqrt(GetD2(vertices[i], vertices[j]));
+      double max_d = d * rate * 1.00001;
+      longests_[i][j] = max_d;
+      longests_[j][i] = max_d;
+    }
+  }
+  for (int32 k = 0; k < nv; ++k) {
+    for (int32 i = 0; i < nv; ++i) {
+      for (int32 j = 0; j < nv; ++j) {
+        longests_[i][j] =
+            std::min(longests_[i][j], longests_[k][i] + longests_[k][j]);
+      }
+    }
+  }
+}
+
+std::unique_ptr<Solution> ZeroDislikes::solve() {
+  const int32 num_vertices = problem_.vertices.size();
+  std::vector<bool> used_vertices(num_vertices, false);
+  for (int i = 0; i < num_vertices; ++i) {
+    if (!assignOnHole(0, i, used_vertices)) {
       continue;
+    }
     // Assignment of hole vertices are done.
     // TODO: Place other vertices.
-    for (int32 i = 0; i < problem_.hole.size(); ++i) {
-      int j = assigned_vertices[i];
-      solution->vertices[j] = problem_.hole[i];
-    }
-    return std::move(solution);
+    return std::move(solution_);
   }
   // Failed to assign
+  std::cerr << "Failed to assign vertices.\n";
   return {};
 }
 
-bool ZeroDislikes::assign(int32 hole_vi,
-                          int32 pose_vi,
-                          std::vector<int32>& assigned_vertices,
-                          std::vector<bool>& used_vertices) {
+bool ZeroDislikes::assignOnHole(int32 hole_vi,
+                                int32 pose_vi,
+                                std::vector<bool>& used_vertices) {
   const auto& hole = problem_.hole;
-  const auto& vertices = problem_.vertices;
-  const int32 next_hole_vi = (hole_vi + 1) % hole.size();
-  Integer hole_edge_d2 = Problem::getD2(hole[hole_vi], hole[next_hole_vi]);
-  assigned_vertices[hole_vi] = pose_vi;
-  used_vertices[pose_vi] = true;
+  if (hole_vi == hole.size())
+    return true;
 
-  // Check the last edge of the hole.
-  if (next_hole_vi == 0) {
-    Integer edge_d2 =
-        Problem::getD2(vertices[pose_vi], vertices[assigned_vertices[0]]);
-    return problem_.isAllowedD2(edge_d2, hole_edge_d2);
+  used_vertices[pose_vi] = true;
+  solution_->vertices[pose_vi] = hole[hole_vi];
+  if (!isValidAssignment(hole_vi, pose_vi, used_vertices)) {
+    used_vertices[pose_vi] = false;
+    return false;
   }
 
+  auto&& connected_pis = problem_.vertices_next_to[pose_vi];
   // Check edge-connected vertices first.
-  for (int32 i : problem_.vertices_next_to[pose_vi]) {
+  for (int32 i : connected_pis) {
     if (used_vertices[i])
       continue;
-    Integer edge_d2 = Problem::getD2(vertices[pose_vi], vertices[i]);
-    if (!problem_.isAllowedD2(edge_d2, hole_edge_d2))
-      continue;
-    if (assign(next_hole_vi, i, assigned_vertices, used_vertices))
+    if (assignOnHole(hole_vi + 1, i, used_vertices))
       return true;
   }
+
   // Check non edge-connected vertices.
-  for (int32 i = 0; i < problem_.vertices.size(); ++i) {
+  const auto& vertices = problem_.vertices;
+  for (int32 i = 0; i < vertices.size(); ++i) {
+    if (used_vertices[i])
+      continue;
+    if (connected_pis.count(i) > 0)
+      continue;
+
+    bool is_reachable = true;
+    for (int32 j = 0; j < vertices.size(); ++j) {
+      if (!used_vertices[j] || i == j)
+        continue;
+      double d = longests_[i][j];
+      if (GetD2(solution_->vertices[i], solution_->vertices[j]) > d * d) {
+        is_reachable = false;
+        break;
+      }
+    }
+    if (!is_reachable)
+      continue;
+
+    if (assignOnHole(hole_vi + 1, i, used_vertices))
+      return true;
   }
 
   used_vertices[pose_vi] = false;
   return false;
+}
+
+bool ZeroDislikes::isValidAssignment(int32 hole_vi,
+                                     int32 pose_vi,
+                                     const std::vector<bool>& used_vertices) {
+  const auto& hole = problem_.hole;
+  const auto& vertices = problem_.vertices;
+  for (int32 pi : problem_.vertices_next_to[pose_vi]) {
+    if (!used_vertices[pi])
+      continue;
+    Integer d2_0 = GetD2(vertices[pose_vi], vertices[pi]);
+    const Segment edge(solution_->vertices[pose_vi], solution_->vertices[pi]);
+    Integer d2 = GetD2(edge);
+    if (!problem_.isAllowedD2(d2_0, d2))
+      return false;
+    for (int32 i = 0; i < hole.size(); ++i) {
+      const Segment hole_edge{hole[i], hole[(i + 1) % hole.size()]};
+      if (IsCrossed(hole_edge, edge))
+        return false;
+    }
+    // TODO: Check if the edge is inside of the hole.
+  }
+  return true;
 }

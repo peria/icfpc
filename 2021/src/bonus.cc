@@ -18,14 +18,14 @@ Bonus::Type Bonus::GetType(const std::string& name) {
 
 std::ostream& operator<<(std::ostream& os, const Bonus::Type& type) {
   switch (type) {
-  case Bonus::Type::kGlobalist:
-    return os << "GLOBALIST";
-  case Bonus::Type::kBreakALeg:
-    return os << "BREAK_A_LEG";
-  case Bonus::Type::kWallhack:
-    return os << "WALLHACK";
-  case Bonus::Type::kSuperflex:
-    return os << "SUPERFLEX";
+    case Bonus::Type::kGlobalist:
+      return os << "GLOBALIST";
+    case Bonus::Type::kBreakALeg:
+      return os << "BREAK_A_LEG";
+    case Bonus::Type::kWallhack:
+      return os << "WALLHACK";
+    case Bonus::Type::kSuperflex:
+      return os << "SUPERFLEX";
   }
   return os << "Unknown";
 }

@@ -3,14 +3,16 @@
 #include <vector>
 
 #include "base.h"
+#include "geo.h"
+#include "problem.h"
 
 struct Solution {
-  Solution() = default;
-  Solution(const std::vector<Point>& v) : vertices(v) {}
+  explicit Solution(const Problem& p);
   ~Solution() {}
   void saveFile(const char* filepath);
 
   std::vector<Point> vertices;
+  const Problem& problem;
   // TODO: obtained bonus
   // TODO: used bonus
 };

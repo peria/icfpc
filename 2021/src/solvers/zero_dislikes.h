@@ -8,14 +8,19 @@
 
 class ZeroDislikes final : public Solver {
  public:
-  ZeroDislikes(const Problem& problem) : Solver(problem) {}
+  ZeroDislikes(const Problem& problem);
   ~ZeroDislikes() override = default;
 
   std::unique_ptr<Solution> solve() override;
 
  private:
-  bool assign(int32 hole_vi,
-              int32 pose_vi,
-              std::vector<int32>& assigned_vertices,
-              std::vector<bool>& used_vertices);
+  bool assignOnHole(int32 hole_vi,
+                    int32 pose_vi,
+                    std::vector<bool>& used_vertices);
+  bool isValidAssignment(int32 hole_vi,
+                         int32 pose_vi,
+                         const std::vector<bool>& used_vertices);
+
+  std::vector<std::vector<double>> longests_;
+  std::unique_ptr<Solution> solution_;
 };

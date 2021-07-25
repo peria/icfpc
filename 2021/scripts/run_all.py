@@ -28,7 +28,15 @@ def main():
         problem_filepath = os.path.join(problems_dir, filename)
         id, _, ext = filename.split('.')
         solution_filepath = os.path.join(solutions_dir, '{}.pose.json'.format(id))
-        subprocess.run([solver_filepath, problem_filepath, solution_filepath])
+        print('Try to run {}.'.format(id))
+        try:
+            subprocess.run([solver_filepath, problem_filepath, solution_filepath], timeout=10)
+            print('Run {} is done.'.format(id))
+        except subprocess.TimeoutExpired:
+            print('Run {} is Time out.'.format(id))
+            pass
+        except:
+            raise
 
 
 if __name__ == '__main__':

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <string>
 #include <ostream>
+#include <string>
 
 #include "base.h"
+#include "geo.h"
 
 struct Bonus {
   enum class Type { kGlobalist, kBreakALeg, kWallhack, kSuperflex };

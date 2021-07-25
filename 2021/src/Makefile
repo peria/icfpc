@@ -1,10 +1,10 @@
 CXX=clang++
 
-SRCS=main.cc solver.cc problem.cc solution.cc bonus.cc
+SRCS=main.cc geo.cc solver.cc problem.cc solution.cc bonus.cc
 
 CXXFLAGS=-O2 -std=c++17
 LDFLAGS=-lglog -lgflags
-CXXFLAGS+=-O0 -g
+# CXXFLAGS+=-O0 -g
 
 ROOT_DIR:=$(dir $(abspath .))
 SRC_DIR=$(ROOT_DIR)/src

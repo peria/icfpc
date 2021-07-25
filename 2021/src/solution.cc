@@ -1,7 +1,9 @@
 #include "solution.h"
 
-#include <nlohmann/json.hpp>
 #include <fstream>
+#include <nlohmann/json.hpp>
+
+Solution::Solution(const Problem& p) : vertices(p.vertices), problem(p) {}
 
 void Solution::saveFile(const char* filepath) {
   using Json = nlohmann::json;
