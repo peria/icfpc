@@ -1,0 +1,7 @@
+/.vscode
+/out/
+# need to be set up as a symbolic link
+/third_party
+
+depend.inc
+solver
