@@ -11,6 +11,9 @@
 DEFINE_string(problems_dir,
               DEFAULT_PROBLEMS_DIR,
               "Path to the directory that contains problem files.");
+DEFINE_string(solutions_dir,
+              DEFAULT_SOLUTIONS_DIR,
+              "Path to the directory that contains solution files.");
 
 int main(int argc, char** argv) {
   google::InitGoogleLogging(*argv);
@@ -22,14 +25,14 @@ int main(int argc, char** argv) {
   }
 
   std::filesystem::path problem_path =
-      fmt::format("{}/{}", FLAGS_problems_dir, argv[1]);
+      fmt::format("{}/{}.json", FLAGS_problems_dir, argv[1]);
   std::shared_ptr<Problem> problem = Problem::Load(problem_path);
   std::unique_ptr<Solver> solver(new Solver);
-  auto actions = solver->Solve(problem);
+  auto solution = solver->Solve(problem);
 
-  for (auto&& action : actions) {
-    std::cout << action->toString() << "\n";
-  }
+  std::filesystem::path solution_path =
+      fmt::format("{}/{}.isl", FLAGS_solutions_dir, argv[1]);
+  solution.Save(solution_path);
 
   return 0;
 }

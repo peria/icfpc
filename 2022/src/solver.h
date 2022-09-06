@@ -5,8 +5,9 @@
 
 #include "action.h"
 #include "problem.h"
+#include "solution.h"
 
 class Solver {
  public:
-  std::vector<std::shared_ptr<Action>> Solve(std::shared_ptr<Problem> problem);
+  Solution Solve(std::shared_ptr<Problem> problem);
 };
