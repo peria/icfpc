@@ -48,7 +48,7 @@ struct HorizontalCutAction final : public LineCutAction {
 
   Type type() const override { return Type::kHorizontalCut; }
   std::string toString() const override {
-    return fmt::format("cut [{0}] [Y] [{1}]", block_id, y);
+    return fmt::format("cut [{}] [Y] [{}]", block_id, y);
   }
 
   int y;
@@ -59,7 +59,7 @@ struct VerticalCutAction final : public LineCutAction {
 
   Type type() const override { return Type::kVerticalCut; }
   std::string toString() const override {
-    return fmt::format("cut [{0}] [X] [{1}]", block_id, x);
+    return fmt::format("cut [{}] [X] [{}]", block_id, x);
   }
 
   int x;
@@ -73,7 +73,7 @@ struct PointCutAction final : public CutAction {
   Type type() const override { return Type::kPointCut; }
   int baseCost() const override { return kBaseCost; }
   std::string toString() const override {
-    return fmt::format("cut [{0}] [{1}, {2}]", block_id, x, y);
+    return fmt::format("cut [{}] [{}, {}]", block_id, x, y);
   }
 
   int x;
@@ -87,7 +87,7 @@ struct ColorAction final : public Action {
   Type type() const override { return Type::kColor; }
   int baseCost() const override { return kBaseCost; }
   std::string toString() const override {
-    return fmt::format("color [{0}, {1}, {2}, {3}]", block_id, color.r(),
+    return fmt::format("color [{}] [{}, {}, {}, {}]", block_id, color.r(),
                        color.g(), color.b(), color.a());
   }
 
@@ -103,7 +103,7 @@ struct SwapAction final : public Action {
   Type type() const override { return Type::kSwap; }
   int baseCost() const override { return kBaseCost; }
   std::string toString() const override {
-    return fmt::format("swap [{0}] [{1}]", block_ids[0], block_ids[1]);
+    return fmt::format("swap [{}] [{}]", block_ids[0], block_ids[1]);
   }
 
   std::array<std::string, 2> block_ids;
@@ -117,7 +117,7 @@ struct MergeAction final : public Action {
   Type type() const override { return Type::kMerge; }
   int baseCost() const override { return kBaseCost; }
   std::string toString() const override {
-    return fmt::format("merge [{0}] [{1}]", block_ids[0], block_ids[1]);
+    return fmt::format("merge [{}] [{}]", block_ids[0], block_ids[1]);
   }
 
   std::array<std::string, 2> block_ids;
@@ -130,9 +130,7 @@ struct CommentAction final : public Action {
 
   Type type() const override { return Type::kComment; }
   int baseCost() const override { return kBaseCost; }
-  std::string toString() const override {
-    return fmt::format("# {0}", comment);
-  }
+  std::string toString() const override { return fmt::format("# {}", comment); }
 
   const std::string comment;
 };

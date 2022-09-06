@@ -66,7 +66,6 @@ std::shared_ptr<Problem> Problem::Load(const std::filesystem::path& filepath) {
     target_colors[i] = Color(c[0], c[1], c[2], c[3]);
   }
 
-  LOG(INFO) << "# of blocks: " << blocks.size();
   auto canvas = std::make_shared<Canvas>(width, height, source, blocks);
   auto target = std::make_shared<Image>(width, height, target_colors);
   return std::make_shared<Problem>(canvas, target);

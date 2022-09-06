@@ -23,7 +23,6 @@ class Canvas {
     if (blocks.size() == 0) {
       blocks_.push_back(std::make_shared<Block>("0", 0, 0, w, h));
     }
-    LOG(INFO) << "# of blocks in canvas: " << blocks_.size();
   }
 
   const Color& operator()(int x, int y) const { return (*image_)(x, y); }
