@@ -3,8 +3,8 @@
 
 #include <filesystem>
 #include <iostream>
+#include <memory>
 
-#include "memory.h"
 #include "problem.h"
 #include "solver.h"
 

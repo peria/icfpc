@@ -1,13 +1,13 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include <fmt/core.h>
 
 #include "block.h"
-#include "memory.h"
 
 // Named "Move" in the spec.
 struct Action {

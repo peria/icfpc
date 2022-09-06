@@ -1,6 +1,8 @@
 #include "solver.h"
 
 #include <cassert>
+#include <memory>
+#include <vector>
 
 #include <glog/logging.h>
 

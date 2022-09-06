@@ -4,7 +4,6 @@
 #include <string>
 
 #include "color.h"
-#include "memory.h"
 
 class Block {
  public:

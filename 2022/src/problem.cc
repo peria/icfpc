@@ -2,7 +2,9 @@
 
 #include <filesystem>
 #include <fstream>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include <glog/logging.h>
 #include <nlohmann/json.hpp>

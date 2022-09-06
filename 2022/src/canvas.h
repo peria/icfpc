@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <glog/logging.h>
@@ -8,7 +9,6 @@
 #include "block.h"
 #include "color.h"
 #include "image.h"
-#include "memory.h"
 
 class Canvas {
  public:

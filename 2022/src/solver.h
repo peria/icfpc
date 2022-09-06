@@ -1,9 +1,9 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "action.h"
-#include "memory.h"
 #include "problem.h"
 
 class Solver {

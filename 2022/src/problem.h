@@ -1,11 +1,11 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
 #include <string>
 
 #include "canvas.h"
 #include "image.h"
-#include "memory.h"
 
 class Problem {
  public:

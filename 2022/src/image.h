@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "color.h"
-#include "memory.h"
 
 // Named "Painting" in the spec.
 class Image {
