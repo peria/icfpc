@@ -2,10 +2,12 @@
 
 #include <array>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include <fmt/core.h>
+#include <glog/logging.h>
 
 #include "block.h"
 
@@ -26,12 +28,18 @@ struct Action {
   virtual Type type() const = 0;
   virtual int baseCost() const = 0;
   virtual std::string toString() const = 0;
+
+  virtual void setBlockId(const std::string& id) {
+    CHECK(false) << "This action is not for one input block: (" << (int)type()
+                 << ") [" << (int)(Type::kColor) << ": Color]";
+  }
 };
 
 struct CutAction : public Action {
   CutAction(const std::string& id) : block_id(id) {}
 
   bool isCut() const final { return true; }
+  void setBlockId(const std::string& id) final { block_id = id; }
 
   std::string block_id;
 };
@@ -90,6 +98,7 @@ struct ColorAction final : public Action {
     return fmt::format("color [{}] [{}, {}, {}, {}]", block_id, color.r(),
                        color.g(), color.b(), color.a());
   }
+  void setBlockId(const std::string& id) final { block_id = id; }
 
   std::string block_id;
   Color color;

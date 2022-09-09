@@ -16,6 +16,10 @@ class Block {
       : id_(id), x0_(x0), y0_(y0), x1_(x1), y1_(y1), color_(color) {}
 
   const std::string& id() const { return id_; }
+  int x0() const { return x0_; }
+  int x1() const { return x1_; }
+  int y0() const { return y0_; }
+  int y1() const { return y1_; }
 
  private:
   const std::string id_;

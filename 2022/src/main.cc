@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 
+#include "empty_solver.h"
 #include "problem.h"
 #include "solver.h"
 
@@ -27,8 +28,11 @@ int main(int argc, char** argv) {
   std::filesystem::path problem_path =
       fmt::format("{}/{}.json", FLAGS_problems_dir, argv[1]);
   std::shared_ptr<Problem> problem = Problem::Load(problem_path);
-  std::unique_ptr<Solver> solver(new Solver);
-  auto solution = solver->Solve(problem);
+
+  std::unique_ptr<Solver> solver(new EmptySolver);
+  Solver::Args args;
+  args.problem = problem;
+  auto solution = solver->Solve(args);
 
   std::filesystem::path solution_path =
       fmt::format("{}/{}.isl", FLAGS_solutions_dir, argv[1]);

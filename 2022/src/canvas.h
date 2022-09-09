@@ -25,10 +25,13 @@ class Canvas {
     }
   }
 
-  const Color& operator()(int x, int y) const { return (*image_)(x, y); }
-  Color& operator()(int x, int y) { return (*image_)(x, y); }
   const std::vector<std::shared_ptr<Block>>& blocks() const { return blocks_; }
   std::vector<std::shared_ptr<Block>>& blocks() { return blocks_; }
+
+  int width() const { return image_->width; }
+  int height() const { return image_->height; }
+  const Color& operator()(int x, int y) const { return (*image_)(x, y); }
+  Color& operator()(int x, int y) { return (*image_)(x, y); }
 
  private:
   std::shared_ptr<Image> image_;
