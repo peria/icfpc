@@ -19,8 +19,8 @@ std::shared_ptr<Action> LineToAction(const std::string& line) {
     char block_id[300];
     char dir;
     int val;
-    if (std::sscanf(line.c_str(), "cut [%s] [%c] [%d]", block_id, &dir, &val) ==
-        3) {
+    if (std::sscanf(line.c_str(), "cut [%[^]]] [%c] [%d]", block_id, &dir,
+                    &val) == 3) {
       if (std::toupper(dir) == 'X') {
         return std::make_shared<VerticalCutAction>(block_id, val);
       } else if (std::toupper(dir) == 'Y') {
@@ -33,30 +33,30 @@ std::shared_ptr<Action> LineToAction(const std::string& line) {
   {
     char block_id[300];
     int val1, val2;
-    if (std::sscanf(line.c_str(), "cut [%s] [%d,%d]", block_id, &val1, &val2) ==
-        3) {
+    if (std::sscanf(line.c_str(), "cut [%[^]]] [%d,%d]", block_id, &val1,
+                    &val2) == 3) {
       return std::make_shared<PointCutAction>(block_id, val1, val2);
     }
   }
   {
     char block_id[300];
     int r, g, b, a;
-    if (std::sscanf(line.c_str(), "color [%s] [%d,%d,%d,%d]", block_id, &r, &g,
-                    &b, &a) == 5) {
+    if (std::sscanf(line.c_str(), "color [%[^]]] [%d,%d,%d,%d]", block_id, &r,
+                    &g, &b, &a) == 5) {
       return std::make_shared<ColorAction>(block_id, Color(r, g, b, a));
     }
   }
   {
     char block_id0[150], block_id1[150];
-    if (std::sscanf(line.c_str(), "merge [%s] [%s]", block_id0, block_id1) ==
-        2) {
+    if (std::sscanf(line.c_str(), "merge [%[^]]] [%[^]]]", block_id0,
+                    block_id1) == 2) {
       return std::make_shared<MergeAction>(block_id0, block_id1);
     }
   }
   {
     char block_id0[150], block_id1[150];
-    if (std::sscanf(line.c_str(), "swap [%s] [%s]", block_id0, block_id1) ==
-        2) {
+    if (std::sscanf(line.c_str(), "swap [%[^]]] [%[^]]]", block_id0,
+                    block_id1) == 2) {
       return std::make_shared<SwapAction>(block_id0, block_id1);
     }
   }

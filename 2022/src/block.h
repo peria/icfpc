@@ -29,7 +29,7 @@ class Block {
 
   void setColor(std::optional<Color> c) {
     color_ = c;
-    image_.reset();
+    image_ = nullptr;
   }
   void setImage(std::shared_ptr<Image> img) {
     image_ = img;

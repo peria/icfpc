@@ -30,7 +30,7 @@ struct Action {
   virtual int baseCost() const = 0;
   virtual std::string toString() const = 0;
 
-  virtual void setBlockId(const std::string& id) {
+  virtual void setBlockId(const std::string& /*id*/) {
     CHECK(false) << "This action is not for one input block: (" << (int)type()
                  << ") [" << (int)(Type::kColor) << ": Color]";
   }
