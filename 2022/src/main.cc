@@ -47,9 +47,9 @@ void CommandEval(const int argc, char** argv) {
 
   std::filesystem::path problem_path =
       fmt::format("{}/{}.json", FLAGS_problems_dir, problem_id);
-  auto&& problem = Problem::Load(problem_path);
-  auto&& actions = Action::LoadIsl(isl_filepath);
-  auto&& result = Evaluator::evaluate(problem, actions);
+  auto problem = Problem::Load(problem_path);
+  auto actions = Action::LoadIsl(isl_filepath);
+  auto result = Evaluator::evaluate(problem, actions);
   LOG(INFO) << "# of actions: " << result.num_actions;
   LOG(INFO) << "Action cost : " << result.action_cost;
   LOG(INFO) << "Similarity  : " << result.similarity_cost;
@@ -69,10 +69,10 @@ void CommandSolve(const int argc, char** argv) {
 
   std::vector<std::shared_ptr<Action>> previous_actions;
   Solution solution;
-  for (auto&& name : {"EmptySolver"}) {
+  for (auto& name : {"EmptySolver"}) {
     Solver::Args args;
     args.problem = problem;
-    auto&& solver = SolverRegistry::getSolver(name);
+    auto solver = SolverRegistry::getSolver(name);
     solution = solver->Solve(args);
   }
   std::filesystem::path solution_path =

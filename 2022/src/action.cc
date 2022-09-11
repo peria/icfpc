@@ -74,7 +74,7 @@ std::vector<std::shared_ptr<Action>> Action::LoadIsl(
   std::vector<std::shared_ptr<Action>> actions;
   std::ifstream ifs(file_path);
   for (std::string line; std::getline(ifs, line);) {
-    auto&& action = LineToAction(line);
+    auto action = LineToAction(line);
     actions.push_back(action);
   }
   return actions;

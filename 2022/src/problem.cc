@@ -56,7 +56,7 @@ std::shared_ptr<Problem> Problem::Load(const std::filesystem::path& filepath) {
       LOG(INFO) << "Load source file: " << source_path;
       ifs >> source_json;
       for (int i = 0; i < width * height; ++i) {
-        auto&& c = source_json[i];
+        auto& c = source_json[i];
         source[i] = Color(c[0], c[1], c[2], c[3]);
       }
     }
@@ -64,7 +64,7 @@ std::shared_ptr<Problem> Problem::Load(const std::filesystem::path& filepath) {
 
   std::vector<Color> target_colors(width * height);
   for (int i = 0; i < width * height; ++i) {
-    auto&& c = target_json[i];
+    auto& c = target_json[i];
     target_colors[i] = Color(c[0], c[1], c[2], c[3]);
   }
 
