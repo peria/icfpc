@@ -3,6 +3,9 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <glog/logging.h>
 

@@ -7,3 +7,5 @@ class EmptySolver final : public Solver {
   EmptySolver() : Solver("EmptySolver") {}
   Solution Solve(const Args& args) override;
 };
+
+REGISTER_SOLVER("EmptySolver", EmptySolver);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <filesystem>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -33,6 +34,9 @@ struct Action {
     CHECK(false) << "This action is not for one input block: (" << (int)type()
                  << ") [" << (int)(Type::kColor) << ": Color]";
   }
+
+  static std::vector<std::shared_ptr<Action>> LoadIsl(
+      const std::filesystem::path& file_path);
 };
 
 struct CutAction : public Action {

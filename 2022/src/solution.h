@@ -8,6 +8,7 @@
 
 struct Solution {
   void Save(const std::filesystem::path& file_path);
+  static Solution Load(const std::filesystem::path& file_path);
 
   std::vector<std::shared_ptr<Action>> actions;
 };
