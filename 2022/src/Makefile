@@ -4,7 +4,7 @@ CXXFLAGS=-O2 -std=c++20 -W
 LDFLAGS=-lglog -lgflags -lfmt
 CXXFLAGS+=-O0 -g
 
-SRCS=problem.cc solution.cc solver.cc evaluator.cc action.cc block.cc image.cc
+SRCS=problem.cc solution.cc solver.cc evaluator.cc action.cc block.cc image.cc color.cc
 SRCS+=empty_solver.cc
 HEADERS=$(wildcard *.h)
 SRCS+=main.cc

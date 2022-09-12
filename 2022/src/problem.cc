@@ -43,6 +43,9 @@ std::shared_ptr<Problem> Problem::Load(const std::filesystem::path& filepath) {
       width = initial_json["width"];
       height = initial_json["height"];
       // TODO: Load blocks.
+    } else {
+      blocks.push_back(std::make_shared<Block>("0", 0, 0, width, height,
+                       Color(255, 255, 255, 255)));
     }
   }
 

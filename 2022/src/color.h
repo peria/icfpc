@@ -3,6 +3,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <ostream>
 
 // Named "RGBA" in the spec.
 struct Color {
@@ -48,3 +49,5 @@ struct Color {
     return std::sqrt(dr * dr + dg * dg + db * db + da * da);
   }
 };
+
+std::ostream& operator<<(std::ostream& os, const Color& c);

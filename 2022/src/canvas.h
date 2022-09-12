@@ -19,11 +19,7 @@ class Canvas {
          int h,
          const std::vector<Color>& cs,
          const std::vector<std::shared_ptr<Block>>& blocks)
-      : image_(std::make_shared<Image>(w, h, cs)), blocks_(blocks) {
-    if (blocks.size() == 0) {
-      blocks_.push_back(std::make_shared<Block>("0", 0, 0, w, h));
-    }
-  }
+      : image_(std::make_shared<Image>(w, h, cs)), blocks_(blocks) {}
 
   const std::vector<std::shared_ptr<Block>>& blocks() const { return blocks_; }
   std::vector<std::shared_ptr<Block>>& blocks() { return blocks_; }

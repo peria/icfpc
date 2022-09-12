@@ -36,17 +36,14 @@ class Block {
     color_ = std::nullopt;
   }
 
-  void SwapWith(std::shared_ptr<Block> rhs) {
-    std::swap(color_, rhs->color_);
-    std::swap(image_, rhs->image_);
-  }
+  static void Swap(std::shared_ptr<Block> lhs, std::shared_ptr<Block> rhs);
 
  private:
   const std::string id_;
-  const int x0_;
-  const int y0_;
-  const int x1_;
-  const int y1_;
+  int x0_;
+  int y0_;
+  int x1_;
+  int y1_;
   std::optional<Color> color_;
   std::shared_ptr<Image> image_;
 };

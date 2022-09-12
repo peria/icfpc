@@ -8,8 +8,8 @@
 // Named "Painting" in the spec.
 class Image {
  public:
-  static double ComputeSimilarity(std::shared_ptr<Image> a,
-                                  std::shared_ptr<Image> b);
+  static int ComputeSimilarity(std::shared_ptr<Image> a,
+                               std::shared_ptr<Image> b);
 
   Image(int w, int h, const std::vector<Color>& cs)
       : width(w), height(h), colors_(cs) {}

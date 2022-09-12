@@ -10,6 +10,7 @@
 #include "action.h"
 #include "block.h"
 #include "canvas.h"
+#include "color.h"
 #include "problem.h"
 
 Evaluator::Result Evaluator::evaluate(
@@ -22,23 +23,29 @@ Evaluator::Result Evaluator::evaluate(
   std::map<std::string, std::shared_ptr<Block>> blocks;
   // Holds references to all blocks, even if it was destroyed by an action.
   std::map<std::string, std::shared_ptr<Block>> all_blocks;
-  for (auto block : canvas->blocks()) {
+  auto register_block = [&blocks, &all_blocks](std::shared_ptr<Block> block) {
     blocks[block->id()] = block;
+    all_blocks[block->id()] = block;
+  };
+  auto unregister_block = [&blocks](std::shared_ptr<Block> block) {
+    blocks.erase(block->id());
+  };
+
+  for (auto block : canvas->blocks()) {
+    register_block(block);
     next_id =
         std::max<int>(next_id, std::strtoll(block->id().c_str(), nullptr, 10));
   }
-  all_blocks = blocks;
+  auto block = blocks.begin()->second;
 
   ++next_id;
   for (auto action : actions) {
-    LOG(INFO) << action->toString();
     switch (action->type()) {
     case Action::Type::kColor: {
       auto act = std::dynamic_pointer_cast<ColorAction>(action);
       auto block = blocks[act->block_id];
       CHECK(block) << act->block_id << " is not found.";
       block->setColor(act->color);
-      double block_area = block->area();
       break;
     }
     case Action::Type::kHorizontalCut: {
@@ -47,7 +54,7 @@ Evaluator::Result Evaluator::evaluate(
       CHECK(block) << act->block_id << " is not found.";
       CHECK_LE(block->y0(), act->y);
       CHECK_LT(act->y, block->y1());
-      blocks.erase(block->id());
+      unregister_block(block);
 
       auto block0 = std::make_shared<Block>(
           fmt::format("{}.0", block->id()), block->x0(), block->y0(),
@@ -55,12 +62,8 @@ Evaluator::Result Evaluator::evaluate(
       auto block1 = std::make_shared<Block>(fmt::format("{}.1", block->id()),
                                             block->x0(), act->y, block->x1(),
                                             block->y1(), block->color());
-      blocks[block0->id()] = block0;
-      blocks[block1->id()] = block1;
-      all_blocks[block0->id()] = block0;
-      all_blocks[block1->id()] = block1;
-
-      double block_area = block->area();
+      register_block(block0);
+      register_block(block1);
       break;
     }
     case Action::Type::kVerticalCut: {
@@ -69,7 +72,7 @@ Evaluator::Result Evaluator::evaluate(
       CHECK(block) << act->block_id << " is not found.";
       CHECK_LE(block->x0(), act->x);
       CHECK_LT(act->x, block->x1());
-      blocks.erase(block->id());
+      unregister_block(block);
 
       auto block0 = std::make_shared<Block>(fmt::format("{}.0", block->id()),
                                             block->x0(), block->y0(), act->x,
@@ -77,10 +80,8 @@ Evaluator::Result Evaluator::evaluate(
       auto block1 = std::make_shared<Block>(fmt::format("{}.1", block->id()),
                                             act->x, block->y0(), block->x1(),
                                             block->y1(), block->color());
-      blocks[block0->id()] = block0;
-      blocks[block1->id()] = block1;
-      all_blocks[block0->id()] = block0;
-      all_blocks[block1->id()] = block1;
+      register_block(block0);
+      register_block(block1);
       break;
     }
     case Action::Type::kPointCut: {
@@ -91,7 +92,7 @@ Evaluator::Result Evaluator::evaluate(
       CHECK_LT(act->y, block->y1());
       CHECK_LE(block->x0(), act->x);
       CHECK_LT(act->x, block->x1());
-      blocks.erase(block->id());
+      unregister_block(block);
 
       auto block0 =
           std::make_shared<Block>(fmt::format("{}.0", block->id()), block->x0(),
@@ -105,14 +106,10 @@ Evaluator::Result Evaluator::evaluate(
       auto block3 =
           std::make_shared<Block>(fmt::format("{}.3", block->id()), block->x0(),
                                   act->y, act->x, block->y1(), block->color());
-      blocks[block0->id()] = block0;
-      blocks[block1->id()] = block1;
-      blocks[block2->id()] = block2;
-      blocks[block3->id()] = block3;
-      all_blocks[block0->id()] = block0;
-      all_blocks[block1->id()] = block1;
-      all_blocks[block2->id()] = block2;
-      all_blocks[block3->id()] = block3;
+      register_block(block0);
+      register_block(block1);
+      register_block(block2);
+      register_block(block3);
       break;
     }
     case Action::Type::kMerge: {
@@ -121,8 +118,8 @@ Evaluator::Result Evaluator::evaluate(
       CHECK(block0) << act->block_ids[0] << " is not found.";
       auto block1 = blocks[act->block_ids[1]];
       CHECK(block1) << act->block_ids[1] << " is not found.";
-      blocks.erase(act->block_ids[0]);
-      blocks.erase(act->block_ids[1]);
+      unregister_block(block0);
+      unregister_block(block1);
       if (block0->x0() > block1->x0() || block0->y1() > block1->y1()) {
         std::swap(block0, block1);
       }
@@ -156,8 +153,7 @@ Evaluator::Result Evaluator::evaluate(
           }
         }
       }
-      blocks[block->id()] = block;
-      all_blocks[block->id()] = block;
+      register_block(block);
       break;
     }
     case Action::Type::kSwap: {
@@ -166,7 +162,7 @@ Evaluator::Result Evaluator::evaluate(
       CHECK(block0) << act->block_ids[0] << " is not found.";
       auto block1 = blocks[act->block_ids[1]];
       CHECK(block1) << act->block_ids[1] << " is not found.";
-      block0->SwapWith(block1);
+      Block::Swap(block0, block1);
       break;
     }
     case Action::Type::kComment:
@@ -175,6 +171,7 @@ Evaluator::Result Evaluator::evaluate(
       break;
     }
   }
+  LOG(INFO) << "Processing is done.";
 
   Result result;
   std::int64_t action_cost = 0;
@@ -201,7 +198,7 @@ Evaluator::Result Evaluator::evaluate(
       break;
     }
     case Action::Type::kSwap: {
-      auto act = std::dynamic_pointer_cast<MergeAction>(action);
+      auto act = std::dynamic_pointer_cast<SwapAction>(action);
       block_area = all_blocks[act->block_ids[0]]->area();
       break;
     }
