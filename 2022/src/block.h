@@ -9,13 +9,16 @@
 
 class Block {
  public:
+  Block(const std::string& id, int x0, int y0, int x1, int y1)
+      : id_(id), x0_(x0), y0_(y0), x1_(x1), y1_(y1) {}
+  Block(const std::string& id, int x0, int y0, int x1, int y1, Color color)
+      : id_(id), x0_(x0), y0_(y0), x1_(x1), y1_(y1), color_(color) {}
   Block(const std::string& id,
         int x0,
         int y0,
         int x1,
         int y1,
-        std::optional<Color> color = std::nullopt)
-      : id_(id), x0_(x0), y0_(y0), x1_(x1), y1_(y1), color_(color) {}
+        std::shared_ptr<Block> block);
 
   const std::string& id() const { return id_; }
   int x0() const { return x0_; }

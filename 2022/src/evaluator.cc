@@ -56,12 +56,12 @@ Evaluator::Result Evaluator::evaluate(
       CHECK_LT(act->y, block->y1());
       unregister_block(block);
 
-      auto block0 = std::make_shared<Block>(
-          fmt::format("{}.0", block->id()), block->x0(), block->y0(),
-          block->x1(), act->y, block->color());
-      auto block1 = std::make_shared<Block>(fmt::format("{}.1", block->id()),
-                                            block->x0(), act->y, block->x1(),
-                                            block->y1(), block->color());
+      auto block0 =
+          std::make_shared<Block>(fmt::format("{}.0", block->id()), block->x0(),
+                                  block->y0(), block->x1(), act->y, block);
+      auto block1 =
+          std::make_shared<Block>(fmt::format("{}.1", block->id()), block->x0(),
+                                  act->y, block->x1(), block->y1(), block);
       register_block(block0);
       register_block(block1);
       break;
@@ -74,12 +74,12 @@ Evaluator::Result Evaluator::evaluate(
       CHECK_LT(act->x, block->x1());
       unregister_block(block);
 
-      auto block0 = std::make_shared<Block>(fmt::format("{}.0", block->id()),
-                                            block->x0(), block->y0(), act->x,
-                                            block->y1(), block->color());
-      auto block1 = std::make_shared<Block>(fmt::format("{}.1", block->id()),
-                                            act->x, block->y0(), block->x1(),
-                                            block->y1(), block->color());
+      auto block0 =
+          std::make_shared<Block>(fmt::format("{}.0", block->id()), block->x0(),
+                                  block->y0(), act->x, block->y1(), block);
+      auto block1 =
+          std::make_shared<Block>(fmt::format("{}.1", block->id()), act->x,
+                                  block->y0(), block->x1(), block->y1(), block);
       register_block(block0);
       register_block(block1);
       break;
@@ -96,16 +96,16 @@ Evaluator::Result Evaluator::evaluate(
 
       auto block0 =
           std::make_shared<Block>(fmt::format("{}.0", block->id()), block->x0(),
-                                  block->y0(), act->x, act->y, block->color());
-      auto block1 = std::make_shared<Block>(fmt::format("{}.1", block->id()),
-                                            act->x, block->y0(), block->x1(),
-                                            act->y, block->color());
-      auto block2 = std::make_shared<Block>(fmt::format("{}.2", block->id()),
-                                            act->x, act->y, block->x1(),
-                                            block->y1(), block->color());
+                                  block->y0(), act->x, act->y, block);
+      auto block1 =
+          std::make_shared<Block>(fmt::format("{}.1", block->id()), act->x,
+                                  block->y0(), block->x1(), act->y, block);
+      auto block2 =
+          std::make_shared<Block>(fmt::format("{}.2", block->id()), act->x,
+                                  act->y, block->x1(), block->y1(), block);
       auto block3 =
           std::make_shared<Block>(fmt::format("{}.3", block->id()), block->x0(),
-                                  act->y, act->x, block->y1(), block->color());
+                                  act->y, act->x, block->y1(), block);
       register_block(block0);
       register_block(block1);
       register_block(block2);
