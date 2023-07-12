@@ -1,4 +1,4 @@
-use crate::base::Placement;
+use crate::base::{Placement, Rect};
 use serde::{Deserialize, Serialize};
 
 pub struct Attendee {
@@ -6,68 +6,88 @@ pub struct Attendee {
     pub tastes: Vec<f64>,
 }
 
-pub struct Pillar {
-    pub center: Placement,
-    pub radius: f64,
-}
-
-pub struct Problem {
-    pub problem_id: usize,
-    pub room_size: Placement,
-    pub stage_size: Placement,
-    pub stage_bottom_left: Placement,
-    pub instruments: Vec<usize>,
-    pub attendees: Vec<Attendee>,
-    pub pillars: Vec<Pillar>,
-}
-
 #[derive(Serialize, Deserialize)]
-struct InputPillar {
-    center: [f64; 2],
-    radius: f64,
-}
-
-#[derive(Serialize, Deserialize)]
-struct InputAttendee {
+struct JsonAttendee {
     x: f64,
     y: f64,
     tastes: Vec<f64>,
 }
 
+pub struct Pillar {
+    pub center: Placement,
+    pub radius: f64,
+}
+
 #[derive(Serialize, Deserialize)]
-struct InputProblem {
+struct JsonPillar {
+    center: [f64; 2],
+    radius: f64,
+}
+
+pub struct Problem {
+    pub problem_id: usize,
+    pub room: Rect,
+    pub stage: Rect,
+    pub instruments: Vec<usize>,
+    pub attendees: Vec<Attendee>,
+    pub pillars: Vec<Pillar>,
+
+    pub is_full_div: bool,
+    pub num_musicians: usize,
+    pub num_attendees: usize,
+}
+
+#[derive(Serialize, Deserialize)]
+struct JsonProblem {
     room_width: f64,
     room_height: f64,
     stage_width: f64,
     stage_height: f64,
     stage_bottom_left: [f64; 2],
     musicians: Vec<usize>,
-    attendees: Vec<InputAttendee>,
-    pillars: Vec<InputPillar>,
+    attendees: Vec<JsonAttendee>,
+    pillars: Vec<JsonPillar>,
 }
 
 impl Problem {
-    pub fn read(problem_id: usize, filepath: &str) -> Problem {
+    pub const EMPTY_RADIUS: f64 = 10.0;
+
+    pub fn read_from_id(problem_id: usize) -> Problem {
+        let filepath = format!("data/problem/problem-{}.json", problem_id);
+        let mut problem = Problem::read_from_file(&filepath);
+        problem.problem_id = problem_id;
+        problem.is_full_div = problem_id > 55;
+        problem
+    }
+
+    pub fn read_from_file(filepath: &str) -> Problem {
         let json = match std::fs::read_to_string(filepath) {
             Err(why) => panic!("Failed to load {}: {}", filepath, why),
             Ok(x) => x,
         };
-        let mut problem = Self::from(json.as_str());
-        problem.problem_id = problem_id;
+        Self::from(json.as_str())
+    }
 
-        problem
+    pub fn dump_statistics(&self) {
+        eprintln!(
+            "[{:2}] {:5} Mus, {:5} Att, {:3} Inst.",
+            self.problem_id,
+            self.num_musicians,
+            self.num_attendees,
+            self.instruments.iter().max().unwrap()
+        );
     }
 }
 
 impl From<&str> for Problem {
     fn from(value: &str) -> Self {
-        let input: InputProblem = serde_json::from_str(value).unwrap();
+        let input: JsonProblem = serde_json::from_str(value).unwrap();
         Problem::from(input)
     }
 }
 
-impl From<InputProblem> for Problem {
-    fn from(value: InputProblem) -> Self {
+impl From<JsonProblem> for Problem {
+    fn from(value: JsonProblem) -> Self {
         let attendees: Vec<Attendee> = value
             .attendees
             .into_iter()
@@ -76,27 +96,31 @@ impl From<InputProblem> for Problem {
 
         Problem {
             problem_id: 0,
-            room_size: Placement {
-                x: value.room_width,
-                y: value.room_height,
+            is_full_div: false,
+            room: Rect {
+                top: value.room_height,
+                bottom: 0.0,
+                left: 0.0,
+                right: value.room_width,
             },
-            stage_size: Placement {
-                x: value.stage_width,
-                y: value.stage_height,
+            stage: Rect {
+                left: value.stage_bottom_left[0],
+                bottom: value.stage_bottom_left[1],
+                top: value.stage_bottom_left[1] + value.stage_height,
+                right: value.stage_bottom_left[0] + value.stage_width,
             },
-            stage_bottom_left: Placement {
-                x: value.stage_bottom_left[0],
-                y: value.stage_bottom_left[1],
-            },
+
+            num_musicians: value.musicians.len(),
             instruments: value.musicians,
+            num_attendees: attendees.len(),
             attendees,
             pillars: Vec::new(),
         }
     }
 }
 
-impl From<InputAttendee> for Attendee {
-    fn from(value: InputAttendee) -> Self {
+impl From<JsonAttendee> for Attendee {
+    fn from(value: JsonAttendee) -> Self {
         Self {
             placement: Placement {
                 x: value.x,

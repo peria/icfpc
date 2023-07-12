@@ -1,6 +1,10 @@
-pub mod base;
-pub mod problem;
-pub mod solution;
+mod base;
+mod problem;
+mod solution;
+
+pub use base::{Musician, Placement};
+pub use problem::Problem;
+pub use solution::Solution;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
