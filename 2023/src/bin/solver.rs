@@ -1,5 +1,5 @@
 use core::panic;
-use rand::Rng;
+use rand::{distributions::Uniform, prelude::Distribution, Rng};
 use std::{env, time::Instant};
 
 use icfpc2023::{Musician, Placement, Problem, Solution};
@@ -19,10 +19,14 @@ impl Solver {
         let right = stage.right - Problem::EMPTY_RADIUS;
         let bottom = stage.bottom + Problem::EMPTY_RADIUS;
         let top = stage.top - Problem::EMPTY_RADIUS;
+        let x_gen = Uniform::new_inclusive(left, right);
+        let y_gen = Uniform::new_inclusive(bottom, top);
         let mut musicians = Vec::new();
         for _ in 0..num_musicians {
             loop {
-                let p = Placement::new(rng.gen_range(left..right), rng.gen_range(bottom..top));
+                let x = x_gen.sample(&mut rng);
+                let y = y_gen.sample(&mut rng);
+                let p = Placement::new(x, y);
                 if musicians
                     .iter()
                     .all(|q| p.distance2(q) >= Problem::EMPTY_RADIUS * Problem::EMPTY_RADIUS)
@@ -77,7 +81,9 @@ fn main() {
             solve(id);
         }
         None => {
-            eprintln!("Usage: {} <problem_id>", &args[0]);
+            for id in 1..=90 {
+                solve(id);
+            }
         }
     };
 }
