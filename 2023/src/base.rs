@@ -31,6 +31,16 @@ pub struct Rect {
     pub right: f64,
 }
 
+impl Rect {
+    pub fn width(&self) -> f64 {
+        self.right - self.left
+    }
+
+    pub fn height(&self) -> f64 {
+        self.top - self.bottom
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct Musician {
     pub placement: Placement,

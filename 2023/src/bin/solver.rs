@@ -1,5 +1,4 @@
-use core::panic;
-use rand::{distributions::Uniform, prelude::Distribution, Rng};
+use rand::{distributions::Uniform, prelude::Distribution};
 use std::{env, time::Instant};
 
 use icfpc2023::{Musician, Placement, Problem, Solution};
@@ -47,7 +46,7 @@ impl Solver {
         let mut solution = Solution::from(&self.problem);
         solution.musicians = musicians;
 
-        solution.evaluate();
+        solution.evaluate(&self.problem);
         solution.elapsed_time = timer.elapsed().as_secs_f64();
 
         solution
@@ -65,12 +64,7 @@ fn solve(problem_id: usize) {
     problem.dump_statistics();
     let solver = Solver::from(problem);
     let solution = solver.solve();
-    let json = solution.to_json();
-    let filepath = format!("data/solution/solution-{}.json", problem_id);
-    match std::fs::write(&filepath, &json) {
-        Err(why) => panic!("Failed to save the solution {}: {}", &filepath, why),
-        Ok(_) => (),
-    }
+    solution.save_as_json();
 }
 
 fn main() {
