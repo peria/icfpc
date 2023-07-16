@@ -24,6 +24,7 @@ impl Placement {
     }
 }
 
+#[derive(Clone, Copy)]
 pub struct Rect {
     pub top: f64,
     pub bottom: f64,

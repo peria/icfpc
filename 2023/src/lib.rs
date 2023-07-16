@@ -3,6 +3,7 @@ mod image;
 mod problem;
 mod solution;
 
+pub use crate::image::Image;
 pub use base::{Musician, Placement, Rect};
 pub use problem::Problem;
 pub use solution::Solution;
