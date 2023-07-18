@@ -38,9 +38,11 @@ impl Solver {
 
         let musicians = musicians
             .into_iter()
-            .map(|x| Musician {
+            .zip(self.problem.instruments.iter())
+            .map(|(x, &inst)| Musician {
                 placement: x,
                 volume: 1.0,
+                instrument: inst,
             })
             .collect();
         let mut solution = Solution::from(&self.problem);

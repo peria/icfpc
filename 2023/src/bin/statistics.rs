@@ -17,7 +17,8 @@ struct JsonStatistics {
     room_height: usize,
     stage_width: usize,
     stage_height: usize,
-    musicians: Vec<JsonMusician>,
+    num_musicians: usize,
+    num_attendees: usize,
 }
 
 impl Statistics {
@@ -43,18 +44,6 @@ impl Statistics {
     }
 
     fn to_json(&self) -> JsonStatistics {
-        let musicians = self
-            .solution
-            .musicians
-            .iter()
-            .zip(self.problem.instruments.iter())
-            .map(|(x, y)| JsonMusician {
-                musician: *x,
-                instrument: *y,
-                score: 0,
-            })
-            .collect();
-        // TODO: Compute musician.score
         JsonStatistics {
             problem_id: self.problem.problem_id,
             score: self.solution.score,
@@ -63,7 +52,8 @@ impl Statistics {
             room_height: self.problem.room.height() as usize,
             stage_width: self.problem.stage.width() as usize,
             stage_height: self.problem.stage.height() as usize,
-            musicians,
+            num_musicians: self.problem.num_musicians,
+            num_attendees: self.problem.num_attendees,
         }
     }
 }

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
+<html lang="ja">
 
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <script type="module">
     import data from "../../data/solution/solution-data.json" assert { type: "json" };
     let score = data.map(x => x['score'] - 0).reduce((s, x) => s + x);
@@ -9,25 +11,46 @@
     let table = document.getElementById('problems');
     data.forEach(x => {
       let tr = document.createElement('tr');
-      ['problem_id', 'score', 'elapsed_time'].forEach(k => {
+      ['problem_id', 'score', 'elapsed_time', 'num_musicians', 'num_attendees'].forEach(k => {
         let e = document.createElement('td');
         e.innerText = x[k];
         tr.appendChild(e);
       });
+
+      let room = document.createElement('td');
+      room.innerText = x['room_width'] + " x " + x['room_height'];
+      tr.appendChild(room);
+      let stage = document.createElement('td');
+      stage.innerText = x['stage_width'] + " x " + x['stage_height'];
+      tr.appendChild(stage);
+
       table.appendChild(tr);
     });
   </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 </head>
 
 <body>
-  Total Score: <span id="score"></span>
-  <table id="problems">
-    <tr>
-      <th>ID</th>
-      <th>Score</th>
-      <th>Time[sec]</th>
-      <th>Room Size</th>
-      <th>Stage Size</th>
-    </tr>
-  </table>
+  <div class="container">
+    <section class="row">
+      <h4 class="col s12 right-align">
+        Total Score: <span id="score"></span>
+      </h4>
+    </section>
+    <section>
+      <table id="problems">
+        <tr>
+          <th>ID</th>
+          <th>Score</th>
+          <th>Time[sec]</th>
+          <th>演者数</th>
+          <th>客数</th>
+          <th>部屋</th>
+          <th>ステージ</th>
+        </tr>
+      </table>
+    </section>
+  </div>
 </body>
+
+</html>

@@ -101,9 +101,14 @@ impl Solution {
 
 impl From<&Problem> for Solution {
     fn from(value: &Problem) -> Self {
+        let musicians = value
+            .instruments
+            .iter()
+            .map(|&x| Musician::new(x))
+            .collect();
         Solution {
             problem_id: value.problem_id,
-            musicians: vec![Musician::new(); value.num_musicians],
+            musicians,
             elapsed_time: 0.0,
             score: 0,
         }
@@ -119,18 +124,22 @@ impl From<&str> for Solution {
 
 impl From<JsonSolution> for Solution {
     fn from(value: JsonSolution) -> Self {
+        let problem_id = value.problem_id;
+        let problem = Problem::read_from_id(problem_id);
         let musicians = value
             .placements
             .iter()
             .zip(value.volumes.iter())
-            .map(|(p, v)| Musician {
-                placement: *p,
-                volume: *v,
+            .zip(problem.instruments.iter())
+            .map(|((&p, &v), &inst)| Musician {
+                placement: p,
+                volume: v,
+                instrument: inst,
             })
             .collect();
 
         Solution {
-            problem_id: value.problem_id,
+            problem_id,
             musicians,
             elapsed_time: value.elapsed_time,
             score: value.score,

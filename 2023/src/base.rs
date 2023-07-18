@@ -46,13 +46,15 @@ impl Rect {
 pub struct Musician {
     pub placement: Placement,
     pub volume: f64,
+    pub instrument: usize,
 }
 
 impl Musician {
-    pub fn new() -> Musician {
+    pub fn new(instrument: usize) -> Musician {
         Musician {
             placement: Placement { x: 0.0, y: 0.0 },
             volume: 1.0,
+            instrument,
         }
     }
 
