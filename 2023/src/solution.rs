@@ -28,6 +28,7 @@ impl Solution {
         let instruments = &problem.instruments;
         let num_musicians = problem.num_musicians;
         let mut qs = vec![1.0; num_musicians];
+        // Extend 2: Playing Together
         if problem.is_full_div {
             for i in 0..num_musicians {
                 let mut q = 0.0;

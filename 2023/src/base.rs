@@ -42,7 +42,7 @@ impl Rect {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
 pub struct Musician {
     pub placement: Placement,
     pub volume: f64,

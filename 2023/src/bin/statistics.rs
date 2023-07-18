@@ -1,21 +1,23 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use icfpc2023::{Image, Problem, Solution};
+use icfpc2023::{Musician, Problem, Solution};
 
 struct Statistics {
     problem: Problem,
     solution: Solution,
 }
 
-#[derive(Deserialize, Serialize)]
+// JsonStatistics stores data to be displayed in HTML.
+#[derive(Serialize)]
 struct JsonStatistics {
     problem_id: usize,
-    image: String,
     score: i64,
+    elapsed_time: f64,
     room_width: usize,
     room_height: usize,
     stage_width: usize,
     stage_height: usize,
+    musicians: Vec<JsonMusician>,
 }
 
 impl Statistics {
@@ -27,7 +29,6 @@ impl Statistics {
         let problem = &statistics.problem;
         let solution = &statistics.solution;
 
-        statistics.draw_image();
         println!(
             "{:2}\t{:12}\t{:4}x{:4}\t{:4}x{:4}",
             problem.problem_id,
@@ -41,35 +42,37 @@ impl Statistics {
         statistics
     }
 
-    fn draw_image(&self) {
-        let problem = &self.problem;
-        let problem_id = self.problem.problem_id;
-        let path = format!("data/image/solution-{}.png", problem_id);
-        let mut image = Image::new(&problem.room);
-        image.rectangle(&problem.stage, (128.0, 128.0, 0.0));
-        for pillar in &problem.pillars {
-            image.circle(&pillar.center, pillar.radius, (0.0, 255.0, 0.0))
-        }
-        for musician in &self.solution.musicians {
-            image.circle(&musician.placement, 5.0, (255.0, 255.0, 255.0));
-        }
-        for attendee in &self.problem.attendees {
-            image.circle(&attendee.placement, 2.0, (0.0, 255.0, 255.0));
-        }
-        image.save(&path);
-    }
-
     fn to_json(&self) -> JsonStatistics {
+        let musicians = self
+            .solution
+            .musicians
+            .iter()
+            .zip(self.problem.instruments.iter())
+            .map(|(x, y)| JsonMusician {
+                musician: *x,
+                instrument: *y,
+                score: 0,
+            })
+            .collect();
+        // TODO: Compute musician.score
         JsonStatistics {
             problem_id: self.problem.problem_id,
-            image: format!("data/image/solution-{}.png", self.problem.problem_id),
             score: self.solution.score,
+            elapsed_time: self.solution.elapsed_time,
             room_width: self.problem.room.width() as usize,
             room_height: self.problem.room.height() as usize,
             stage_width: self.problem.stage.width() as usize,
             stage_height: self.problem.stage.height() as usize,
+            musicians,
         }
     }
+}
+
+#[derive(Serialize)]
+struct JsonMusician {
+    musician: Musician,
+    instrument: usize,
+    score: i64,
 }
 
 fn dump_statistics() {

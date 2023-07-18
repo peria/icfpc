@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<head>
+  <script type="module">
+    import data from "../../data/solution/solution-data.json" assert { type: "json" };
+    let score = data.map(x => x['score'] - 0).reduce((s, x) => s + x);
+    document.getElementById('score').innerText = score;
+
+    let table = document.getElementById('problems');
+    data.forEach(x => {
+      let tr = document.createElement('tr');
+      ['problem_id', 'score', 'elapsed_time'].forEach(k => {
+        let e = document.createElement('td');
+        e.innerText = x[k];
+        tr.appendChild(e);
+      });
+      table.appendChild(tr);
+    });
+  </script>
+</head>
+
+<body>
+  Total Score: <span id="score"></span>
+  <table id="problems">
+    <tr>
+      <th>ID</th>
+      <th>Score</th>
+      <th>Time[sec]</th>
+      <th>Room Size</th>
+      <th>Stage Size</th>
+    </tr>
+  </table>
+</body>
