@@ -1,43 +1,16 @@
-use crate::base::{Placement, Rect};
-use serde::{Deserialize, Serialize};
-
-pub struct Attendee {
-    pub placement: Placement,
-    pub tastes: Vec<f64>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct JsonAttendee {
-    x: f64,
-    y: f64,
-    tastes: Vec<f64>,
-}
-
-pub struct Pillar {
-    pub center: Placement,
-    pub radius: f64,
-}
-
-#[derive(Serialize, Deserialize)]
-struct JsonPillar {
-    center: [f64; 2],
-    radius: f64,
-}
+use crate::{Attendee, Pillar, Point, Rect};
+use serde::Deserialize;
 
 pub struct Problem {
     pub problem_id: usize,
     pub room: Rect,
     pub stage: Rect,
-    pub instruments: Vec<usize>,
+    pub instruments: Vec<usize>, // named "musicians" in JSON
     pub attendees: Vec<Attendee>,
     pub pillars: Vec<Pillar>,
-
-    pub is_full_div: bool,
-    pub num_musicians: usize,
-    pub num_attendees: usize,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 struct JsonProblem {
     room_width: f64,
     room_height: f64,
@@ -46,17 +19,35 @@ struct JsonProblem {
     stage_bottom_left: [f64; 2],
     musicians: Vec<usize>,
     attendees: Vec<JsonAttendee>,
-    pillars: Vec<JsonPillar>,
+    pillars: Option<Vec<Pillar>>,
+}
+
+#[derive(Deserialize)]
+struct JsonAttendee {
+    x: f64,
+    y: f64,
+    tastes: Vec<f64>,
 }
 
 impl Problem {
     pub const EMPTY_RADIUS: f64 = 10.0;
 
+    pub fn is_full_div(&self) -> bool {
+        self.problem_id > 55
+    }
+
+    pub fn num_musicians(&self) -> usize {
+        self.instruments.len()
+    }
+
+    pub fn num_attendees(&self) -> usize {
+        self.attendees.len()
+    }
+
     pub fn read_from_id(problem_id: usize) -> Problem {
         let filepath = format!("data/problem/problem-{}.json", problem_id);
         let mut problem = Problem::read_from_file(&filepath);
         problem.problem_id = problem_id;
-        problem.is_full_div = problem_id > 55;
         problem
     }
 
@@ -72,8 +63,8 @@ impl Problem {
         eprintln!(
             "[{:2}] {:5} Mus, {:5} Att, {:3} Inst.",
             self.problem_id,
-            self.num_musicians,
-            self.num_attendees,
+            self.num_musicians(),
+            self.num_attendees(),
             self.instruments.iter().max().unwrap()
         );
     }
@@ -94,35 +85,38 @@ impl From<JsonProblem> for Problem {
             .map(|x| Attendee::from(x))
             .collect();
 
+        let room = Rect {
+            top: value.room_height,
+            bottom: 0.0,
+            left: 0.0,
+            right: value.room_width,
+        };
+        let stage = Rect {
+            left: value.stage_bottom_left[0],
+            bottom: value.stage_bottom_left[1],
+            top: value.stage_bottom_left[1] + value.stage_height,
+            right: value.stage_bottom_left[0] + value.stage_width,
+        };
+        let pillars = match value.pillars {
+            None => Vec::new(),
+            Some(x) => x,
+        };
+
         Problem {
             problem_id: 0,
-            is_full_div: false,
-            room: Rect {
-                top: value.room_height,
-                bottom: 0.0,
-                left: 0.0,
-                right: value.room_width,
-            },
-            stage: Rect {
-                left: value.stage_bottom_left[0],
-                bottom: value.stage_bottom_left[1],
-                top: value.stage_bottom_left[1] + value.stage_height,
-                right: value.stage_bottom_left[0] + value.stage_width,
-            },
-
-            num_musicians: value.musicians.len(),
+            room,
+            stage,
             instruments: value.musicians,
-            num_attendees: attendees.len(),
             attendees,
-            pillars: Vec::new(),
+            pillars,
         }
     }
 }
 
 impl From<JsonAttendee> for Attendee {
     fn from(value: JsonAttendee) -> Self {
-        Self {
-            placement: Placement {
+        Attendee {
+            placement: Point {
                 x: value.x,
                 y: value.y,
             },

@@ -1,4 +1,4 @@
-use crate::{Placement, Rect};
+use crate::{Point, Rect};
 
 use opencv as cv;
 
@@ -27,7 +27,7 @@ impl Image {
         cv::imgcodecs::imwrite(path, &self.canvas, &params).unwrap();
     }
 
-    pub fn circle(&mut self, center: &Placement, radius: f64, color: (f64, f64, f64)) {
+    pub fn circle(&mut self, center: &Point, radius: f64, color: (f64, f64, f64)) {
         let cx = center.x as i32;
         let cy = center.y as i32;
         cv::imgproc::circle(

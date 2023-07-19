@@ -52,8 +52,8 @@ impl Statistics {
             room_height: self.problem.room.height() as usize,
             stage_width: self.problem.stage.width() as usize,
             stage_height: self.problem.stage.height() as usize,
-            num_musicians: self.problem.num_musicians,
-            num_attendees: self.problem.num_attendees,
+            num_musicians: self.problem.num_musicians(),
+            num_attendees: self.problem.num_attendees(),
         }
     }
 }

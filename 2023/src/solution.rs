@@ -1,20 +1,37 @@
+use crate::{Musician, Point, Problem};
 use core::panic;
-
-use crate::{
-    base::{Musician, Placement},
-    Problem,
-};
 use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct Solution {
     pub problem_id: usize,
+    // `musicians` may have some duplicated information with Problem.
     pub musicians: Vec<Musician>,
-
     pub elapsed_time: f64,
     pub score: i64,
 }
 
+#[derive(Serialize, Deserialize)]
+struct Output {
+    placements: Vec<Point>,
+    volumes: Vec<f64>,
+}
+
 impl Solution {
+    pub fn new(value: &Problem) -> Solution {
+        let musicians = value
+            .instruments
+            .iter()
+            .map(|&x| Musician::new(x))
+            .collect();
+        Solution {
+            problem_id: value.problem_id,
+            musicians,
+            elapsed_time: 0.0,
+            score: 0,
+        }
+    }
+
     // Compute the final score, based on the spec.
     pub fn evaluate(&mut self, problem: &Problem) -> i64 {
         if self.problem_id != problem.problem_id {
@@ -26,10 +43,10 @@ impl Solution {
 
         let musicians = &self.musicians;
         let instruments = &problem.instruments;
-        let num_musicians = problem.num_musicians;
+        let num_musicians = problem.num_musicians();
         let mut qs = vec![1.0; num_musicians];
         // Extend 2: Playing Together
-        if problem.is_full_div {
+        if problem.is_full_div() {
             for i in 0..num_musicians {
                 let mut q = 0.0;
                 let mi = &musicians[i];
@@ -67,22 +84,27 @@ impl Solution {
         self.score
     }
 
-    pub fn to_json(&self) -> String {
-        let placements: Vec<Placement> = self.musicians.iter().map(|x| x.placement).collect();
+    pub fn as_output(&self) -> String {
+        let placements: Vec<Point> = self.musicians.iter().map(|x| x.placement).collect();
         let volumes: Vec<f64> = self.musicians.iter().map(|x| x.volume).collect();
 
-        let output = JsonSolution {
+        let output = Output {
             placements,
             volumes,
-            problem_id: self.problem_id,
-            elapsed_time: self.elapsed_time,
-            score: self.score,
         };
         serde_json::to_string(&output).unwrap()
     }
 
+    pub fn save_output(&self) {
+        let output = self.as_output();
+        let filepath = format!("data/output/output-{}.json", self.problem_id);
+        if let Err(why) = std::fs::write(&filepath, &output) {
+            panic!("Failed to save the solution {}: {}", &filepath, why);
+        }
+    }
+
     pub fn save_as_json(&self) {
-        let json = self.to_json();
+        let json = serde_json::to_string(self).unwrap();
         let filepath = format!("data/solution/solution-{}.json", self.problem_id);
         if let Err(why) = std::fs::write(&filepath, &json) {
             panic!("Failed to save the solution {}: {}", &filepath, why);
@@ -99,62 +121,8 @@ impl Solution {
     }
 }
 
-impl From<&Problem> for Solution {
-    fn from(value: &Problem) -> Self {
-        let musicians = value
-            .instruments
-            .iter()
-            .map(|&x| Musician::new(x))
-            .collect();
-        Solution {
-            problem_id: value.problem_id,
-            musicians,
-            elapsed_time: 0.0,
-            score: 0,
-        }
-    }
-}
-
 impl From<&str> for Solution {
     fn from(value: &str) -> Self {
-        let input: JsonSolution = serde_json::from_str(value).unwrap();
-        Solution::from(input)
+        serde_json::from_str(value).unwrap()
     }
-}
-
-impl From<JsonSolution> for Solution {
-    fn from(value: JsonSolution) -> Self {
-        let problem_id = value.problem_id;
-        let problem = Problem::read_from_id(problem_id);
-        let musicians = value
-            .placements
-            .iter()
-            .zip(value.volumes.iter())
-            .zip(problem.instruments.iter())
-            .map(|((&p, &v), &inst)| Musician {
-                placement: p,
-                volume: v,
-                instrument: inst,
-            })
-            .collect();
-
-        Solution {
-            problem_id,
-            musicians,
-            elapsed_time: value.elapsed_time,
-            score: value.score,
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize)]
-struct JsonSolution {
-    // Output requirementsi in contest spec.
-    placements: Vec<Placement>,
-    volumes: Vec<f64>,
-
-    // Additional information to track.
-    problem_id: usize,
-    elapsed_time: f64,
-    score: i64,
 }

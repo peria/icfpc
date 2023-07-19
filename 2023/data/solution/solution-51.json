@@ -1,1 +1,1 @@
-{"placements":[{"x":552.1750468592626,"y":1503.7278544247297},{"x":656.7371403697836,"y":1537.6030930378124}],"volumes":[1.0,1.0],"problem_id":51,"elapsed_time":6.934e-6,"score":184303}
+{"problem_id":51,"musicians":[{"placement":{"x":1082.8356894214426,"y":1389.9697514261595},"volume":1.0,"instrument":0,"score":0},{"placement":{"x":1776.200470322919,"y":1391.448385145242},"volume":1.0,"instrument":1,"score":0}],"elapsed_time":6.702e-6,"score":179712}

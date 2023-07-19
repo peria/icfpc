@@ -1,7 +1,7 @@
 use rand::{distributions::Uniform, prelude::Distribution};
 use std::{env, time::Instant};
 
-use icfpc2023::{Musician, Placement, Problem, Solution};
+use icfpc2023::{Musician, Point, Problem, Solution};
 
 struct Solver {
     problem: Problem,
@@ -11,7 +11,7 @@ impl Solver {
     fn solve(&self) -> Solution {
         let timer = Instant::now();
 
-        let num_musicians = self.problem.num_musicians;
+        let num_musicians = self.problem.num_musicians();
         let mut rng = rand::thread_rng();
         let stage = &self.problem.stage;
         let left = stage.left + Problem::EMPTY_RADIUS;
@@ -25,7 +25,7 @@ impl Solver {
             loop {
                 let x = x_gen.sample(&mut rng);
                 let y = y_gen.sample(&mut rng);
-                let p = Placement::new(x, y);
+                let p = Point::new(x, y);
                 if musicians
                     .iter()
                     .all(|q| p.distance2(q) >= Problem::EMPTY_RADIUS * Problem::EMPTY_RADIUS)
@@ -43,13 +43,18 @@ impl Solver {
                 placement: x,
                 volume: 1.0,
                 instrument: inst,
+                score: 0,
             })
             .collect();
-        let mut solution = Solution::from(&self.problem);
+        let mut solution = Solution::new(&self.problem);
         solution.musicians = musicians;
 
         solution.evaluate(&self.problem);
         solution.elapsed_time = timer.elapsed().as_secs_f64();
+        eprintln!(
+            "Score: {0}, Time: {1:.2} sec.",
+            solution.score, solution.elapsed_time
+        );
 
         solution
     }
@@ -66,6 +71,7 @@ fn solve(problem_id: usize) {
     problem.dump_statistics();
     let solver = Solver::from(problem);
     let solution = solver.solve();
+    solution.save_output();
     solution.save_as_json();
 }
 

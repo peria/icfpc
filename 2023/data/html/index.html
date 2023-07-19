@@ -6,7 +6,7 @@
   <script type="module">
     import data from "../../data/solution/solution-data.json" assert { type: "json" };
     let score = data.map(x => x['score'] - 0).reduce((s, x) => s + x);
-    document.getElementById('score').innerText = score;
+    document.getElementById('score').innerText = score.toLocaleString();
 
     let table = document.getElementById('problems');
     data.forEach(x => {
@@ -32,11 +32,15 @@
 
 <body>
   <div class="container">
-    <section class="row">
-      <h4 class="col s12 right-align">
-        Total Score: <span id="score"></span>
-      </h4>
-    </section>
+    <h4 class="right-align">
+      Total Score: <span id="score"></span>
+    </h4>
+    <h4 class="right-align">
+      sanma: <span>95,182,115,684</span>
+    </h4>
+    <h4 class="right-align">
+      #1 @ freeze: <span>136,841,439,993</span>
+    </h4>
     <section>
       <table id="problems">
         <tr>
