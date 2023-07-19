@@ -41,20 +41,17 @@ impl Solution {
             );
         }
 
-        let musicians = &self.musicians;
-        let instruments = &problem.instruments;
-        let num_musicians = problem.num_musicians();
-        let mut qs = vec![1.0; num_musicians];
+        let musicians = &mut self.musicians;
+        let mut qs = vec![1.0; musicians.len()];
+
         // Extend 2: Playing Together
         if problem.is_full_div() {
-            for i in 0..num_musicians {
+            for (i, mi) in musicians.iter().enumerate() {
                 let mut q = 0.0;
-                let mi = &musicians[i];
-                for j in 0..num_musicians {
-                    if i == j || instruments[i] != instruments[j] {
+                for (j, mj) in musicians.iter().enumerate() {
+                    if i == j || mi.instrument != mj.instrument {
                         continue;
                     }
-                    let mj = &musicians[j];
                     let d = mi.placement.distance(&mj.placement);
                     q += 1.0 / d;
                 }
@@ -64,22 +61,30 @@ impl Solution {
         }
 
         let mut score = 0;
+        let mut musician_scores = vec![0i64; musicians.len()];
         for attendee in problem.attendees.iter() {
-            for i in 0..num_musicians {
-                let mi = &musicians[i];
-                let instrument = instruments[i];
-                let impact = if (0..num_musicians)
-                    .any(|j| i != j && musicians[j].blocks(&mi.placement, &attendee.placement))
+            for (i, mi) in musicians.iter().enumerate() {
+                let impact = if musicians
+                    .iter()
+                    .enumerate()
+                    .any(|(j, mj)| i != j && mj.blocks(&mi.placement, &attendee.placement))
                 {
                     0.0
                 } else {
                     let d2 = attendee.placement.distance2(&mi.placement);
-                    (1_000_000.0 * attendee.tastes[instrument] / d2).ceil()
+                    (1_000_000.0 * attendee.tastes[mi.instrument] / d2).ceil()
                 };
-                score += (mi.volume * qs[i] * impact).ceil() as i64;
+                let pair_score = (mi.volume * qs[i] * impact).ceil() as i64;
+                score += pair_score;
+                musician_scores[i] += pair_score;
             }
         }
         self.score = score;
+
+        musicians
+            .iter_mut()
+            .zip(musician_scores.iter())
+            .for_each(|(mi, score)| mi.score = *score);
 
         self.score
     }
