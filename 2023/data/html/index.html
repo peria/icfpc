@@ -23,6 +23,9 @@
       let stage = document.createElement('td');
       stage.innerText = x['stage_width'] + " x " + x['stage_height'];
       tr.appendChild(stage);
+      let link = document.createElement('td');
+      link.innerHTML = '<a href="solution.html?id=' + x['problem_id'] + '">Solution</a>';
+      tr.appendChild(link);
 
       table.appendChild(tr);
     });
@@ -51,6 +54,7 @@
           <th>客数</th>
           <th>部屋</th>
           <th>ステージ</th>
+          <th>Solution</th>
         </tr>
       </table>
     </section>

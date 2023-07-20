@@ -1,4 +1,5 @@
-use rand::{distributions::Uniform, prelude::Distribution};
+use rand::{distributions::Uniform, prelude::Distribution, SeedableRng};
+use rand_chacha::ChaCha8Rng;
 use std::{env, time::Instant};
 
 use icfpc2023::{Musician, Point, Problem, Solution};
@@ -8,11 +9,14 @@ struct Solver {
 }
 
 impl Solver {
+    const RANDOM_SEED: [u8; 32] = [123; 32];
+
     fn solve(&self) -> Solution {
         let timer = Instant::now();
 
         let num_musicians = self.problem.num_musicians();
-        let mut rng = rand::thread_rng();
+        // Use a random number generator with a fixed seed to check behavioral differences.
+        let mut rng: ChaCha8Rng = SeedableRng::from_seed(Self::RANDOM_SEED);
         let stage = &self.problem.stage;
         let left = stage.left + Problem::EMPTY_RADIUS;
         let right = stage.right - Problem::EMPTY_RADIUS;

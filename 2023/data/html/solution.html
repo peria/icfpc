@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script>
+    function update(problem, solution) {
+      const canvas = document.getElementById('canvas');
+      const context = canvas.getContext('2d');
+      const STAGE_BASE_X = problem.stage_bottom_left[0];
+      const STAGE_BASE_Y = problem.stage_bottom_left[1];
+      const CANVAS_BASE_X = 50;
+      const CANVAS_BASE_Y = 50;
+      const OFFSET_X = CANVAS_BASE_X - STAGE_BASE_X;
+      const OFFSET_Y = CANVAS_BASE_Y - STAGE_BASE_Y;
+      console.log(problem);
+      console.log(solution);
+
+      canvas.width = problem.stage_width + CANVAS_BASE_X * 2;
+      canvas.height = problem.stage_height + CANVAS_BASE_Y * 2;
+
+      // Paint stage
+      context.fillStyle = "rgb(128, 255, 255)";
+      context.fillRect(STAGE_BASE_X + OFFSET_X,
+        STAGE_BASE_Y + OFFSET_Y,
+        problem.stage_width,
+        problem.stage_height);
+
+      // Draw musicians
+      solution.musicians.forEach(musician => {
+        const score = Math.max(0, Math.min(255, Math.floor(musician.score * 256e-5)));
+        const color = `rgb(${score}, ${score}, ${score})`;
+        const place = musician.placement;
+        const x = place.x + OFFSET_X;
+        const y = place.y + OFFSET_Y;
+        context.fillStyle = color;
+        context.beginPath();
+        context.arc(x, y, 5, 0, 2 * Math.PI);
+        context.fill();
+        context.stroke();
+      });
+
+      // Draw room outline
+      context.fillStyle = "rgb(0, 0, 128)";
+      context.strokeRect(OFFSET_X,
+        OFFSET_Y,
+        problem.room_width,
+        problem.room_height);
+    }
+
+    window.onload = () => {
+      const params = (new URL(window.location.href)).searchParams;
+      const id = params.get("id");
+      document.getElementById('id').innerText = "ID: " + id;
+      const problem_url = '../problem/problem-' + id + '.json';
+      const solution_url = '../solution/solution-' + id + '.json';
+      Promise.all([
+        fetch(problem_url).then(x => x.json()),
+        fetch(solution_url).then(x => x.json())
+      ])
+        .then(xs => update(xs[0], xs[1]));
+    };
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <span id="id"></span>
+  </div>
+  <canvas id="canvas"></canvas>
+</body>
+
+</html>
