@@ -17,6 +17,7 @@ pub struct Pillar {
 pub struct Musician {
     pub placement: Point,
     pub volume: f64,
+    pub q: f64,
     pub instrument: usize,
     pub score: i64,
 }
@@ -26,6 +27,7 @@ impl Musician {
         Musician {
             placement: Point { x: 0.0, y: 0.0 },
             volume: 1.0,
+            q: 1.0,
             instrument,
             score: 0,
         }

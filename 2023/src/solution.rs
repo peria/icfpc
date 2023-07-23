@@ -2,7 +2,7 @@ use crate::{Musician, Point, Problem};
 use core::panic;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Solution {
     pub problem_id: usize,
     // `musicians` may have some duplicated information with Problem.
@@ -84,7 +84,11 @@ impl Solution {
         musicians
             .iter_mut()
             .zip(musician_scores.iter())
-            .for_each(|(mi, score)| mi.score = *score);
+            .zip(qs.iter())
+            .for_each(|((mi, score), q)| {
+                mi.score = *score;
+                mi.q = *q;
+            });
 
         self.score
     }
@@ -104,7 +108,7 @@ impl Solution {
         let output = self.as_output();
         let filepath = format!("data/output/output-{}.json", self.problem_id);
         if let Err(why) = std::fs::write(&filepath, &output) {
-            panic!("Failed to save the solution {}: {}", &filepath, why);
+            panic!("Failed to save output to commit {}: {}", &filepath, why);
         }
     }
 
