@@ -13,6 +13,27 @@ pub struct Pillar {
     pub radius: f64,
 }
 
+impl Pillar {
+    pub fn blocks(&self, p1: &Point, p2: &Point) -> bool {
+        // https://tjkendev.github.io/procon-library/python/geometry/circle_line_cross_point.html
+        let dx = p2.x - p1.x;
+        let dy = p2.y - p1.y;
+        let x = p1.x - self.center.x;
+        let y = p1.y - self.center.y;
+        let a = dx * dx + dy * dy;
+        let b = dx * x + dy * y;
+        let c = x * x + y * y - self.radius * self.radius;
+        let det = b * b - a * c;
+        if det <= 0.0 {
+            return false;
+        }
+
+        let f0 = c;
+        let f1 = a + 2.0 * b + c;
+        f0 * f1 <= 0.0 || (-a <= b && b <= 0.0)
+    }
+}
+
 #[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Musician {
     pub placement: Point,

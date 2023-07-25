@@ -24,7 +24,7 @@ impl Solver {
         let timer = Instant::now();
 
         let mut solution = self.init_solution();
-        let mut num_iteration = 0;
+        let mut num_iterations = 0;
         loop {
             let score = solution.score;
             let updates = self.decide_update(&solution);
@@ -34,18 +34,20 @@ impl Solver {
             if diff < 0 {
                 self.apply_updates(&mut solution, &updates, true);
                 solution.evaluate(&self.problem);
+            } else {
+                eprintln!("Updated: {}", solution.score);
             }
-            eprintln!("Updated: {}", solution.score);
-
-            num_iteration += 1;
-            if num_iteration > 20 {
+            num_iterations += 1;
+            if timer.elapsed().as_secs_f64() > 5.0 {
                 break;
             }
         }
+
         solution.elapsed_time = timer.elapsed().as_secs_f64();
+        solution.num_iterations = num_iterations;
         eprintln!(
-            "Score: {0}, Time: {1:.2} sec.",
-            solution.score, solution.elapsed_time
+            "Score: {0}, Time: {1:.2} sec. {2} iteration",
+            solution.score, solution.elapsed_time, num_iterations
         );
         solution
     }

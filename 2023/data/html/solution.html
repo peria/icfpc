@@ -5,6 +5,11 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <script>
     function update(problem, solution) {
+      drawCanvas(problem, solution);
+      updateMusiciansTable(problem, solution);
+    }
+
+    function drawCanvas(problem, solution) {
       const canvas = document.getElementById('canvas');
       const context = canvas.getContext('2d');
       const STAGE_BASE_X = problem.stage_bottom_left[0];
@@ -13,11 +18,12 @@
       const CANVAS_BASE_Y = 50;
       const OFFSET_X = CANVAS_BASE_X - STAGE_BASE_X;
       const OFFSET_Y = CANVAS_BASE_Y - STAGE_BASE_Y;
-      console.log(problem);
-      console.log(solution);
 
       canvas.width = problem.stage_width + CANVAS_BASE_X * 2;
       canvas.height = problem.stage_height + CANVAS_BASE_Y * 2;
+      const max_abs_score = solution.musicians
+        .map(x => Math.abs(x.score))
+        .reduce((m, x) => Math.max(m, x), 0);
 
       // Paint stage
       context.fillStyle = "rgb(128, 255, 255)";
@@ -28,8 +34,8 @@
 
       // Draw musicians
       solution.musicians.forEach(musician => {
-        const score = Math.max(0, Math.min(255, Math.floor(musician.score * 256e-5)));
-        const color = `rgb(${score}, ${score}, ${score})`;
+        const score = Math.floor(musician.score * 256 / max_abs_score);
+        const color = score < 0 ? `rgb(${-score}, 0, 0)` : `rgb(${score}, ${score}, ${score})`;
         const place = musician.placement;
         const x = place.x + OFFSET_X;
         const y = place.y + OFFSET_Y;
@@ -46,6 +52,20 @@
         OFFSET_Y,
         problem.room_width,
         problem.room_height);
+    }
+
+    function updateMusiciansTable(problem, solution) {
+      const inst_table = document.getElementById('instruments');
+      let count = {};
+      console.log(problem.musicians);
+      problem.musicians.forEach(
+        x => count[x] = (count[x] == undefined) ? 1 : (count[x] + 1));
+      console.log(count);
+      let html = '';
+      for (var key in count) {
+        html += `<tr><td>${key}</td><td>${count[key]}</td></tr>`;
+      }
+      inst_table.innerHTML = html;
     }
 
     window.onload = () => {
@@ -65,10 +85,24 @@
 </head>
 
 <body>
-  <div class="container">
-    <span id="id"></span>
-  </div>
-  <canvas id="canvas"></canvas>
+  <section class="container">
+    <div>
+      <h4 id="id" class="col"></h4>
+    </div>
+    <div class="row">
+      <canvas id="canvas"></canvas>
+      <table class="table">
+        <thead>
+          <caption>Musician</caption>
+          <tr>
+            <th>楽器</th>
+            <th>人数</th>
+          </tr>
+        </thead>
+        <tbody id="instruments"></tbody>
+      </table>
+    </div>
+  </section>
 </body>
 
 </html>

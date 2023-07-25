@@ -8,6 +8,7 @@ pub struct Solution {
     // `musicians` may have some duplicated information with Problem.
     pub musicians: Vec<Musician>,
     pub elapsed_time: f64,
+    pub num_iterations: usize,
     pub score: i64,
 }
 
@@ -28,6 +29,7 @@ impl Solution {
             problem_id: value.problem_id,
             musicians,
             elapsed_time: 0.0,
+            num_iterations: 0,
             score: 0,
         }
     }
@@ -73,6 +75,15 @@ impl Solution {
                 } else {
                     let d2 = attendee.placement.distance2(&mi.placement);
                     (1_000_000.0 * attendee.tastes[mi.instrument] / d2).ceil()
+                };
+                let impact = if problem
+                    .pillars
+                    .iter()
+                    .any(|p| p.blocks(&mi.placement, &attendee.placement))
+                {
+                    0.0
+                } else {
+                    impact
                 };
                 let pair_score = (mi.volume * qs[i] * impact).ceil() as i64;
                 score += pair_score;
