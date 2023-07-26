@@ -70,7 +70,14 @@ impl Solver {
         let mut updates = Vec::new();
 
         // TODO: Change behavor
-        let id = self.generator.get_stream() as usize % self.problem.num_musicians();
+        let mut id = 0;
+        for i in 1..self.problem.num_musicians() {
+            if solution.musicians[id].score > solution.musicians[i].score {
+                id = i;
+            }
+        }
+
+        let id = id;
         loop {
             let point = self.get_random_place();
             if solution.musicians.iter().enumerate().all(|(i, m)| {
