@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <script>
     function update(problem, solution) {
+      document.getElementById('score').innerText = `Score: ${solution.score}`;
       drawCanvas(problem, solution);
       updateMusiciansTable(problem, solution);
     }
@@ -86,21 +87,26 @@
 
 <body>
   <section class="container">
-    <div>
-      <h4 id="id" class="col"></h4>
+    <div class="row">
+      <h4 id="id" class="col s3"></h4>
+      <h4 id="score" class="col s3"></h4>
     </div>
     <div class="row">
-      <canvas id="canvas"></canvas>
-      <table class="table">
-        <thead>
-          <caption>Musician</caption>
-          <tr>
-            <th>楽器</th>
-            <th>人数</th>
-          </tr>
-        </thead>
-        <tbody id="instruments"></tbody>
-      </table>
+      <div class="col s6">
+        <canvas id="canvas"></canvas>
+      </div>
+      <div class="col s6">
+        <table class="table col s6">
+          <thead>
+            <caption>Musician</caption>
+            <tr>
+              <th>楽器</th>
+              <th>人数</th>
+            </tr>
+          </thead>
+          <tbody id="instruments"></tbody>
+        </table>
+      </div>
     </div>
   </section>
 </body>
