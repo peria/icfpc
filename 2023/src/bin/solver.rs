@@ -4,10 +4,8 @@ use std::{env, time::Instant};
 
 use icfpc2023::{Musician, Point, Problem, Solution};
 
-pub struct Update {
-    pub id: usize,
-    pub new_place: Point,
-    pub old_place: Point,
+enum Update {
+    Move(usize, Point, Point),
 }
 
 struct Solver {
@@ -27,14 +25,16 @@ impl Solver {
         let mut solution = self.init_solution();
         let mut num_iterations = 0;
         loop {
-            let updates = self.decide_update(&solution);
-            let diff = self.apply_updates(&mut solution, &updates, false);
-            if diff < 0 {
-                self.apply_updates(&mut solution, &updates, true);
-                solution.evaluate(&self.problem);
-            } else {
+            let update = self.decide_update(&solution);
+            let diff = self.apply_update(&mut solution, &update, false);
+            if diff > 0 {
+                solution.score += diff;
                 eprintln!("Updated: {}", solution.score);
             }
+            if diff < 0 {
+                self.apply_update(&mut solution, &update, true);
+            }
+
             num_iterations += 1;
             if timer.elapsed().as_secs_f64() > Self::TIME_THRESHOLD {
                 break;
@@ -45,6 +45,11 @@ impl Solver {
         }
         solution.evaluate(&self.problem);
 
+        for musician in solution.musicians.iter_mut() {
+            musician.volume = if musician.score < 0 { 0.0 } else { 10.0 };
+        }
+
+        solution.evaluate(&self.problem);
         solution.elapsed_time = timer.elapsed().as_secs_f64();
         solution.num_iterations = num_iterations;
         eprintln!(
@@ -66,10 +71,12 @@ impl Solver {
     // 1. Move one musician to a random position
     // self.move_musician_random(&mut solution, dry_run)
     // 2. Swap two musicians who have different instruments
-    fn decide_update(&mut self, solution: &Solution) -> Vec<Update> {
-        let mut updates = Vec::new();
+    fn decide_update(&mut self, solution: &Solution) -> Update {
+        self.decide_move(solution)
+    }
 
-        // TODO: Change behavor
+    fn decide_move(&mut self, solution: &Solution) -> Update {
+        // Move the least scored musician to a random point.
         let mut id = 0;
         for i in 1..self.problem.num_musicians() {
             if solution.musicians[id].score > solution.musicians[i].score {
@@ -85,110 +92,142 @@ impl Solver {
                     || point.distance2(&m.placement)
                         >= Problem::EMPTY_RADIUS * Problem::EMPTY_RADIUS
             }) {
-                updates.push(Update {
-                    id,
-                    old_place: solution.musicians[id].placement,
-                    new_place: point,
-                });
-                return updates;
+                let old_point = solution.musicians[id].placement.clone();
+                return Update::Move(id, old_point, point);
             }
         }
     }
 
-    fn apply_updates(&self, solution: &mut Solution, updates: &Vec<Update>, revert: bool) -> i64 {
+    fn apply_update(&self, solution: &mut Solution, update: &Update, revert: bool) -> i64 {
+        let mut diff = 0;
+        match update {
+            Update::Move(id, old_place, new_place) => {
+                let id = *id;
+                let diffs = self.remove_musican(solution, id);
+                for (j, d) in diffs.iter() {
+                    diff += d;
+                    solution.musicians[*j].score += d;
+                }
+
+                solution.musicians[id].placement = if revert { *old_place } else { *new_place };
+
+                let diffs = self.place_musician(solution, id);
+                for (j, d) in diffs.iter() {
+                    diff += d;
+                    solution.musicians[*j].score += d;
+                }
+            }
+        }
+        diff
+    }
+
+    // Remove a musician and returns approx. score difference.
+    // Approx. means that we ignore q[i] in this computation.
+    fn remove_musican(&self, solution: &mut Solution, id: usize) -> Vec<(usize, i64)> {
         let attendees = &self.problem.attendees;
         let pillars = &self.problem.pillars;
+        let musician = &solution.musicians[id];
 
-        let mut diff = 0;
-        for update in updates.iter() {
-            let id = update.id;
-            let musician = &solution.musicians[id];
-
-            // Effect on removing the musician.
-            diff -= musician.score;
-            let mut diffs = Vec::new();
-            for (j, mj) in solution.musicians.iter().enumerate() {
-                if j == id {
-                    continue;
-                }
-                for a in attendees.iter() {
-                    if !musician.blocks(&mj.placement, &a.placement) {
-                        continue;
-                    }
-
-                    let d = if pillars
-                        .iter()
-                        .any(|p| p.blocks(&mj.placement, &a.placement))
-                        || solution.musicians.iter().enumerate().any(|(k, mk)| {
-                            k != id && j != k && mk.blocks(&mj.placement, &a.placement)
-                        }) {
-                        0
-                    } else {
-                        let d2 = mj.placement.distance2(&a.placement);
-                        (1_000_000.0 * a.tastes[mj.instrument] / d2).ceil() as i64
-                    };
-                    diffs.push((j, d));
-                    diff += d;
-                }
+        let mut diffs = Vec::new();
+        diffs.push((id, -musician.score));
+        for (j, mj) in solution.musicians.iter().enumerate() {
+            if j == id {
+                continue;
             }
-
-            for (j, d) in diffs.iter() {
-                solution.musicians[*j].score += d;
-            }
-
-            solution.musicians[id].placement = if revert {
-                update.old_place
-            } else {
-                update.new_place
-            };
-
-            // Effect on putting the musician.
-            let musician = &solution.musicians[id];
-            for (j, mj) in solution.musicians.iter().enumerate() {
-                if j == id {
-                    continue;
-                }
-                for a in attendees.iter() {
-                    if musician.blocks(&mj.placement, &a.placement) {
-                        let d = if pillars
-                            .iter()
-                            .any(|p| p.blocks(&mj.placement, &a.placement))
-                            || solution.musicians.iter().enumerate().any(|(k, mk)| {
-                                k != id && j != k && mk.blocks(&mj.placement, &a.placement)
-                            }) {
-                            0
-                        } else {
-                            // Newly blocked by `musician`.
-                            let d2 = mj.placement.distance2(&a.placement);
-                            (1_000_000.0 * a.tastes[mj.instrument] / d2).ceil() as i64
-                        };
-                        diff -= d;
-                    }
-                }
-            }
-            let mut musician_score = 0;
+            let mut diff = 0;
             for a in attendees.iter() {
-                let d = if solution
+                // If `musician` is the one who blocks the ray between `mj`
+                // and `a`, the ray earns a new score.
+                if !musician.blocks(&mj.placement, &a.placement) {
+                    continue;
+                }
+                if pillars
+                    .iter()
+                    .any(|p| !p.blocks(&mj.placement, &a.placement))
+                {
+                    continue;
+                }
+                if solution
                     .musicians
                     .iter()
                     .enumerate()
-                    .all(|(j, mj)| id == j || !mj.blocks(&musician.placement, &a.placement))
-                    && pillars
-                        .iter()
-                        .all(|p| !p.blocks(&musician.placement, &a.placement))
+                    .any(|(k, mk)| k != id || k != j || mk.blocks(&mj.placement, &a.placement))
                 {
-                    (1_000_000.0 * a.tastes[musician.instrument]
-                        / musician.placement.distance2(&a.placement))
-                    .ceil() as i64
-                } else {
-                    0
-                };
-                musician_score += d;
+                    continue;
+                }
+                let d2 = mj.placement.distance2(&a.placement);
+                diff += (1_000_000.0 * a.tastes[mj.instrument] / d2).ceil() as i64;
             }
-            diff += musician_score;
-            solution.musicians[id].score = musician_score;
+            diffs.push((j, diff));
         }
-        diff
+        diffs
+    }
+
+    // Place a musician and returns approx. score difference.
+    // Approx. means that we ignore q[i] in this computation.
+    fn place_musician(&self, solution: &mut Solution, id: usize) -> Vec<(usize, i64)> {
+        let pillars = &self.problem.pillars;
+        let attendees = &self.problem.attendees;
+        let musician = &solution.musicians[id];
+        let mut diffs = Vec::new();
+
+        // Look for pairs of a musican and an attendee that can be newly blocked
+        // by `musician`.
+        for (j, mj) in solution.musicians.iter().enumerate() {
+            if j == id {
+                continue;
+            }
+            let mut diff = 0;
+            for a in attendees.iter() {
+                if !musician.blocks(&mj.placement, &a.placement) {
+                    continue;
+                }
+                if pillars
+                    .iter()
+                    .any(|p| p.blocks(&mj.placement, &a.placement))
+                {
+                    continue;
+                }
+                if solution
+                    .musicians
+                    .iter()
+                    .enumerate()
+                    .any(|(k, mk)| k != id && k != j && mk.blocks(&mj.placement, &a.placement))
+                {
+                    continue;
+                }
+                // Newly blocked by `musician`.
+                let d2 = mj.placement.distance2(&a.placement);
+                diff -= (1_000_000.0 * a.tastes[mj.instrument] / d2).ceil() as i64;
+            }
+            diffs.push((j, diff));
+        }
+
+        // Put musican and computes their earning score.
+        let mut diff = 0;
+        for a in attendees.iter() {
+            if solution
+                .musicians
+                .iter()
+                .enumerate()
+                .any(|(j, mj)| j != id && mj.blocks(&musician.placement, &a.placement))
+            {
+                continue;
+            }
+
+            if pillars
+                .iter()
+                .any(|p| p.blocks(&musician.placement, &a.placement))
+            {
+                continue;
+            }
+
+            let d2 = musician.placement.distance2(&a.placement);
+            diff += (1_000_000.0 * a.tastes[musician.instrument] / d2).ceil() as i64;
+        }
+        diffs.push((id, diff));
+
+        diffs
     }
 
     fn place_randomly(&mut self) -> Vec<Musician> {

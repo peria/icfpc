@@ -11,10 +11,14 @@
     let table = document.getElementById('problems');
     let html = '';
     data.forEach(x => {
+      const score = (x['score'] - 0).toLocaleString();
       let tr = `<td><a href="solution.html?id=${x['problem_id']}">${x['problem_id']}</a>`;
-      ['score', 'elapsed_time', 'num_iterations', 'num_musicians', 'num_attendees'].forEach(k => {
-        tr += `<td>${x[k]}`;
-      });
+      tr += `<td><span class="right">${score}`;
+      tr += `<td><span class="right">${(x['elapsed_time'] - 0).toFixed(1)}`;
+      tr += `<td><span class="right">${x['num_iterations']}`;
+      tr += `<td><span class="right">${x['num_musicians']}`;
+      tr += `<td><span class="right">${x['num_instruments']}`;
+      tr += `<td><span class="right">${x['num_attendees']}`;
       tr += `<td>${x['room_width']} x ${x['room_height']}`;
       tr += `<td>${x['stage_width']} x ${x['stage_height']}`;
       html += `<tr>${tr}`;
@@ -41,14 +45,15 @@
     <table>
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Score</th>
-          <th>Time[sec]</th>
-          <th>Iterations</th>
-          <th>演者数</th>
-          <th>客数</th>
-          <th>部屋</th>
-          <th>ステージ</th>
+          <th class="center">ID</th>
+          <th class="center">Score</th>
+          <th class="center">Time[sec]</th>
+          <th class="center">Iterations</th>
+          <th class="center">演者数</th>
+          <th class="center">楽器数</th>
+          <th class="center">客数</th>
+          <th class="center">部屋</th>
+          <th class="center">ステージ</th>
         </tr>
       </thead>
       <tbody id="problems">

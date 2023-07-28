@@ -4,19 +4,27 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <script>
-    function update(problem, solution) {
-      document.getElementById('score').innerText = `Score: ${solution.score}`;
-      drawCanvas(problem, solution);
-      updateMusiciansTable(problem, solution);
+    let problem = undefined;
+    let solution = undefined;
+    let musician_mode = false;
+
+    function update() {
+      let score = solution.score - 0;
+      document.getElementById('score').innerText = score.toLocaleString();
+      drawCanvas();
+      updateMusiciansTable();
     }
 
-    function drawCanvas(problem, solution) {
+    function drawCanvas() {
       const canvas = document.getElementById('canvas');
       const context = canvas.getContext('2d');
       const STAGE_BASE_X = problem.stage_bottom_left[0];
       const STAGE_BASE_Y = problem.stage_bottom_left[1];
       const CANVAS_BASE_X = 50;
       const CANVAS_BASE_Y = 50;
+      const INSTRUMENT_COLORS = [
+        'rgb(255, 255, 0)', 'rgb(255, 0, 255)', 'rgb(255, 0, 0)',
+        'rgb(0, 255, 255)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'];
       const OFFSET_X = CANVAS_BASE_X - STAGE_BASE_X;
       const OFFSET_Y = CANVAS_BASE_Y - STAGE_BASE_Y;
 
@@ -36,7 +44,9 @@
       // Draw musicians
       solution.musicians.forEach(musician => {
         const score = Math.floor(musician.score * 256 / max_abs_score);
-        const color = score < 0 ? `rgb(${-score}, 0, 0)` : `rgb(${score}, ${score}, ${score})`;
+        const color = musician_mode ?
+          INSTRUMENT_COLORS[musician.instrument % INSTRUMENT_COLORS.length] :
+          (score < 0 ? `rgb(${-score}, 0, 0)` : `rgb(${score}, ${score}, ${score})`);
         const place = musician.placement;
         const x = place.x + OFFSET_X;
         const y = place.y + OFFSET_Y;
@@ -55,7 +65,7 @@
         problem.room_height);
     }
 
-    function updateMusiciansTable(problem, solution) {
+    function updateMusiciansTable() {
       const inst_table = document.getElementById('instruments');
       let count = {};
       console.log(problem.musicians);
@@ -72,30 +82,46 @@
     window.onload = () => {
       const params = (new URL(window.location.href)).searchParams;
       const id = params.get("id");
-      document.getElementById('id').innerText = "ID: " + id;
+      document.getElementById('id').innerText = id;
       const problem_url = '../problem/problem-' + id + '.json';
       const solution_url = '../solution/solution-' + id + '.json';
       Promise.all([
         fetch(problem_url).then(x => x.json()),
         fetch(solution_url).then(x => x.json())
       ])
-        .then(xs => update(xs[0], xs[1]));
+        .then(xs => {
+          problem = xs[0];
+          solution = xs[1];
+          update();
+        });
+
+      const sw = document.getElementById('musician_switch');
+      sw.addEventListener('change', (e) => {
+        musician_mode = e.target.checked;
+        drawCanvas();
+      });
     };
+
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 </head>
 
 <body>
-  <section class="container">
+  <section>
     <div class="row">
-      <h4 id="id" class="col s3"></h4>
-      <h4 id="score" class="col s3"></h4>
+      <h4 class="col s6">Problem <span id="id"></span></h4>
+      <h4 class="col s6 right">Score: <span id="score"></span></h4>
     </div>
     <div class="row">
-      <div class="col s9">
-        <canvas id="canvas"></canvas>
-      </div>
       <div class="col s3">
+        <div class="switch">
+          <label>
+            得点状況
+            <input type="checkbox" id="musician_switch">
+            <span class="lever"></span>
+            楽器割り当て
+          </label>
+        </div>
         <table class="table">
           <thead>
             <caption>Musician</caption>
@@ -106,6 +132,9 @@
           </thead>
           <tbody id="instruments"></tbody>
         </table>
+      </div>
+      <div class="col s9">
+        <canvas id="canvas"></canvas>
       </div>
     </div>
   </section>

@@ -20,6 +20,7 @@ struct JsonStatistics {
     stage_height: usize,
     num_musicians: usize,
     num_attendees: usize,
+    num_instruments: usize,
 }
 
 impl Statistics {
@@ -56,6 +57,7 @@ impl Statistics {
             stage_height: self.problem.stage.height() as usize,
             num_musicians: self.problem.num_musicians(),
             num_attendees: self.problem.num_attendees(),
+            num_instruments: *self.problem.instruments.iter().max().unwrap(),
         }
     }
 }
