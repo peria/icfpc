@@ -1,15 +1,20 @@
-use rand::{distributions::Distribution, distributions::Uniform, SeedableRng};
+use rand::{
+    distributions::{Distribution, Uniform},
+    SeedableRng,
+};
 use rand_chacha::ChaCha8Rng;
 use std::{env, time::Instant};
 
-use icfpc2023::{Musician, Point, Problem, Solution};
+use icfpc2023::{Musician, Point, Problem, Rect, Solution, StagePart};
 
 enum Update {
     Move(usize, Point, Point),
+    Swap(usize, usize),
 }
 
 struct Solver {
     problem: Problem,
+    parts: Vec<Vec<StagePart>>,
     generator: ChaCha8Rng,
     x_generator: Uniform<f64>,
     y_generator: Uniform<f64>,
@@ -29,7 +34,6 @@ impl Solver {
             let diff = self.apply_update(&mut solution, &update, false);
             if diff > 0 {
                 solution.score += diff;
-                eprintln!("Updated: {}", solution.score);
             }
             if diff < 0 {
                 self.apply_update(&mut solution, &update, true);
@@ -41,6 +45,7 @@ impl Solver {
             }
             if num_iterations % 100 == 0 {
                 solution.evaluate(&self.problem);
+                eprintln!("Updated: {}", solution.score);
             }
         }
         solution.evaluate(&self.problem);
@@ -52,8 +57,9 @@ impl Solver {
         solution.evaluate(&self.problem);
         solution.elapsed_time = timer.elapsed().as_secs_f64();
         solution.num_iterations = num_iterations;
+        solution.stages = self.parts.clone();
         eprintln!(
-            "Score: {0}, Time: {1:.2} sec. {2} iteration",
+            "Score: {0}, Time: {1:.2} sec. {2} iteration.",
             solution.score, solution.elapsed_time, num_iterations
         );
         solution
@@ -67,12 +73,11 @@ impl Solver {
         solution
     }
 
-    // TODO: Choose either one randomly
-    // 1. Move one musician to a random position
-    // self.move_musician_random(&mut solution, dry_run)
-    // 2. Swap two musicians who have different instruments
     fn decide_update(&mut self, solution: &Solution) -> Update {
-        self.decide_move(solution)
+        match self.generator.get_stream() % 10 {
+            0..=8 => self.decide_move(solution),
+            _ => self.decide_swap(solution),
+        }
     }
 
     fn decide_move(&mut self, solution: &Solution) -> Update {
@@ -98,10 +103,21 @@ impl Solver {
         }
     }
 
+    fn decide_swap(&mut self, solution: &Solution) -> Update {
+        let num_musicians = self.problem.num_musicians() as usize;
+        loop {
+            let id0 = self.generator.get_stream() as usize % num_musicians;
+            let id1 = self.generator.get_stream() as usize % num_musicians;
+            if solution.musicians[id0].instrument != solution.musicians[id1].instrument {
+                return Update::Swap(id0, id1);
+            }
+        }
+    }
+
     fn apply_update(&self, solution: &mut Solution, update: &Update, revert: bool) -> i64 {
-        let mut diff = 0;
         match update {
             Update::Move(id, old_place, new_place) => {
+                let mut diff = 0;
                 let id = *id;
                 let diffs = self.remove_musican(solution, id);
                 for (j, d) in diffs.iter() {
@@ -116,9 +132,52 @@ impl Solver {
                     diff += d;
                     solution.musicians[*j].score += d;
                 }
+                diff
+            }
+            Update::Swap(id0, id1) => {
+                let m0 = &solution.musicians[*id0];
+                let m1 = &solution.musicians[*id1];
+                let p0 = m0.placement.clone();
+                let p1 = m1.placement.clone();
+                let diff = -m0.score - m1.score;
+                let mut score1 = 0;
+                let mut score0 = 0;
+                if m0.score != 0 {
+                    for a in self.problem.attendees.iter() {
+                        if solution
+                            .musicians
+                            .iter()
+                            .enumerate()
+                            .any(|(j, mj)| j != *id0 && j != *id1 && mj.blocks(&p0, &a.placement))
+                        {
+                            continue;
+                        }
+                        let d2 = p1.distance2(&a.placement);
+                        score1 += (1_000_000.0 / d2).ceil() as i64;
+                    }
+                }
+                if m1.score != 0 {
+                    for a in self.problem.attendees.iter() {
+                        if solution
+                            .musicians
+                            .iter()
+                            .enumerate()
+                            .any(|(j, mj)| j != *id0 && j != *id1 && mj.blocks(&p1, &a.placement))
+                        {
+                            continue;
+                        }
+                        let d2 = p1.distance2(&a.placement);
+                        score0 += (1_000_000.0 / d2).ceil() as i64;
+                    }
+                }
+                solution.musicians[*id0].placement = p1;
+                solution.musicians[*id1].placement = p0;
+                solution.musicians[*id0].score = score0;
+                solution.musicians[*id1].score = score1;
+
+                diff + score0 + score1
             }
         }
-        diff
     }
 
     // Remove a musician and returns approx. score difference.
@@ -284,15 +343,54 @@ impl Solver {
 }
 
 impl From<Problem> for Solver {
-    fn from(value: Problem) -> Self {
-        let stage = &value.stage;
+    fn from(problem: Problem) -> Self {
+        let stage = &problem.stage;
         let left = stage.left + Problem::EMPTY_RADIUS;
         let right = stage.right - Problem::EMPTY_RADIUS;
         let bottom = stage.bottom + Problem::EMPTY_RADIUS;
         let top = stage.top - Problem::EMPTY_RADIUS;
 
+        let num_instruments = problem.instruments.iter().max().unwrap() + 1;
+        let mut parts = Vec::new();
+        for inst in 0..num_instruments {
+            let mut partsv = Vec::new();
+            let inner_stage = Rect {
+                left: problem.stage.left + Problem::EMPTY_RADIUS,
+                top: problem.stage.top - Problem::EMPTY_RADIUS,
+                bottom: problem.stage.bottom + Problem::EMPTY_RADIUS,
+                right: problem.stage.right - Problem::EMPTY_RADIUS,
+            };
+            let part = StagePart::new(inner_stage, inst, &problem);
+            partsv.push(part);
+
+            // TODO: implement here
+            let mut loop_time = 0;
+            loop {
+                let mut index = partsv.len() - 1;
+                while index > 0 && partsv[index].size() < Problem::EMPTY_RADIUS * 6.0 {
+                    index -= 1;
+                }
+                if index == 0 && partsv[index].size() < Problem::EMPTY_RADIUS {
+                    break;
+                }
+                let broken = partsv.remove(index);
+                for piece in broken.break2(inst, &problem).into_iter() {
+                    match partsv.binary_search(&piece) {
+                        Ok(index) => partsv.insert(index, piece),
+                        Err(index) => partsv.insert(index, piece),
+                    }
+                }
+                loop_time += 1;
+                if loop_time > 100 || partsv.len() > 60 {
+                    break;
+                }
+            }
+            parts.push(partsv);
+        }
+
         Solver {
-            problem: value,
+            problem,
+            parts,
             generator: SeedableRng::from_seed(Self::RANDOM_SEED),
             x_generator: Uniform::new_inclusive(left, right),
             y_generator: Uniform::new_inclusive(bottom, top),

@@ -7,5 +7,5 @@ mod spec;
 pub use crate::image::Image;
 pub use base::{Point, Rect};
 pub use problem::Problem;
-pub use solution::Solution;
+pub use solution::{Solution, StagePart};
 pub use spec::{Attendee, Musician, Pillar};

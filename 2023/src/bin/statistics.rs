@@ -57,7 +57,7 @@ impl Statistics {
             stage_height: self.problem.stage.height() as usize,
             num_musicians: self.problem.num_musicians(),
             num_attendees: self.problem.num_attendees(),
-            num_instruments: *self.problem.instruments.iter().max().unwrap(),
+            num_instruments: *self.problem.instruments.iter().max().unwrap() + 1,
         }
     }
 }

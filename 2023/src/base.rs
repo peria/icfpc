@@ -24,7 +24,7 @@ impl Point {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone, Copy)]
 pub struct Rect {
     pub top: f64,
     pub bottom: f64,
@@ -39,5 +39,73 @@ impl Rect {
 
     pub fn height(&self) -> f64 {
         self.top - self.bottom
+    }
+
+    pub fn break4(&self) -> Vec<Rect> {
+        let midx = (self.left + self.right) * 0.5;
+        let midy = (self.bottom + self.top) * 0.5;
+        let places: Vec<Rect> = vec![
+            Rect {
+                left: self.left,
+                right: midx,
+                bottom: self.bottom,
+                top: midy,
+            },
+            Rect {
+                left: midx,
+                right: self.right,
+                bottom: self.bottom,
+                top: midy,
+            },
+            Rect {
+                left: self.left,
+                right: midx,
+                bottom: midy,
+                top: self.top,
+            },
+            Rect {
+                left: midx,
+                right: self.right,
+                bottom: midy,
+                top: self.top,
+            },
+        ];
+        places
+    }
+
+    pub fn break2(&self) -> Vec<Rect> {
+        if self.width() > self.height() {
+            let midx = (self.left + self.right) * 0.5;
+            vec![
+                Rect {
+                    left: self.left,
+                    right: midx,
+                    bottom: self.bottom,
+                    top: self.top,
+                },
+                Rect {
+                    left: midx,
+                    right: self.right,
+                    bottom: self.bottom,
+                    top: self.top,
+                },
+            ]
+        } else {
+            let midy = (self.bottom + self.top) * 0.5;
+            vec![
+                Rect {
+                    left: self.left,
+                    right: self.right,
+                    bottom: self.bottom,
+                    top: midy,
+                },
+                Rect {
+                    left: self.left,
+                    right: self.right,
+                    bottom: midy,
+                    top: self.top,
+                },
+            ]
+        }
     }
 }

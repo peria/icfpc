@@ -7,76 +7,138 @@
     let problem = undefined;
     let solution = undefined;
     let musician_mode = false;
+    let target_instrument = undefined;
+    const INSTRUMENT_COLORS = [
+      'rgb(200, 200, 0)', 'rgb(200, 0, 200)', 'rgb(200, 0, 0)',
+      'rgb(0, 200, 200)', 'rgb(0, 200, 0)', 'rgb(0, 0, 200)'];
+
+    let Screen = class {
+      CANVAS_BASE_X = 50;
+      CANVAS_BASE_Y = 50;
+
+      constructor(canvas, problem) {
+        canvas.width = problem.stage_width + this.CANVAS_BASE_X * 2;
+        canvas.height = problem.stage_height + this.CANVAS_BASE_Y * 2;
+
+        this.canvas = canvas;
+        this.context = canvas.getContext('2d');
+        this.problem = problem;
+
+        this.STAGE_BASE_X = problem.stage_bottom_left[0] - 0;
+        this.STAGE_BASE_Y = problem.stage_bottom_left[1] - 0;
+        this.OFFSET_X = this.CANVAS_BASE_X - this.STAGE_BASE_X;
+        this.OFFSET_Y = this.CANVAS_BASE_Y - this.STAGE_BASE_Y;
+      }
+
+      rect(x, y, w, h, fillColor, strokeColor) {
+        x = x + this.OFFSET_X;
+        y = y + this.OFFSET_Y;
+        if (fillColor !== undefined) {
+          this.context.fillStyle = fillColor;
+          this.context.fillRect(x, y, w, h);
+        }
+        if (strokeColor !== undefined) {
+          this.context.strokeColor = strokeColor;
+          this.context.strokeRect(x, y, w, h);
+        }
+      }
+
+      circle(x, y, r, fillColor, strokeColor) {
+        x = x + this.OFFSET_X;
+        y = y + this.OFFSET_Y;
+        if (fillColor !== undefined) {
+          this.context.fillStyle = fillColor;
+          this.context.beginPath();
+          this.context.arc(x, y, r, 0, 2 * Math.PI);
+          this.context.fill();
+        }
+        if (strokeColor !== undefined) {
+          this.context.strokeColor = strokeColor;
+          this.context.beginPath();
+          this.context.arc(x, y, r, 0, 2 * Math.PI);
+          this.context.stroke();
+        }
+      }
+    };
 
     function update() {
+      console.log(solution);
+      console.log(problem);
       let score = solution.score - 0;
       document.getElementById('score').innerText = score.toLocaleString();
       drawCanvas();
       updateMusiciansTable();
+      updateAttendeesTable();
     }
 
     function drawCanvas() {
       const canvas = document.getElementById('canvas');
-      const context = canvas.getContext('2d');
-      const STAGE_BASE_X = problem.stage_bottom_left[0];
-      const STAGE_BASE_Y = problem.stage_bottom_left[1];
-      const CANVAS_BASE_X = 50;
-      const CANVAS_BASE_Y = 50;
-      const INSTRUMENT_COLORS = [
-        'rgb(255, 255, 0)', 'rgb(255, 0, 255)', 'rgb(255, 0, 0)',
-        'rgb(0, 255, 255)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'];
-      const OFFSET_X = CANVAS_BASE_X - STAGE_BASE_X;
-      const OFFSET_Y = CANVAS_BASE_Y - STAGE_BASE_Y;
+      const screen = new Screen(canvas, problem);
 
-      canvas.width = problem.stage_width + CANVAS_BASE_X * 2;
-      canvas.height = problem.stage_height + CANVAS_BASE_Y * 2;
+      // Paint stage
+      {
+        let x = problem.stage_bottom_left[0];
+        let y = problem.stage_bottom_left[1];
+        screen.rect(x, y, problem.stage_width, problem.stage_height, "rgb(128, 255, 255)", undefined);
+      }
+
+      target_instrument = 0;
+      if (target_instrument !== undefined) {
+        let stages = solution.stages[target_instrument];
+        stages.forEach(x => {
+          let w = x.place.right - x.place.left;
+          let h = x.place.top - x.place.bottom;
+          let color = 'rgb(0, 0, 0)';
+          screen.rect(x.place.left, x.place.bottom, w, h, undefined, color);
+        });
+      }
+
+      // Draw musicians
       const max_abs_score = solution.musicians
         .map(x => Math.abs(x.score))
         .reduce((m, x) => Math.max(m, x), 0);
-
-      // Paint stage
-      context.fillStyle = "rgb(128, 255, 255)";
-      context.fillRect(STAGE_BASE_X + OFFSET_X,
-        STAGE_BASE_Y + OFFSET_Y,
-        problem.stage_width,
-        problem.stage_height);
-
-      // Draw musicians
       solution.musicians.forEach(musician => {
         const score = Math.floor(musician.score * 256 / max_abs_score);
         const color = musician_mode ?
           INSTRUMENT_COLORS[musician.instrument % INSTRUMENT_COLORS.length] :
           (score < 0 ? `rgb(${-score}, 0, 0)` : `rgb(${score}, ${score}, ${score})`);
         const place = musician.placement;
-        const x = place.x + OFFSET_X;
-        const y = place.y + OFFSET_Y;
-        context.fillStyle = color;
-        context.beginPath();
-        context.arc(x, y, 5, 0, 2 * Math.PI);
-        context.fill();
-        context.stroke();
+        screen.circle(place.x, place.y, 5, color, undefined);
+      });
+
+      // Draw attendees
+      problem.attendees.forEach(attendee => {
+        const color = 'rgb(255, 0, 0)';
+        screen.circle(attendee.x, attendee.y, 2, color, undefined);
       });
 
       // Draw room outline
-      context.fillStyle = "rgb(0, 0, 128)";
-      context.strokeRect(OFFSET_X,
-        OFFSET_Y,
-        problem.room_width,
-        problem.room_height);
+      screen.rect(0, 0, problem.room_width, problem.room_height, undefined, 'rgb(0, 0, 128)');
     }
 
     function updateMusiciansTable() {
       const inst_table = document.getElementById('instruments');
       let count = {};
-      console.log(problem.musicians);
       problem.musicians.forEach(
         x => count[x] = (count[x] == undefined) ? 1 : (count[x] + 1));
-      console.log(count);
       let html = '';
       for (var key in count) {
         html += `<tr><td>${key}</td><td>${count[key]}</td></tr>`;
       }
       inst_table.innerHTML = html;
+    }
+
+    function updateAttendeesTable() {
+      const attend_table = document.getElementById('attendees');
+      let html = '';
+      for (var i = 0; i < problem.attendees.length; i++) {
+        const attendee = problem.attendees[i];
+        const x = attendee.x;
+        const y = attendee.y;
+        const ts = attendee.tastes;
+        html += `<tr><td>(${x}, ${y})<td>[${ts}]`;
+      }
+      attend_table.innerHTML = html;
     }
 
     window.onload = () => {
@@ -131,6 +193,17 @@
             </tr>
           </thead>
           <tbody id="instruments"></tbody>
+        </table>
+
+        <table class="table">
+          <thead>
+            <caption>Attendee</caption>
+            <tr>
+              <th>座標</th>
+              <th>好み</th>
+            </tr>
+          </thead>
+          <tbody id="attendees"></tbody>
         </table>
       </div>
       <div class="col s9">

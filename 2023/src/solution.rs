@@ -1,4 +1,4 @@
-use crate::{Musician, Point, Problem};
+use crate::{Musician, Point, Problem, Rect};
 use core::panic;
 use serde::{Deserialize, Serialize};
 
@@ -7,6 +7,7 @@ pub struct Solution {
     pub problem_id: usize,
     // `musicians` may have some duplicated information with Problem.
     pub musicians: Vec<Musician>,
+    pub stages: Vec<Vec<StagePart>>,
     pub elapsed_time: f64,
     pub num_iterations: usize,
     pub score: i64,
@@ -25,9 +26,15 @@ impl Solution {
             .iter()
             .map(|&x| Musician::new(x))
             .collect();
+        let mut stages = Vec::new();
+        for i in 0..value.instruments.iter().max().unwrap() + 1 {
+            stages.push(vec![StagePart::new(value.stage, i, value)]);
+        }
+
         Solution {
             problem_id: value.problem_id,
             musicians,
+            stages,
             elapsed_time: 0.0,
             num_iterations: 0,
             score: 0,
@@ -144,5 +151,65 @@ impl Solution {
 impl From<&str> for Solution {
     fn from(value: &str) -> Self {
         serde_json::from_str(value).unwrap()
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct StagePart {
+    place: Rect,
+    impact: i64,
+}
+
+impl StagePart {
+    pub fn new(place: Rect, instrument: usize, problem: &Problem) -> Self {
+        let mut impact = 0;
+        for a in problem.attendees.iter() {
+            let x = a.placement.x.max(place.left).min(place.right);
+            let y = a.placement.y.max(place.bottom).min(place.top);
+            let d2 = Point { x, y }.distance2(&a.placement);
+            impact += (1_000_000.0 * a.tastes[instrument] / d2).ceil() as i64;
+        }
+
+        Self { place, impact }
+    }
+
+    pub fn size(&self) -> f64 {
+        self.place.width().min(self.place.height())
+    }
+
+    pub fn break4(&self, instrument: usize, problem: &Problem) -> Vec<Self> {
+        self.place
+            .break4()
+            .into_iter()
+            .map(|p| Self::new(p, instrument, problem))
+            .collect()
+    }
+
+    pub fn break2(&self, instrument: usize, problem: &Problem) -> Vec<Self> {
+        self.place
+            .break2()
+            .into_iter()
+            .map(|p| Self::new(p, instrument, problem))
+            .collect()
+    }
+}
+
+impl Ord for StagePart {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.impact.cmp(&other.impact)
+    }
+}
+
+impl PartialOrd for StagePart {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Eq for StagePart {}
+
+impl PartialEq for StagePart {
+    fn eq(&self, other: &Self) -> bool {
+        self.impact == other.impact
     }
 }
