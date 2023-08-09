@@ -65,7 +65,7 @@ impl Problem {
             self.problem_id,
             self.num_musicians(),
             self.num_attendees(),
-            self.instruments.iter().max().unwrap()
+            self.instruments.iter().max().unwrap() + 1
         );
     }
 }

@@ -52,7 +52,6 @@ impl Solution {
 
         let musicians = &mut self.musicians;
         let mut qs = vec![1.0; musicians.len()];
-
         // Extend 2: Playing Together
         if problem.is_full_div() {
             for (i, mi) in musicians.iter().enumerate() {
@@ -70,9 +69,12 @@ impl Solution {
         }
 
         let mut score = 0;
-        let mut musician_scores = vec![0i64; musicians.len()];
-        for attendee in problem.attendees.iter() {
-            for (i, mi) in musicians.iter().enumerate() {
+        let mut musician_scores = Vec::new();
+        let mut volumes = Vec::new();
+        for (i, mi) in musicians.iter().enumerate() {
+            let mut musician_score = 0;
+            let mut volume = 10.0;
+            for attendee in problem.attendees.iter() {
                 let impact = if musicians
                     .iter()
                     .enumerate()
@@ -92,10 +94,16 @@ impl Solution {
                 } else {
                     impact
                 };
-                let pair_score = (mi.volume * qs[i] * impact).ceil() as i64;
-                score += pair_score;
-                musician_scores[i] += pair_score;
+                let pair_score = (volume * qs[i] * impact).ceil() as i64;
+                musician_score += pair_score;
             }
+            if musician_score < 0 {
+                volume = 0.0;
+                musician_score = 0;
+            }
+            volumes.push(volume);
+            musician_scores.push(musician_score);
+            score += musician_score;
         }
         self.score = score;
 
@@ -103,9 +111,11 @@ impl Solution {
             .iter_mut()
             .zip(musician_scores.iter())
             .zip(qs.iter())
-            .for_each(|((mi, score), q)| {
+            .zip(volumes.iter())
+            .for_each(|(((mi, score), q), v)| {
                 mi.score = *score;
                 mi.q = *q;
+                mi.volume = *v;
             });
 
         self.score
@@ -156,8 +166,8 @@ impl From<&str> for Solution {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct StagePart {
-    place: Rect,
-    impact: i64,
+    pub place: Rect,
+    pub impact: i64,
 }
 
 impl StagePart {

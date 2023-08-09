@@ -1,6 +1,6 @@
 use rand::{
     distributions::{Distribution, Uniform},
-    SeedableRng,
+    RngCore, SeedableRng,
 };
 use rand_chacha::ChaCha8Rng;
 use std::{env, time::Instant};
@@ -16,8 +16,6 @@ struct Solver {
     problem: Problem,
     parts: Vec<Vec<StagePart>>,
     generator: ChaCha8Rng,
-    x_generator: Uniform<f64>,
-    y_generator: Uniform<f64>,
 }
 
 impl Solver {
@@ -29,6 +27,7 @@ impl Solver {
 
         let mut solution = self.init_solution();
         let mut num_iterations = 0;
+        let mut best: Option<Solution> = None;
         loop {
             let update = self.decide_update(&solution);
             let diff = self.apply_update(&mut solution, &update, false);
@@ -46,15 +45,16 @@ impl Solver {
             if num_iterations % 100 == 0 {
                 solution.evaluate(&self.problem);
                 eprintln!("Updated: {}", solution.score);
+                if best.is_none() || best.as_ref().unwrap().score < solution.score {
+                    best = Some(solution.clone());
+                }
             }
         }
         solution.evaluate(&self.problem);
-
-        for musician in solution.musicians.iter_mut() {
-            musician.volume = if musician.score < 0 { 0.0 } else { 10.0 };
+        if best.is_some() && best.as_ref().unwrap().score > solution.score {
+            solution = best.unwrap();
         }
 
-        solution.evaluate(&self.problem);
         solution.elapsed_time = timer.elapsed().as_secs_f64();
         solution.num_iterations = num_iterations;
         solution.stages = self.parts.clone();
@@ -74,22 +74,28 @@ impl Solver {
     }
 
     fn decide_update(&mut self, solution: &Solution) -> Update {
-        match self.generator.get_stream() % 10 {
-            0..=8 => self.decide_move(solution),
-            _ => self.decide_swap(solution),
+        if self.problem.problem_id == 23 {
+            // Problem 23 has 1 instrument, and swap doesn't work.
+            self.decide_move(solution)
+        } else {
+            match self.generator.next_u64() % 10 {
+                0..=8 => self.decide_move(solution),
+                _ => self.decide_swap(solution),
+            }
         }
     }
 
     fn decide_move(&mut self, solution: &Solution) -> Update {
         // Move the least scored musician to a random point.
-        let mut id = 0;
-        for i in 1..self.problem.num_musicians() {
-            if solution.musicians[id].score > solution.musicians[i].score {
-                id = i;
-            }
-        }
+        // let mut id = 0;
+        // for i in 1..self.problem.num_musicians() {
+        //     if solution.musicians[id].score > solution.musicians[i].score {
+        //         id = i;
+        //     }
+        // }
+        // let id = id;
 
-        let id = id;
+        let id = self.generator.next_u64() as usize % self.problem.num_musicians();
         loop {
             let point = self.get_random_place();
             if solution.musicians.iter().enumerate().all(|(i, m)| {
@@ -106,8 +112,8 @@ impl Solver {
     fn decide_swap(&mut self, solution: &Solution) -> Update {
         let num_musicians = self.problem.num_musicians() as usize;
         loop {
-            let id0 = self.generator.get_stream() as usize % num_musicians;
-            let id1 = self.generator.get_stream() as usize % num_musicians;
+            let id0 = self.generator.next_u64() as usize % num_musicians;
+            let id1 = self.generator.next_u64() as usize % num_musicians;
             if solution.musicians[id0].instrument != solution.musicians[id1].instrument {
                 return Update::Swap(id0, id1);
             }
@@ -292,9 +298,10 @@ impl Solver {
     fn place_randomly(&mut self) -> Vec<Musician> {
         let num_musicians = self.problem.num_musicians();
         let mut placements = Vec::new();
-        for _ in 0..num_musicians {
+        let instruments = &self.problem.instruments.clone();
+        for instrument in instruments.iter() {
             loop {
-                let p = self.get_random_place();
+                let p = self.get_skewed_place(*instrument);
                 if placements
                     .iter()
                     .all(|q| p.distance2(q) >= Problem::EMPTY_RADIUS * Problem::EMPTY_RADIUS)
@@ -304,6 +311,7 @@ impl Solver {
                 }
             }
         }
+
         let instruments = &self.problem.instruments;
         let mut qs = vec![1.0; num_musicians];
         if self.problem.is_full_div() {
@@ -323,7 +331,7 @@ impl Solver {
 
         placements
             .into_iter()
-            .zip(self.problem.instruments.iter())
+            .zip(instruments.iter())
             .zip(qs.iter())
             .map(|((x, &inst), q)| Musician {
                 placement: x,
@@ -336,20 +344,31 @@ impl Solver {
     }
 
     fn get_random_place(&mut self) -> Point {
-        let x = self.x_generator.sample(&mut self.generator);
-        let y = self.y_generator.sample(&mut self.generator);
+        let place = &self.problem.stage;
+        let left = place.left + Problem::EMPTY_RADIUS;
+        let right = place.right - Problem::EMPTY_RADIUS;
+        let bottom = place.bottom + Problem::EMPTY_RADIUS;
+        let top = place.top - Problem::EMPTY_RADIUS;
+        let x_generator = Uniform::new_inclusive(left, right);
+        let y_generator = Uniform::new_inclusive(bottom, top);
+        let x = x_generator.sample(&mut self.generator);
+        let y = y_generator.sample(&mut self.generator);
+        Point::new(x, y)
+    }
+
+    fn get_skewed_place(&mut self, instrument: usize) -> Point {
+        let parts = &self.parts[instrument];
+        let place = &parts[self.generator.next_u64() as usize % parts.len()].place;
+        let x_generator = Uniform::new_inclusive(place.left, place.right);
+        let y_generator = Uniform::new_inclusive(place.bottom, place.top);
+        let x = x_generator.sample(&mut self.generator);
+        let y = y_generator.sample(&mut self.generator);
         Point::new(x, y)
     }
 }
 
 impl From<Problem> for Solver {
     fn from(problem: Problem) -> Self {
-        let stage = &problem.stage;
-        let left = stage.left + Problem::EMPTY_RADIUS;
-        let right = stage.right - Problem::EMPTY_RADIUS;
-        let bottom = stage.bottom + Problem::EMPTY_RADIUS;
-        let top = stage.top - Problem::EMPTY_RADIUS;
-
         let num_instruments = problem.instruments.iter().max().unwrap() + 1;
         let mut parts = Vec::new();
         for inst in 0..num_instruments {
@@ -392,8 +411,6 @@ impl From<Problem> for Solver {
             problem,
             parts,
             generator: SeedableRng::from_seed(Self::RANDOM_SEED),
-            x_generator: Uniform::new_inclusive(left, right),
-            y_generator: Uniform::new_inclusive(bottom, top),
         }
     }
 }
