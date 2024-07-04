@@ -21,3 +21,4 @@ Code files I used in real contests are stored in [another repository](https://gi
 - [2021](./2021) : 脳カベ
 - [2022](./2022) : 切って塗ってお絵かき
 - [2023](./2023) : ライブの配置最適化
+- [2024](./2024) : 宇宙人の学校で複数のパズル
