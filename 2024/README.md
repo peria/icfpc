@@ -37,3 +37,10 @@
 難しかったのは今回のコンテストでの数少ない欠点だったと思う。
 
 上位は上位で、おそらく解法が近い中での最適化ゲームになってたのではないかと懸念している。
+
+## Note
+```
+$ python3 -m venv .venv
+$ source .venv/bin/activate
+$ pip3 install requests
+```
