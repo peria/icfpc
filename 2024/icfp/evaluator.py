@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from collections import deque
+import copy
 import sys
 import translator
 
@@ -8,25 +9,26 @@ import translator
 def evaluate(message):
     tokens = deque(message.split(' '))
     root = build_ast(tokens)
-    result = root.evaluate()
-    if isinstance(result, AstString):
-        return result.value
-    return result
+    for i in range(100):
+        root = root.evaluate()
+        if isinstance(root, AstString):
+            return root.value
+    return root
 
 
 def build_ast(tokens):
     assert isinstance(tokens, deque)
     assert len(tokens) > 0
-    token = tokens.pop()
+    token = tokens.popleft()
     indicator, body = token[0], token[1:]
     if indicator == 'T':
         return AstBoolean(True)
     if indicator == 'F':
         return AstBoolean(False)
     if indicator == 'I':
-        return AstInteger(body)
+        return AstInteger(translator.icfp_to_int(body))
     if indicator == 'S':
-        return AstString(body)
+        return AstString(translator.icfp_to_ascii(body))
     if indicator == 'U':
         operand = build_ast(tokens)
         return AstUnaryOperator(body, operand)
@@ -42,28 +44,31 @@ def build_ast(tokens):
         false_branch = build_ast(tokens)
         return AstIf(condition, true_branch, false_branch)
     if indicator == 'L':
-        id = icfp_to_int(body)
-        return AstLambdaAbstraction(id)
+        id = translator.icfp_to_int(body)
+        definition = build_ast(tokens)
+        return AstLambdaAbstraction(id, definition)
     if indicator == 'v':
-        id = icfp_to_int(body)
+        id = translator.icfp_to_int(body)
         return AstVariable(id)
-    print(f'Fail to convert token: {token}', file=sys.stderr)
+    print(f'Fail to convert a token: {token}', file=sys.stderr)
     return None
-
-
-def icfp_to_int(icfp):
-    value = 0
-    for c in icfp:
-        value = value * 94 + ord(c) - ord('!')
-    return value
 
 
 class AstNode(object):
     def __init__(self):
         pass
 
+    def _dump(self, level, text):
+        print('| ' * level + text, file=sys.stderr)
+
+    def dump(self, level):
+        raise NotImplementedError(f'{type(self)}.dump() is not imlemented')
+
     def evaluate(self):
-        raise NotImplementedError
+        raise NotImplementedError(f'{type(self)}.evaluate() is not imlemented')
+
+    def apply(self, _id, _value):
+        raise NotImplementedError(f'{type(self)}.apply() is not imlemented')
 
 
 class AstBoolean(AstNode):
@@ -71,26 +76,44 @@ class AstBoolean(AstNode):
         assert isinstance(value, bool)
         self.value = value
 
+    def dump(self, level):
+        self._dump(level, f'Boolean({self.value})')
+
     def evaluate(self):
+        return self
+
+    def apply(self, _id, _value):
         return self
 
 
 class AstInteger(AstNode):
-    def __init__(self, body):
-        assert isinstance(body, str)
-        self.value = icfp_to_int(body)
+    def __init__(self, value):
+        assert isinstance(value, int)
+        self.value = value
+
+    def dump(self, level):
+        self._dump(level, f'Integer({self.value})')
 
     def evaluate(self):
         return self
 
+    def apply(self, _id, _value):
+        return self
+
 
 class AstString(AstNode):
-    def __init__(self, body):
-        # `body` is an ICFP string.
-        assert isinstance(body, str)
-        self.value = translator.icfp_to_ascii(body)
+    def __init__(self, value):
+        # `body` is ASCII string.
+        assert isinstance(value, str)
+        self.value = value
+
+    def dump(self, level):
+        self._dump(level, f'String("{self.value}")')
 
     def evaluate(self):
+        return self
+
+    def apply(self, _id, _value):
         return self
 
 
@@ -101,12 +124,27 @@ class AstUnaryOperator(AstNode):
         self.operator = operator
         self.operand = operand
 
+    def dump(self, level):
+        self._dump(level, f'UnaryOperator {self.operator}')
+        self.operand.dump(level + 1)
+
     def evaluate(self):
+        operator = self.operator
         operand = self.operand.evaluate()
-        if self.operator == '-' and isinstance(operand, AstInteger):
+        if operator == '-' and isinstance(operand, AstInteger):
             return AstInteger(-operand.value)
-        if self.operator == '!' and isinstance(operand, AstBoolean):
+        if operator == '!' and isinstance(operand, AstBoolean):
             return AstBoolean(not operand.value)
+        if operator == '#' and isinstance(operand, AstString):
+            return AstInteger(translator.ascii_to_int(operand.value))
+        if operator == '$' and isinstance(operand, AstInteger):
+            return AstString(translator.int_to_ascii(operand.value))
+        if operand != self.operand:
+            return AstUnaryOperator(self.operator, operand)
+        return self
+
+    def apply(self, id, value):
+        operand = self.operand.apply(id, value)
         if operand != self.operand:
             return AstUnaryOperator(self.operator, operand)
         return self
@@ -121,6 +159,11 @@ class AstBinaryOperator(AstNode):
         self.lhs = lhs
         self.rhs = rhs
 
+    def dump(self, level):
+        self._dump(level, f'Binary Operator {self.operator}')
+        self.lhs.dump(level + 1)
+        self.rhs.dump(level + 1)
+
     def evaluate(self):
         operator = self.operator
         lhs = self.lhs.evaluate()
@@ -132,12 +175,12 @@ class AstBinaryOperator(AstNode):
         if operator == '*' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
             return AstInteger(lhs.value * rhs.value)
         if operator == '/' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
-            q = abs(lhs.value) / abs(rhs.value)
+            q = abs(lhs.value) // abs(rhs.value)
             if lhs.value * rhs.value < 0:
                 q = -q
             return AstInteger(q)
         if operator == '%' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
-            q = abs(lhs.value) / abs(rhs.value)
+            q = abs(lhs.value) // abs(rhs.value)
             if lhs.value * rhs.value < 0:
                 q = -q
             return AstInteger(lhs.value - q * rhs.value)
@@ -146,11 +189,11 @@ class AstBinaryOperator(AstNode):
         if operator == '>' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
             return AstBoolean(lhs.value > rhs.value)
         if operator == '=' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
-            return AstBoolean(lhs.value < rhs.value)
+            return AstBoolean(lhs.value == rhs.value)
         if operator == '=' and isinstance(lhs, AstBoolean) and isinstance(rhs,  AstBoolean):
-            return AstBoolean(lhs.value < rhs.value)
+            return AstBoolean(lhs.value == rhs.value)
         if operator == '=' and isinstance(lhs, AstString) and isinstance(rhs,  AstString):
-            return AstBoolean(lhs.value < rhs.value)
+            return AstBoolean(lhs.value == rhs.value)
         if operator == '|' and isinstance(lhs, AstBoolean) and isinstance(rhs,  AstBoolean):
             return AstBoolean(lhs.value or rhs.value)
         if operator == '&' and isinstance(lhs, AstBoolean) and isinstance(rhs,  AstBoolean):
@@ -161,6 +204,15 @@ class AstBinaryOperator(AstNode):
             return AstString(rhs.value[:lhs.value])
         if operator == 'D' and isinstance(lhs, AstInteger) and isinstance(rhs, AstString):
             return AstString(rhs.value[lhs.value:])
+        if lhs != self.lhs or rhs != self.rhs:
+            return AstBinaryOperator(self.operator, lhs, rhs)
+        return self
+
+    def apply(self, id, value):
+        lhs = self.lhs.apply(id, value)
+        rhs = self.rhs.apply(id, value)
+        if lhs != self.lhs or rhs != self.rhs:
+            return AstBinaryOperator(self.operator, lhs, rhs)
         return self
 
 
@@ -171,8 +223,25 @@ class AstEvaluator(AstNode):
         self.lhs = lhs
         self.rhs = rhs
 
+    def dump(self, level):
+        self._dump(level, f'Evaluate')
+        self.lhs.dump(level + 1)
+        self.rhs.dump(level + 1)
+
     def evaluate(self):
-        raise NotImplementedError
+        lhs = self.lhs
+        if isinstance(lhs, AstLambdaAbstraction):
+            return lhs.definition.apply(lhs.id, self.rhs)
+        lhs = lhs.evaluate()
+        if lhs != self.lhs:
+            return AstEvaluator(lhs, self.rhs)
+        return self
+
+    def apply(self, id, value):
+        lhs = self.lhs.apply(id, value)
+        rhs = self.rhs.apply(id, value)
+        if lhs != self.lhs or rhs != self.rhs:
+            return AstEvaluator(lhs, rhs)
         return self
 
 
@@ -185,6 +254,14 @@ class AstIf(AstNode):
         self.true_branch = true_branch
         self.false_branch = false_branch
 
+    def dump(self, level):
+        self._dump(level, f'IF')
+        self.condition.dump(level + 1)
+        self._dump(level, f'THEN')
+        self.true_branch.dump(level + 1)
+        self._dump(level, f'ELSE')
+        self.false_branch.dump(level + 1)
+
     def evaluate(self):
         condition = self.condition.evaluate()
         if isinstance(condition, AstBoolean):
@@ -192,7 +269,16 @@ class AstIf(AstNode):
                 return self.true_branch.evaluate()
             else:
                 return self.false_branch.evaluate()
+        if condition != self.condition:
+            return AstIf(condition, self.true_branch, self.false_branch)
         return self
+
+    def apply(self, id, value):
+        condition = self.condition.apply(id, value)
+        true_branch = self.true_branch.applly(id, value)
+        false_branch = self.false_branch(id, value)
+        if condition != self.condition or true_branch != self.true_branch or false_branch != self.false_branch:
+            return AstIf(condition, true_branch, false_branch)
 
 
 class AstLambdaAbstraction(AstNode):
@@ -201,8 +287,22 @@ class AstLambdaAbstraction(AstNode):
         self.id = id
         self.definition = definition
 
+    def dump(self, level):
+        self._dump(level, f'Lambda x{self.id}')
+        self.definition.dump(level + 1)
+
     def evaluate(self):
-        raise NotImplementedError
+        definition = self.definition.evaluate()
+        if definition != self.definition:
+            return AstLambdaAbstraction(self.id, definition)
+        return self
+
+    def apply(self, id, value):
+        if id == self.id:
+            return self
+        definition = self.definition.apply(id, value)
+        if definition != self.definition:
+            return AstLambdaAbstraction(id, definition)
         return self
 
 
@@ -211,7 +311,15 @@ class AstVariable(AstNode):
         assert isinstance(id, int)
         self.id = id
 
+    def dump(self, level):
+        self._dump(level, f'\\x{self.id}')
+
     def evaluate(self):
+        return self
+
+    def apply(self, id, value):
+        if id == self.id:
+            return copy.copy(value)
         return self
 
 
