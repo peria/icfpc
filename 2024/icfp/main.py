@@ -10,10 +10,12 @@ import argparse
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--evaluate', '--no-communicate',
+        '--no-communicate',
         action='store_false', dest='communicate')
     parser.add_argument(
         '--no-translate', action='store_false', dest='translate')
+    parser.add_argument(
+        '--no-evaluate', action='store_false', dest='evaluate')
     args = parser.parse_args()
 
     lines = []
@@ -25,8 +27,9 @@ def main():
     # TODO: Compress 'message'
     if args.communicate:
         message = communicator.communicate(message)
-    result = evaluator.evaluate(message)
-    print(result)
+    if args.evaluate:
+        message = evaluator.evaluate(message)
+    print(message)
 
 
 if __name__ == '__main__':
