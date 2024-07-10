@@ -4,15 +4,38 @@ from collections import deque
 import copy
 import sys
 import translator
+import unittest
+
+sys.setrecursionlimit(100000)
 
 
 def evaluate(message):
+    try:
+        node = evaluate_core(message)
+        if isinstance(node, AstString):
+            return node.value
+    except AssertionError as e:
+        _e_type, _e_obj, trace = sys.exc_info()
+        filename = trace.tb_frame.f_code.co_filename
+        line_number = trace.tb_lineno
+        print(
+            f'Failed to evaluate at {filename}({line_number}). Return the original program.\n{e}', file=sys.stderr)
+        raise
+        return message
+    print(f'Value type is {type(node)}', file=sys.stderr)
+    return str(node.value)
+
+
+def evaluate_core(message):
+    MAX_LOOP = 100000
     tokens = deque(message.split(' '))
     root = build_ast(tokens)
-    for i in range(100):
-        root = root.evaluate()
-        if isinstance(root, AstString):
-            return root.value
+    for i in range(MAX_LOOP):
+        new_root = root.evaluate()
+        if isinstance(new_root, AstString) or new_root == root:
+            return new_root
+        root = new_root
+    print(f'Can\'t evaluate in {MAX_LOOP} loops.', file=sys.stderr)
     return root
 
 
@@ -153,8 +176,10 @@ class AstUnaryOperator(AstNode):
 class AstBinaryOperator(AstNode):
     def __init__(self, operator, lhs, rhs):
         assert operator in '+-*/%<>=|&.TD'
-        assert isinstance(lhs, AstNode)
-        assert isinstance(rhs, AstNode)
+        assert isinstance(
+            lhs, AstNode), f'lhs {type(lhs)} is not AST node for {operator}'
+        assert isinstance(
+            rhs, AstNode), f'rhs {type(rhs)} is not AST node for {operator}'
         self.operator = operator
         self.lhs = lhs
         self.rhs = rhs
@@ -168,35 +193,35 @@ class AstBinaryOperator(AstNode):
         operator = self.operator
         lhs = self.lhs.evaluate()
         rhs = self.rhs.evaluate()
-        if operator == '+' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
+        if operator == '+' and isinstance(lhs, AstInteger) and isinstance(rhs, AstInteger):
             return AstInteger(lhs.value + rhs.value)
-        if operator == '-' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
+        if operator == '-' and isinstance(lhs, AstInteger) and isinstance(rhs, AstInteger):
             return AstInteger(lhs.value - rhs.value)
-        if operator == '*' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
+        if operator == '*' and isinstance(lhs, AstInteger) and isinstance(rhs, AstInteger):
             return AstInteger(lhs.value * rhs.value)
-        if operator == '/' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
+        if operator == '/' and isinstance(lhs, AstInteger) and isinstance(rhs, AstInteger):
             q = abs(lhs.value) // abs(rhs.value)
             if lhs.value * rhs.value < 0:
                 q = -q
             return AstInteger(q)
-        if operator == '%' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
+        if operator == '%' and isinstance(lhs, AstInteger) and isinstance(rhs, AstInteger):
             q = abs(lhs.value) // abs(rhs.value)
             if lhs.value * rhs.value < 0:
                 q = -q
             return AstInteger(lhs.value - q * rhs.value)
-        if operator == '<' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
+        if operator == '<' and isinstance(lhs, AstInteger) and isinstance(rhs, AstInteger):
             return AstBoolean(lhs.value < rhs.value)
-        if operator == '>' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
+        if operator == '>' and isinstance(lhs, AstInteger) and isinstance(rhs, AstInteger):
             return AstBoolean(lhs.value > rhs.value)
-        if operator == '=' and isinstance(lhs, AstInteger) and isinstance(rhs,  AstInteger):
+        if operator == '=' and isinstance(lhs, AstInteger) and isinstance(rhs, AstInteger):
             return AstBoolean(lhs.value == rhs.value)
-        if operator == '=' and isinstance(lhs, AstBoolean) and isinstance(rhs,  AstBoolean):
+        if operator == '=' and isinstance(lhs, AstBoolean) and isinstance(rhs, AstBoolean):
             return AstBoolean(lhs.value == rhs.value)
-        if operator == '=' and isinstance(lhs, AstString) and isinstance(rhs,  AstString):
+        if operator == '=' and isinstance(lhs, AstString) and isinstance(rhs, AstString):
             return AstBoolean(lhs.value == rhs.value)
-        if operator == '|' and isinstance(lhs, AstBoolean) and isinstance(rhs,  AstBoolean):
+        if operator == '|' and isinstance(lhs, AstBoolean) and isinstance(rhs, AstBoolean):
             return AstBoolean(lhs.value or rhs.value)
-        if operator == '&' and isinstance(lhs, AstBoolean) and isinstance(rhs,  AstBoolean):
+        if operator == '&' and isinstance(lhs, AstBoolean) and isinstance(rhs, AstBoolean):
             return AstBoolean(lhs.value and rhs.value)
         if operator == '.' and isinstance(lhs, AstString) and isinstance(rhs, AstString):
             return AstString(lhs.value + rhs.value)
@@ -275,15 +300,23 @@ class AstIf(AstNode):
 
     def apply(self, id, value):
         condition = self.condition.apply(id, value)
-        true_branch = self.true_branch.applly(id, value)
-        false_branch = self.false_branch(id, value)
+        if isinstance(condition, AstBoolean):
+            if condition.value:
+                return self.true_branch.apply(id, value)
+            else:
+                return self.false_branch.apply(id, value)
+
+        true_branch = self.true_branch.apply(id, value)
+        false_branch = self.false_branch.apply(id, value)
         if condition != self.condition or true_branch != self.true_branch or false_branch != self.false_branch:
             return AstIf(condition, true_branch, false_branch)
+        return self
 
 
 class AstLambdaAbstraction(AstNode):
     def __init__(self, id, definition):
         assert isinstance(id, int)
+        assert isinstance(definition, AstNode)
         self.id = id
         self.definition = definition
 
@@ -298,11 +331,12 @@ class AstLambdaAbstraction(AstNode):
         return self
 
     def apply(self, id, value):
+        # Do not apply `id` more.
         if id == self.id:
             return self
         definition = self.definition.apply(id, value)
         if definition != self.definition:
-            return AstLambdaAbstraction(id, definition)
+            return AstLambdaAbstraction(self.id, definition)
         return self
 
 
@@ -323,5 +357,52 @@ class AstVariable(AstNode):
         return self
 
 
+class TestBaseICFP(unittest.TestCase):
+    def test_evaluate_units(self):
+        data = [
+            ("T", AstBoolean, "True"),  # Boolean
+            ("F", AstBoolean, "False"),
+            ("I/6", AstInteger, "1337"),  # Integer
+            ("SB%,,/}Q/2,$_", AstString, "Hello World!"),  # String
+            ("U- I$", AstInteger, "-3"),  # Unary operator
+            ("U! T", AstBoolean, "False"),
+            ("U# S4%34", AstInteger, "15818151"),
+            ("U$ I4%34", AstString, "test"),
+            ("B+ I# I$", AstInteger, "5"),  # Binary operator
+            ("B- I$ I#", AstInteger, "1"),
+            ("B* I$ I#", AstInteger, "6"),
+            ("B/ U- I( I#", AstInteger, "-3"),
+            ("B% U- I( I#", AstInteger, "-1"),
+            ("B< I$ I#", AstBoolean, "False"),
+            ("B> I$ I#", AstBoolean, "True"),
+            ("B= I$ I#", AstBoolean, "False"),
+            ("B| T F", AstBoolean, "True"),
+            ("B& T F", AstBoolean, "False"),
+            ("B. S4% S34", AstString, "test"),
+            ("BT I$ S4%34", AstString, "tes"),
+            ("BD I$ S4%34", AstString, "t"),
+            ("B$ L! B+ v! v! I#", AstInteger, "4"),  # (v0 => v0 + v0)(2) == 4
+        ]
+        for icfp, expect_type, expect_value in data:
+            actual = evaluate_core(icfp)
+            self.assertEqual(type(actual), expect_type)
+            self.assertEqual(str(actual.value), expect_value)
+
+    def test_evaluation(self):
+        icfp = 'B$ B$ L# L$ v# B. SB%,,/ S}Q/2,$_ IK'
+        actual = evaluate(icfp)
+        self.assertEqual(actual, "Hello World!")
+
+    def test_evaluation2(self):
+        icfp = 'B$ L# B$ L" B+ v" v" B* I$ I# v8'
+        actual = evaluate(icfp)
+        self.assertEqual(actual, "12")
+
+    def test_simple_language_test(self):
+        icfp = 'B$ B$ B$ B$ L$ L$ L$ L# v$ I" I# I$ I%'
+        actual = evaluate(icfp)
+        self.assertEqual(actual, "3")
+
+
 if __name__ == '__main__':
-    print('evaluator.py is not run from the command line.p')
+    unittest.main()
