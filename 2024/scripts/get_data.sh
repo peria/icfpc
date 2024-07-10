@@ -14,16 +14,15 @@
 #     echo ${command} | ./icfp/main.py > lambdaman/problems/lambdaman${i}.txt
 #     echo "lambdaman ${i} done"
 # done
+# command="get lambdaman21"
+# echo ${command} | ./icfp/main.py --no-evaluate > lambdaman/problems/lambdaman21.icfp
 
-command="get lambdaman21"
-echo ${command} | ./icfp/main.py --no-evaluate > lambdaman/problems/lambdaman21.icfp
-
-# for i in {1..12}
-# do
-#     command="get 3d${i}"
-#     echo ${command} | ./icfp/main.py > 3d/problems/3d${i}.txt
-#     echo "3d ${i} done"
-# done
+for i in {1..12}
+do
+    command="get 3d${i}"
+    echo ${command} | ./icfp/main.py > 3d/problems/3d${i}.md
+    echo "3d ${i} done"
+done
 
 # for i in {1..25}
 # do
