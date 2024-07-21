@@ -3,15 +3,16 @@
 from collections import deque
 import copy
 import sys
+import time
 import translator
 import unittest
 
 sys.setrecursionlimit(100000)
 
 
-def evaluate(message):
+def evaluate(message, dump=0):
     try:
-        node = evaluate_core(message)
+        node = evaluate_core(message, dump)
         if isinstance(node, AstString):
             return node.value
     except AssertionError as e:
@@ -23,18 +24,28 @@ def evaluate(message):
         raise
         return message
     print(f'Value type is {type(node)}', file=sys.stderr)
-    return str(node.value)
+    return str(node)
 
 
-def evaluate_core(message):
-    MAX_LOOP = 100000
+def evaluate_core(message, dump):
+    MAX_LOOP = 100
     tokens = deque(message.split(' '))
     root = build_ast(tokens)
+    if dump == 1:
+        print(f'{root}\n', file=sys.stderr)
+    elif dump == 2:
+        root.dump(0)
+
     for i in range(MAX_LOOP):
         new_root = root.evaluate()
         if isinstance(new_root, AstString) or new_root == root:
             return new_root
         root = new_root
+        if dump == 2:
+            root.dump(0)
+            # print(root, file=sys.stderr)
+            time.sleep(1)
+
     print(f'Can\'t evaluate in {MAX_LOOP} loops.', file=sys.stderr)
     return root
 
@@ -114,6 +125,9 @@ class AstInteger(AstNode):
         assert isinstance(value, int)
         self.value = value
 
+    def __str__(self):
+        return f'I{self.value}'
+
     def dump(self, level):
         self._dump(level, f'Integer({self.value})')
 
@@ -184,6 +198,9 @@ class AstBinaryOperator(AstNode):
         self.lhs = lhs
         self.rhs = rhs
 
+    def __str__(self):
+        return f'{self.lhs} {self.operator} {self.rhs}'
+
     def dump(self, level):
         self._dump(level, f'Binary Operator {self.operator}')
         self.lhs.dump(level + 1)
@@ -248,6 +265,9 @@ class AstEvaluator(AstNode):
         self.lhs = lhs
         self.rhs = rhs
 
+    def __str__(self):
+        return f'EVAL ({self.lhs}) <{self.rhs}>'
+
     def dump(self, level):
         self._dump(level, f'Evaluate')
         self.lhs.dump(level + 1)
@@ -278,6 +298,9 @@ class AstIf(AstNode):
         self.condition = condition
         self.true_branch = true_branch
         self.false_branch = false_branch
+
+    def __str__(self):
+        return f'\nIF {self.condition}\nTHEN {self.true_branch}\nELSE {self.false_branch}'
 
     def dump(self, level):
         self._dump(level, f'IF')
@@ -320,6 +343,9 @@ class AstLambdaAbstraction(AstNode):
         self.id = id
         self.definition = definition
 
+    def __str__(self):
+        return f'LAMBDA x{self.id} {self.definition}'
+
     def dump(self, level):
         self._dump(level, f'Lambda x{self.id}')
         self.definition.dump(level + 1)
@@ -344,6 +370,9 @@ class AstVariable(AstNode):
     def __init__(self, id):
         assert isinstance(id, int)
         self.id = id
+
+    def __str__(self):
+        return f'x{self.id}'
 
     def dump(self, level):
         self._dump(level, f'\\x{self.id}')

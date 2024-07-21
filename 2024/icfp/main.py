@@ -16,6 +16,8 @@ def main():
         '--no-translate', action='store_false', dest='translate')
     parser.add_argument(
         '--no-evaluate', action='store_false', dest='evaluate')
+    parser.add_argument('--dump', action='store',
+                        default=0, dest='dump')
     args = parser.parse_args()
 
     lines = []
@@ -28,7 +30,7 @@ def main():
     if args.communicate:
         message = communicator.communicate(message)
     if args.evaluate:
-        message = evaluator.evaluate(message)
+        message = evaluator.evaluate(message, dump=int(args.dump))
     print(message)
 
 
