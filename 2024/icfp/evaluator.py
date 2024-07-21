@@ -28,7 +28,7 @@ def evaluate(message, dump=0):
 
 
 def evaluate_core(message, dump):
-    MAX_LOOP = 100
+    MAX_LOOP = 10000
     tokens = deque(message.split(' '))
     root = build_ast(tokens)
     if dump == 1:
