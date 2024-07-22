@@ -113,6 +113,9 @@ class AstBoolean(AstNode):
         assert isinstance(value, bool)
         self.value = value
 
+    def __str__(self):
+        return str(self.value)
+
     def dump(self, level):
         self._dump(level, f'Boolean({self.value})')
 
@@ -129,7 +132,7 @@ class AstInteger(AstNode):
         self.value = value
 
     def __str__(self):
-        return f'I{self.value}'
+        return str(self.value)
 
     def dump(self, level):
         self._dump(level, f'Integer({self.value})')
@@ -147,6 +150,9 @@ class AstString(AstNode):
         assert isinstance(value, str)
         self.value = value
 
+    def __str__(self):
+        return f'"{self.value}"'
+
     def dump(self, level):
         self._dump(level, f'String("{self.value}")')
 
@@ -163,6 +169,13 @@ class AstUnaryOperator(AstNode):
         assert isinstance(operand, AstNode)
         self.operator = operator
         self.operand = operand
+
+    def __str__(self):
+        if self.operator == '#':
+            return f'STR2INT({self.operand})'
+        if self.operator == '$':
+            return f'INT2STR({self.operand})'
+        return f'{self.operator}{self.operand}'
 
     def dump(self, level):
         self._dump(level, f'UnaryOperator {self.operator}')
@@ -347,7 +360,7 @@ class AstLambdaAbstraction(AstNode):
         self.definition = definition
 
     def __str__(self):
-        return f'LAMBDA x{self.id} {self.definition}'
+        return f'LAMBDA x{self.id} => {self.definition}'
 
     def dump(self, level):
         self._dump(level, f'Lambda x{self.id}')
