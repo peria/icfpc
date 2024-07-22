@@ -15,6 +15,9 @@ def evaluate(message, dump=0):
         node = evaluate_core(message, dump)
         if isinstance(node, AstString):
             return node.value
+        # For efficiency
+        if isinstance(node, AstInteger):
+            return f'Integer {node.value}'
     except AssertionError as e:
         _e_type, _e_obj, trace = sys.exc_info()
         filename = trace.tb_frame.f_code.co_filename
@@ -44,7 +47,7 @@ def evaluate_core(message, dump):
         if dump == 2:
             root.dump(0)
             # print(root, file=sys.stderr)
-            time.sleep(1)
+            time.sleep(.5)
 
     print(f'Can\'t evaluate in {MAX_LOOP} loops.', file=sys.stderr)
     return root
