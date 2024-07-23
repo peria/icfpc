@@ -215,7 +215,10 @@ class AstBinaryOperator(AstNode):
         self.rhs = rhs
 
     def __str__(self):
-        return f'{self.lhs} {self.operator} {self.rhs}'
+        operator = self.operator
+        if operator == '=':
+            operator = '=='
+        return f'({self.lhs} {operator} {self.rhs})'
 
     def dump(self, level):
         self._dump(level, f'Binary Operator {self.operator}')
