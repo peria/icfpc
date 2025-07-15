@@ -1,0 +1,10 @@
+[package]
+name = "icfpc2007"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ropey = "1.6.1"
+
+[profile.dev]
+opt-level = 2
