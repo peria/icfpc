@@ -45,8 +45,6 @@ struct RichDNA {
 }
 
 impl RichDNA {
-    const UNDEFINED: char = ' ';
-
     fn new(dna: &str) -> Self {
         let dna = DNA::from(dna);
         RichDNA { dna, pc: 0 }
@@ -56,9 +54,11 @@ impl RichDNA {
         self.dna.len_chars()
     }
 
-    fn consume(&mut self) -> Base {
+    fn consume(&mut self) -> Option<Base> {
         let b = self.refer(0);
-        self.pc += 1;
+        if b.is_some() {
+            self.pc += 1;
+        }
         b
     }
 
@@ -69,9 +69,9 @@ impl RichDNA {
         DNA::from(slice)
     }
 
-    fn refer(&self, offset: usize) -> Base {
+    fn refer(&self, offset: usize) -> Option<Base> {
         let pc = self.pc + offset;
-        self.dna.get_char(pc).unwrap_or(Self::UNDEFINED)
+        self.dna.get_char(pc)
     }
 
     fn get_env(&self, i: usize, j: usize) -> DNA {
@@ -85,13 +85,13 @@ impl RichDNA {
 
     fn position(&self, mut from: usize, s: &DNA) -> Option<usize> {
         loop {
-            if self.refer(from) == Self::UNDEFINED {
+            if self.refer(from).is_none() {
                 return None;
             }
 
             let mut is_ok = true;
             for (j, b) in s.chars().enumerate() {
-                if b != self.refer(from + j) {
+                if Some(b) != self.refer(from + j) {
                     is_ok = false;
                     break;
                 }
@@ -150,12 +150,11 @@ impl Fuun {
                 break;
             }
             let t = t.unwrap();
-            eprintln!("{} Pat / {} Tpl", p.len(), t.len());
 
             self.match_replace(p, t);
 
             loop_count += 1;
-            if loop_count < 20 || loop_count % 100 == 0 {
+            if loop_count < 20 || loop_count % 1000 == 0 {
                 eprintln!(
                     "{}-th loop is done. Length = {}, #RNA = {}",
                     loop_count,
@@ -185,45 +184,40 @@ impl Fuun {
         let mut p = Vec::new();
         let mut level = 0;
         loop {
-            let d = self.dna.consume();
-            match d {
-                'C' => p.push(PItem::Base('I')),
-                'F' => p.push(PItem::Base('C')),
-                'P' => p.push(PItem::Base('F')),
-                'I' => {
-                    let d = self.dna.consume();
-                    match d {
-                        'C' => p.push(PItem::Base('P')),
-                        'F' => {
+            match self.dna.consume() {
+                Some('C') => p.push(PItem::Base('I')),
+                Some('F') => p.push(PItem::Base('C')),
+                Some('P') => p.push(PItem::Base('F')),
+                Some('I') => {
+                    match self.dna.consume() {
+                        Some('C') => p.push(PItem::Base('P')),
+                        Some('F') => {
                             self.dna.consume(); // three bases consumed.
                             let s = self.consts();
                             p.push(PItem::Search(s));
                         }
-                        'P' => {
+                        Some('P') => {
                             let n = self.nat();
                             let n = if n.1 { 0xffff_ffff } else { n.0 };
                             p.push(PItem::Skip(n));
                         }
-                        'I' => {
-                            let d = self.dna.consume();
-                            match d {
-                                'C' | 'F' => {
-                                    if level == 0 {
-                                        return Some(p);
-                                    }
-                                    level -= 1;
-                                    p.push(PItem::GroupEnd);
+                        Some('I') => match self.dna.consume() {
+                            Some('C') | Some('F') => {
+                                if level == 0 {
+                                    return Some(p);
                                 }
-                                'I' => {
-                                    self.rna.push(self.dna.consume_rna());
-                                }
-                                'P' => {
-                                    p.push(PItem::GroupBegin);
-                                    level += 1;
-                                }
-                                _ => return None,
+                                level -= 1;
+                                p.push(PItem::GroupEnd);
                             }
-                        }
+                            Some('I') => {
+                                self.rna.push(self.dna.consume_rna());
+                            }
+                            Some('P') => {
+                                p.push(PItem::GroupBegin);
+                                level += 1;
+                            }
+                            _ => return None,
+                        },
                         _ => return None,
                     }
                 }
@@ -237,11 +231,10 @@ impl Fuun {
         let mut base: usize = 1;
         let mut overflow = false;
         loop {
-            let d = self.dna.consume();
-            match d {
-                'P' => return (n, overflow),
-                'C' => n += base,
-                'I' | 'F' => (),
+            match self.dna.consume() {
+                Some('P') => return (n, overflow),
+                Some('C') => n += base,
+                Some('I') | Some('F') => (),
                 _ => panic!(),
             }
             let r = base.overflowing_mul(2);
@@ -253,21 +246,17 @@ impl Fuun {
     fn consts(&mut self) -> DNA {
         let mut s = DNA::new();
         loop {
-            let d = self.dna.consume();
-            match d {
-                'C' => s.insert_char(0, 'I'),
-                'F' => s.insert_char(0, 'C'),
-                'P' => s.insert_char(0, 'F'),
-                'I' => {
-                    let d = self.dna.consume();
-                    match d {
-                        'C' => s.insert_char(0, 'P'),
-                        _ => {
-                            self.dna.rollback(2);
-                            return s;
-                        }
+            match self.dna.consume() {
+                Some('C') => s.insert_char(0, 'I'),
+                Some('F') => s.insert_char(0, 'C'),
+                Some('P') => s.insert_char(0, 'F'),
+                Some('I') => match self.dna.consume() {
+                    Some('C') => s.insert_char(0, 'P'),
+                    _ => {
+                        self.dna.rollback(2);
+                        return s;
                     }
-                }
+                },
                 _ => {
                     self.dna.rollback(1);
                     return s;
@@ -279,39 +268,30 @@ impl Fuun {
     fn template(&mut self) -> Option<Template> {
         let mut t = Template::new();
         loop {
-            let d = self.dna.consume();
-            match d {
-                'C' => t.push(TItem::Base('I')),
-                'F' => t.push(TItem::Base('C')),
-                'P' => t.push(TItem::Base('F')),
-                'I' => {
-                    let d = self.dna.consume();
-                    match d {
-                        'C' => t.push(TItem::Base('P')),
-                        'F' | 'P' => {
-                            let l = self.nat();
-                            let n = self.nat();
-                            debug_assert!(!(l.1 || n.1));
-                            t.push(TItem::Reference(l.0, n.0));
-                        }
-                        'I' => {
-                            let d = self.dna.consume();
-                            match d {
-                                'C' | 'F' => return Some(t),
-                                'P' => {
-                                    let n = self.nat();
-                                    debug_assert!(!n.1);
-                                    t.push(TItem::Length(n.0));
-                                }
-                                'I' => {
-                                    self.rna.push(self.dna.consume_rna());
-                                }
-                                _ => return None,
-                            }
-                        }
-                        _ => return None,
+            match self.dna.consume() {
+                Some('C') => t.push(TItem::Base('I')),
+                Some('F') => t.push(TItem::Base('C')),
+                Some('P') => t.push(TItem::Base('F')),
+                Some('I') => match self.dna.consume() {
+                    Some('C') => t.push(TItem::Base('P')),
+                    Some('F') | Some('P') => {
+                        let l = self.nat();
+                        let n = self.nat();
+                        debug_assert!(!(l.1 || n.1));
+                        t.push(TItem::Reference(l.0, n.0));
                     }
-                }
+                    Some('I') => match self.dna.consume() {
+                        Some('C') | Some('F') => return Some(t),
+                        Some('P') => {
+                            let n = self.nat();
+                            debug_assert!(!n.1);
+                            t.push(TItem::Length(n.0));
+                        }
+                        Some('I') => self.rna.push(self.dna.consume_rna()),
+                        _ => return None,
+                    },
+                    _ => return None,
+                },
                 _ => return None,
             }
         }
@@ -324,7 +304,7 @@ impl Fuun {
         for p in pat.iter() {
             match p {
                 PItem::Base(b) => {
-                    if self.dna.refer(i) == *b {
+                    if self.dna.refer(i) == Some(*b) {
                         i += 1
                     } else {
                         return;
@@ -435,9 +415,6 @@ mod test {
         assert_eq!(pattern[2], PItem::GroupEnd);
         assert_eq!(pattern[3], PItem::Base('P'));
     }
-
-    #[test]
-    fn tempalte_test() {}
 
     #[test]
     fn execute_test() {
