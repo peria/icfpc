@@ -35,15 +35,72 @@ enum TItem {
 }
 type Environment = Vec<DNA>;
 
-struct Fuun {
+struct RichDNA {
     dna: DNA,
+    pc: usize,
+}
+
+impl RichDNA {
+    fn len(&self) -> usize {
+        self.dna.len_chars()
+    }
+
+    fn refer(&self, i: usize) -> Option<char> {
+        self.dna.get_char(i)
+    }
+
+    fn consume(&mut self, n: usize) {
+        self.dna.remove(..n);
+    }
+
+    fn to_rna(&self, n: usize) -> String {
+        let slice = self.dna.slice(n..(n + 7));
+        String::from(slice)
+    }
+
+    fn prepend(&mut self, s: &str) {
+        self.dna.insert(0, s);
+    }
+
+    fn find_postfix(&self, mut from: usize, s: &DNA) -> Option<usize> {
+        let n = s.len_chars();
+        loop {
+            if from + n > self.len() {
+                return None;
+            }
+
+            let slice = self.dna.get_chars_at(from).unwrap();
+            if slice.zip(s.chars()).all(|(a, b)| a == b) {
+                return Some(from + n);
+            }
+            from += 1;
+        }
+    }
+
+    fn get_env(&self, from: usize, to: usize) -> DNA {
+        let slice = self.dna.slice(from..to);
+        DNA::from(slice)
+    }
+}
+
+impl From<&str> for RichDNA {
+    fn from(value: &str) -> Self {
+        Self {
+            dna: DNA::from(value),
+            pc: 0,
+        }
+    }
+}
+
+struct Fuun {
+    dna: RichDNA,
     rna: RNA,
 }
 
 impl Fuun {
     pub fn new(dna: &str) -> Self {
         Fuun {
-            dna: DNA::from(dna),
+            dna: RichDNA::from(dna),
             rna: RNA::new(),
         }
     }
@@ -70,7 +127,7 @@ impl Fuun {
                 eprintln!(
                     "{}-th loop is done. Length = {}, #RNA = {}",
                     loop_count,
-                    self.dna.len_chars(),
+                    self.dna.len(),
                     self.rna.len()
                 );
             }
@@ -78,7 +135,7 @@ impl Fuun {
         eprintln!(
             "{}-th loop is done. Length = {}, #RNA = {}",
             loop_count,
-            self.dna.len_chars(),
+            self.dna.len(),
             self.rna.len()
         );
     }
@@ -88,44 +145,44 @@ impl Fuun {
         let mut level = 0;
         loop {
             let dna = &mut self.dna;
-            match dna.get_char(0) {
+            match dna.refer(0) {
                 Some('C') => {
-                    dna.remove(..1);
+                    dna.consume(1);
                     p.push(PItem::Base('I'));
                 }
                 Some('F') => {
-                    dna.remove(..1);
+                    dna.consume(1);
                     p.push(PItem::Base('C'));
                 }
                 Some('P') => {
-                    dna.remove(..1);
+                    dna.consume(1);
                     p.push(PItem::Base('F'));
                 }
-                Some('I') => match dna.get_char(1) {
+                Some('I') => match dna.refer(1) {
                     Some('C') => {
-                        dna.remove(..2);
+                        dna.consume(2);
                         p.push(PItem::Base('P'));
                     }
                     Some('P') => {
-                        dna.remove(..2);
+                        dna.consume(2);
                         match self.nat() {
                             Some(n) => p.push(PItem::Skip(n)),
                             None => return None,
                         }
                     }
                     Some('F') => {
-                        dna.remove(..3); // Consume 3 bases
+                        dna.consume(3); // Consume 3 bases
                         let s = self.consts();
                         p.push(PItem::Search(s));
                     }
-                    Some('I') => match dna.get_char(2) {
+                    Some('I') => match dna.refer(2) {
                         Some('P') => {
-                            dna.remove(..3);
+                            dna.consume(3);
                             level += 1;
                             p.push(PItem::GroupBegin);
                         }
                         Some('C') | Some('F') => {
-                            dna.remove(..3);
+                            dna.consume(3);
                             if level == 0 {
                                 return Some(p);
                             } else {
@@ -134,9 +191,9 @@ impl Fuun {
                             }
                         }
                         Some('I') => {
-                            let rna = self.dna.slice(3..10);
-                            self.rna.push(String::from(rna));
-                            self.dna.remove(..10);
+                            let rna = self.dna.to_rna(3);
+                            self.rna.push(rna);
+                            self.dna.consume(10);
                         }
                         _ => return None,
                     },
@@ -151,26 +208,26 @@ impl Fuun {
         let mut t = Template::new();
         loop {
             let dna = &mut self.dna;
-            match dna.get_char(0) {
+            match dna.refer(0) {
                 Some('C') => {
-                    dna.remove(..1);
+                    dna.consume(1);
                     t.push(TItem::Base('I'));
                 }
                 Some('F') => {
-                    dna.remove(..1);
+                    dna.consume(1);
                     t.push(TItem::Base('C'));
                 }
                 Some('P') => {
-                    dna.remove(..1);
+                    dna.consume(1);
                     t.push(TItem::Base('F'));
                 }
-                Some('I') => match dna.get_char(1) {
+                Some('I') => match dna.refer(1) {
                     Some('C') => {
-                        dna.remove(..2);
+                        dna.consume(2);
                         t.push(TItem::Base('P'));
                     }
                     Some('F') | Some('P') => {
-                        dna.remove(..2);
+                        dna.consume(2);
                         let l = self.nat();
                         if l.is_none() {
                             return None;
@@ -181,22 +238,22 @@ impl Fuun {
                         }
                         t.push(TItem::Protect(n.unwrap(), l.unwrap()));
                     }
-                    Some('I') => match dna.get_char(2) {
+                    Some('I') => match dna.refer(2) {
                         Some('C') | Some('F') => {
-                            dna.remove(..3);
+                            dna.consume(3);
                             return Some(t);
                         }
                         Some('P') => {
-                            dna.remove(..3);
+                            dna.consume(3);
                             match self.nat() {
                                 Some(n) => t.push(TItem::Number(n)),
                                 None => return None,
                             }
                         }
                         Some('I') => {
-                            let rna = dna.slice(3..10);
-                            self.rna.push(String::from(rna));
-                            dna.remove(..10);
+                            let rna = dna.to_rna(3);
+                            self.rna.push(rna);
+                            dna.consume(10);
                         }
                         _ => return None,
                     },
@@ -214,7 +271,7 @@ impl Fuun {
         for p in pat.iter() {
             match p {
                 PItem::Base(b) => {
-                    if self.dna.get_char(i) == Some(*b) {
+                    if self.dna.refer(i) == Some(*b) {
                         i += 1;
                     } else {
                         return;
@@ -222,12 +279,12 @@ impl Fuun {
                 }
                 PItem::Skip(n) => {
                     i += n;
-                    if i > self.dna.len_chars() {
+                    if i > self.dna.len() {
                         return;
                     }
                 }
                 PItem::Search(s) => {
-                    if let Some(n) = self.find_postfix(i, s) {
+                    if let Some(n) = self.dna.find_postfix(i, s) {
                         i = n
                     } else {
                         return;
@@ -236,30 +293,30 @@ impl Fuun {
                 PItem::GroupBegin => c.push(i),
                 PItem::GroupEnd => {
                     let c0 = c.pop().unwrap();
-                    let env = self.dna.slice(c0..i);
-                    e.push(DNA::from(env));
+                    let env = self.dna.get_env(c0, i);
+                    e.push(env);
                 }
             }
         }
-        self.dna.remove(..i);
+        self.dna.consume(i);
         self.replace(t, e);
     }
 
     fn nat(&mut self) -> Option<usize> {
-        match self.dna.get_char(0) {
+        match self.dna.refer(0) {
             Some('P') => {
-                self.dna.remove(..1);
+                self.dna.consume(1);
                 Some(0)
             }
             Some('I') | Some('F') => {
-                self.dna.remove(..1);
+                self.dna.consume(1);
                 match self.nat() {
                     Some(n) => Some(2 * n),
                     None => None,
                 }
             }
             Some('C') => {
-                self.dna.remove(..1);
+                self.dna.consume(1);
                 match self.nat() {
                     Some(n) => Some(2 * n + 1),
                     None => None,
@@ -270,28 +327,28 @@ impl Fuun {
     }
 
     fn consts(&mut self) -> DNA {
-        match self.dna.get_char(0) {
+        match self.dna.refer(0) {
             Some('C') => {
-                self.dna.remove(..1);
+                self.dna.consume(1);
                 let mut s = self.consts();
                 s.insert_char(0, 'I');
                 s
             }
             Some('F') => {
-                self.dna.remove(..1);
+                self.dna.consume(1);
                 let mut s = self.consts();
                 s.insert_char(0, 'C');
                 s
             }
             Some('P') => {
-                self.dna.remove(..1);
+                self.dna.consume(1);
                 let mut s = self.consts();
                 s.insert_char(0, 'F');
                 s
             }
-            Some('I') => match self.dna.get_char(1) {
+            Some('I') => match self.dna.refer(1) {
                 Some('C') => {
-                    self.dna.remove(..2);
+                    self.dna.consume(2);
                     let mut s = self.consts();
                     s.insert_char(0, 'P');
                     s
@@ -311,22 +368,7 @@ impl Fuun {
                 TItem::Number(n) => r.append(Self::asnat(e[*n].len_chars())),
             }
         }
-        self.dna.insert(0, &r.to_string());
-    }
-
-    fn find_postfix(&self, mut from: usize, s: &Rope) -> Option<usize> {
-        let n = s.len_chars();
-        loop {
-            if from + n > self.dna.len_chars() {
-                return None;
-            }
-
-            let slice = self.dna.get_chars_at(from).unwrap();
-            if slice.zip(s.chars()).all(|(a, b)| a == b) {
-                return Some(from + n);
-            }
-            from += 1;
-        }
+        self.dna.prepend(&r.to_string());
     }
 
     fn protect(l: usize, d: &DNA) -> DNA {
