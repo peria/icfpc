@@ -42,24 +42,28 @@ struct RichDNA {
 
 impl RichDNA {
     fn len(&self) -> usize {
-        self.dna.len_chars()
+        self.dna.len_chars() - self.pc
     }
 
     fn refer(&self, i: usize) -> Option<char> {
-        self.dna.get_char(i)
+        self.dna.get_char(self.pc + i)
     }
 
     fn consume(&mut self, n: usize) {
-        self.dna.remove(..n);
+        self.pc += n;
     }
 
     fn to_rna(&self, n: usize) -> String {
-        let slice = self.dna.slice(n..(n + 7));
+        let from = self.pc + n;
+        let slice = self.dna.slice(from..(from + 7));
         String::from(slice)
     }
 
-    fn prepend(&mut self, s: &str) {
-        self.dna.insert(0, s);
+    fn prepend(&mut self, s: DNA) {
+        let remained = self.dna.split_off(self.pc);
+        self.dna = s;
+        self.dna.append(remained);
+        self.pc = 0;
     }
 
     fn find_postfix(&self, mut from: usize, s: &DNA) -> Option<usize> {
@@ -69,7 +73,7 @@ impl RichDNA {
                 return None;
             }
 
-            let slice = self.dna.get_chars_at(from).unwrap();
+            let slice = self.dna.get_chars_at(self.pc + from).unwrap();
             if slice.zip(s.chars()).all(|(a, b)| a == b) {
                 return Some(from + n);
             }
@@ -78,7 +82,7 @@ impl RichDNA {
     }
 
     fn get_env(&self, from: usize, to: usize) -> DNA {
-        let slice = self.dna.slice(from..to);
+        let slice = self.dna.slice((self.pc + from)..(self.pc + to));
         DNA::from(slice)
     }
 }
@@ -368,7 +372,7 @@ impl Fuun {
                 TItem::Number(n) => r.append(Self::asnat(e[*n].len_chars())),
             }
         }
-        self.dna.prepend(&r.to_string());
+        self.dna.prepend(r);
     }
 
     fn protect(l: usize, d: &DNA) -> DNA {

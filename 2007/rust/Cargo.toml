@@ -7,4 +7,4 @@ edition = "2024"
 ropey = "1.6.1"
 
 [profile.dev]
-opt-level = 2
+opt-level = 0
