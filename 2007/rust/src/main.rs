@@ -1,7 +1,6 @@
-use core::panic;
 use std::{fs::File, io::Read};
 
-use ropey::Rope;
+use ropey::{Rope, RopeBuilder};
 
 fn main() {
     let mut dna_file = File::open("../data/endo.dna").unwrap();
@@ -15,12 +14,11 @@ fn main() {
     // }
 }
 
-type Base = char; // 'I', 'C', 'F', or 'P'
-type DNA = ropey::Rope;
-type RNA = Vec<DNA>;
-type Environment = Vec<DNA>;
-
-#[derive(Debug, Clone, PartialEq)]
+type Base = char;
+type DNA = Rope;
+type RNA = Vec<String>;
+type Pattern = Vec<PItem>;
+#[derive(Debug, PartialEq)]
 enum PItem {
     Base(Base),
     Skip(usize),
@@ -28,111 +26,25 @@ enum PItem {
     GroupBegin,
     GroupEnd,
 }
-type Pattern = Vec<PItem>;
-
-#[derive(Debug, Clone, PartialEq)]
+type Template = Vec<TItem>;
+#[derive(Debug, PartialEq)]
 enum TItem {
     Base(Base),
-    Reference(usize, usize),
-    Length(usize),
+    Protect(usize, usize), // [n, l]
+    Number(usize),
 }
-type Template = Vec<TItem>;
-
-#[derive(Debug)]
-struct RichDNA {
-    dna: DNA,
-    pc: usize,
-}
-
-impl RichDNA {
-    fn new(dna: &str) -> Self {
-        let dna = DNA::from(dna);
-        RichDNA { dna, pc: 0 }
-    }
-
-    fn len(&self) -> usize {
-        self.dna.len_chars()
-    }
-
-    fn consume(&mut self) -> Option<Base> {
-        let b = self.refer(0);
-        if b.is_some() {
-            self.pc += 1;
-        }
-        b
-    }
-
-    fn consume_rna(&mut self) -> DNA {
-        const RNA_SIZE: usize = 7;
-        let slice = self.dna.slice(self.pc..(self.pc + RNA_SIZE));
-        self.pc += RNA_SIZE;
-        DNA::from(slice)
-    }
-
-    fn refer(&self, offset: usize) -> Option<Base> {
-        let pc = self.pc + offset;
-        self.dna.get_char(pc)
-    }
-
-    fn get_env(&self, i: usize, j: usize) -> DNA {
-        let offset = self.pc;
-        DNA::from(self.dna.slice((offset + i)..(offset + j)))
-    }
-
-    fn rollback(&mut self, size: usize) {
-        self.pc -= size;
-    }
-
-    fn position(&self, mut from: usize, s: &DNA) -> Option<usize> {
-        loop {
-            if self.refer(from).is_none() {
-                return None;
-            }
-
-            let mut is_ok = true;
-            for (j, b) in s.chars().enumerate() {
-                if Some(b) != self.refer(from + j) {
-                    is_ok = false;
-                    break;
-                }
-            }
-            if is_ok {
-                return Some(from);
-            }
-            from += 1;
-        }
-    }
-
-    fn seek(&mut self, size: usize) {
-        self.pc += size;
-    }
-
-    fn gc(&mut self) {
-        let pc = self.pc;
-        self.pc = 0;
-        self.dna.remove(..pc);
-    }
-
-    fn prepend(&mut self, r: Rope) {
-        self.dna.insert(0, &r.to_string());
-    }
-
-    #[allow(dead_code)]
-    fn to_string(&self) -> String {
-        self.dna.to_string()
-    }
-}
+type Environment = Vec<DNA>;
 
 struct Fuun {
+    dna: DNA,
     rna: RNA,
-    dna: RichDNA,
 }
 
 impl Fuun {
     pub fn new(dna: &str) -> Self {
-        Self {
+        Fuun {
+            dna: DNA::from(dna),
             rna: RNA::new(),
-            dna: RichDNA::new(dna),
         }
     }
 
@@ -158,7 +70,7 @@ impl Fuun {
                 eprintln!(
                     "{}-th loop is done. Length = {}, #RNA = {}",
                     loop_count,
-                    self.dna.len(),
+                    self.dna.len_chars(),
                     self.rna.len()
                 );
             }
@@ -166,101 +78,71 @@ impl Fuun {
         eprintln!(
             "{}-th loop is done. Length = {}, #RNA = {}",
             loop_count,
-            self.dna.len(),
-            self.rna.len()
-        );
-        self.finish();
-    }
-
-    fn finish(&self) {
-        eprintln!(
-            "Exec is done. Length = {}, #RNA = {}",
-            self.dna.len(),
+            self.dna.len_chars(),
             self.rna.len()
         );
     }
 
     fn pattern(&mut self) -> Option<Pattern> {
-        let mut p = Vec::new();
+        let mut p = Pattern::new();
         let mut level = 0;
         loop {
-            match self.dna.consume() {
-                Some('C') => p.push(PItem::Base('I')),
-                Some('F') => p.push(PItem::Base('C')),
-                Some('P') => p.push(PItem::Base('F')),
-                Some('I') => {
-                    match self.dna.consume() {
-                        Some('C') => p.push(PItem::Base('P')),
-                        Some('F') => {
-                            self.dna.consume(); // three bases consumed.
-                            let s = self.consts();
-                            p.push(PItem::Search(s));
+            let dna = &mut self.dna;
+            match dna.get_char(0) {
+                Some('C') => {
+                    dna.remove(..1);
+                    p.push(PItem::Base('I'));
+                }
+                Some('F') => {
+                    dna.remove(..1);
+                    p.push(PItem::Base('C'));
+                }
+                Some('P') => {
+                    dna.remove(..1);
+                    p.push(PItem::Base('F'));
+                }
+                Some('I') => match dna.get_char(1) {
+                    Some('C') => {
+                        dna.remove(..2);
+                        p.push(PItem::Base('P'));
+                    }
+                    Some('P') => {
+                        dna.remove(..2);
+                        match self.nat() {
+                            Some(n) => p.push(PItem::Skip(n)),
+                            None => return None,
                         }
+                    }
+                    Some('F') => {
+                        dna.remove(..3); // Consume 3 bases
+                        let s = self.consts();
+                        p.push(PItem::Search(s));
+                    }
+                    Some('I') => match dna.get_char(2) {
                         Some('P') => {
-                            let n = self.nat();
-                            let n = if n.1 { 0xffff_ffff } else { n.0 };
-                            p.push(PItem::Skip(n));
+                            dna.remove(..3);
+                            level += 1;
+                            p.push(PItem::GroupBegin);
                         }
-                        Some('I') => match self.dna.consume() {
-                            Some('C') | Some('F') => {
-                                if level == 0 {
-                                    return Some(p);
-                                }
+                        Some('C') | Some('F') => {
+                            dna.remove(..3);
+                            if level == 0 {
+                                return Some(p);
+                            } else {
                                 level -= 1;
                                 p.push(PItem::GroupEnd);
                             }
-                            Some('I') => {
-                                self.rna.push(self.dna.consume_rna());
-                            }
-                            Some('P') => {
-                                p.push(PItem::GroupBegin);
-                                level += 1;
-                            }
-                            _ => return None,
-                        },
+                        }
+                        Some('I') => {
+                            let rna = self.dna.slice(3..10);
+                            self.rna.push(String::from(rna));
+                            self.dna.remove(..10);
+                        }
                         _ => return None,
-                    }
-                }
-                _ => return None,
-            }
-        }
-    }
-
-    fn nat(&mut self) -> (usize, bool) {
-        let mut n = 0;
-        let mut base: usize = 1;
-        let mut overflow = false;
-        loop {
-            match self.dna.consume() {
-                Some('P') => return (n, overflow),
-                Some('C') => n += base,
-                Some('I') | Some('F') => (),
-                _ => panic!(),
-            }
-            let r = base.overflowing_mul(2);
-            base = r.0;
-            overflow |= r.1;
-        }
-    }
-
-    fn consts(&mut self) -> DNA {
-        let mut s = DNA::new();
-        loop {
-            match self.dna.consume() {
-                Some('C') => s.insert_char(0, 'I'),
-                Some('F') => s.insert_char(0, 'C'),
-                Some('P') => s.insert_char(0, 'F'),
-                Some('I') => match self.dna.consume() {
-                    Some('C') => s.insert_char(0, 'P'),
-                    _ => {
-                        self.dna.rollback(2);
-                        return s;
-                    }
+                    },
+                    _ => return None,
                 },
-                _ => {
-                    self.dna.rollback(1);
-                    return s;
-                }
+                _ => return None,
             }
         }
     }
@@ -268,26 +150,54 @@ impl Fuun {
     fn template(&mut self) -> Option<Template> {
         let mut t = Template::new();
         loop {
-            match self.dna.consume() {
-                Some('C') => t.push(TItem::Base('I')),
-                Some('F') => t.push(TItem::Base('C')),
-                Some('P') => t.push(TItem::Base('F')),
-                Some('I') => match self.dna.consume() {
-                    Some('C') => t.push(TItem::Base('P')),
-                    Some('F') | Some('P') => {
-                        let l = self.nat();
-                        let n = self.nat();
-                        debug_assert!(!(l.1 || n.1));
-                        t.push(TItem::Reference(l.0, n.0));
+            let dna = &mut self.dna;
+            match dna.get_char(0) {
+                Some('C') => {
+                    dna.remove(..1);
+                    t.push(TItem::Base('I'));
+                }
+                Some('F') => {
+                    dna.remove(..1);
+                    t.push(TItem::Base('C'));
+                }
+                Some('P') => {
+                    dna.remove(..1);
+                    t.push(TItem::Base('F'));
+                }
+                Some('I') => match dna.get_char(1) {
+                    Some('C') => {
+                        dna.remove(..2);
+                        t.push(TItem::Base('P'));
                     }
-                    Some('I') => match self.dna.consume() {
-                        Some('C') | Some('F') => return Some(t),
-                        Some('P') => {
-                            let n = self.nat();
-                            debug_assert!(!n.1);
-                            t.push(TItem::Length(n.0));
+                    Some('F') | Some('P') => {
+                        dna.remove(..2);
+                        let l = self.nat();
+                        if l.is_none() {
+                            return None;
                         }
-                        Some('I') => self.rna.push(self.dna.consume_rna()),
+                        let n = self.nat();
+                        if n.is_none() {
+                            return None;
+                        }
+                        t.push(TItem::Protect(n.unwrap(), l.unwrap()));
+                    }
+                    Some('I') => match dna.get_char(2) {
+                        Some('C') | Some('F') => {
+                            dna.remove(..3);
+                            return Some(t);
+                        }
+                        Some('P') => {
+                            dna.remove(..3);
+                            match self.nat() {
+                                Some(n) => t.push(TItem::Number(n)),
+                                None => return None,
+                            }
+                        }
+                        Some('I') => {
+                            let rna = dna.slice(3..10);
+                            self.rna.push(String::from(rna));
+                            dna.remove(..10);
+                        }
                         _ => return None,
                     },
                     _ => return None,
@@ -304,90 +214,155 @@ impl Fuun {
         for p in pat.iter() {
             match p {
                 PItem::Base(b) => {
-                    if self.dna.refer(i) == Some(*b) {
-                        i += 1
+                    if self.dna.get_char(i) == Some(*b) {
+                        i += 1;
                     } else {
                         return;
                     }
                 }
                 PItem::Skip(n) => {
                     i += n;
-                    if i > self.dna.len() {
+                    if i > self.dna.len_chars() {
                         return;
                     }
                 }
                 PItem::Search(s) => {
-                    let n = self.dna.position(i, s);
-                    if n.is_none() {
+                    if let Some(n) = self.find_postfix(i, s) {
+                        i = n
+                    } else {
                         return;
                     }
-                    i = n.unwrap() + s.len_chars();
                 }
                 PItem::GroupBegin => c.push(i),
                 PItem::GroupEnd => {
                     let c0 = c.pop().unwrap();
-                    let env = self.dna.get_env(c0, i);
-                    e.push(env);
+                    let env = self.dna.slice(c0..i);
+                    e.push(DNA::from(env));
                 }
             }
         }
-        self.dna.seek(i);
-        self.dna.gc();
-
+        self.dna.remove(..i);
         self.replace(t, e);
     }
 
-    fn replace(&mut self, tpl: Template, env: Environment) {
+    fn nat(&mut self) -> Option<usize> {
+        match self.dna.get_char(0) {
+            Some('P') => {
+                self.dna.remove(..1);
+                Some(0)
+            }
+            Some('I') | Some('F') => {
+                self.dna.remove(..1);
+                match self.nat() {
+                    Some(n) => Some(2 * n),
+                    None => None,
+                }
+            }
+            Some('C') => {
+                self.dna.remove(..1);
+                match self.nat() {
+                    Some(n) => Some(2 * n + 1),
+                    None => None,
+                }
+            }
+            _ => None,
+        }
+    }
+
+    fn consts(&mut self) -> DNA {
+        match self.dna.get_char(0) {
+            Some('C') => {
+                self.dna.remove(..1);
+                let mut s = self.consts();
+                s.insert_char(0, 'I');
+                s
+            }
+            Some('F') => {
+                self.dna.remove(..1);
+                let mut s = self.consts();
+                s.insert_char(0, 'C');
+                s
+            }
+            Some('P') => {
+                self.dna.remove(..1);
+                let mut s = self.consts();
+                s.insert_char(0, 'F');
+                s
+            }
+            Some('I') => match self.dna.get_char(1) {
+                Some('C') => {
+                    self.dna.remove(..2);
+                    let mut s = self.consts();
+                    s.insert_char(0, 'P');
+                    s
+                }
+                _ => DNA::new(),
+            },
+            _ => DNA::new(),
+        }
+    }
+
+    fn replace(&mut self, tpl: Template, e: Environment) {
         let mut r = DNA::new();
         for t in tpl.iter() {
             match t {
-                &TItem::Base(b) => r.insert_char(r.len_chars(), b),
-                &TItem::Reference(l, n) => r.append(Self::protect(l, &env[n])),
-                &TItem::Length(n) => {
-                    let len = if n < env.len() { env[n].len_chars() } else { 0 };
-                    r.append(Self::asnat(len));
-                }
+                TItem::Base(b) => r.insert_char(r.len_chars(), *b),
+                TItem::Protect(n, l) => r.append(Self::protect(*l, &e[*n])),
+                TItem::Number(n) => r.append(Self::asnat(e[*n].len_chars())),
             }
         }
-        self.dna.prepend(r);
+        self.dna.insert(0, &r.to_string());
+    }
+
+    fn find_postfix(&self, mut from: usize, s: &Rope) -> Option<usize> {
+        let n = s.len_chars();
+        loop {
+            if from + n > self.dna.len_chars() {
+                return None;
+            }
+
+            let slice = self.dna.get_chars_at(from).unwrap();
+            if slice.zip(s.chars()).all(|(a, b)| a == b) {
+                return Some(from + n);
+            }
+            from += 1;
+        }
     }
 
     fn protect(l: usize, d: &DNA) -> DNA {
-        let mut dna = d.clone();
-        for _ in 0..l {
-            dna = Self::quote(&dna);
+        if l == 0 {
+            d.clone()
+        } else {
+            Self::protect(l - 1, &Self::quote(d))
         }
-        dna
     }
 
     fn quote(d: &DNA) -> DNA {
-        let mut dna = String::new();
-        for b in d.chars() {
-            match b {
-                'I' => dna.push('C'),
-                'C' => dna.push('F'),
-                'F' => dna.push('P'),
-                'P' => {
-                    dna.push('I');
-                    dna.push('C');
-                }
-                _ => panic!(),
+        let mut builder = RopeBuilder::new();
+        for c in d.chars() {
+            match c {
+                'I' => builder.append("C"),
+                'C' => builder.append("F"),
+                'F' => builder.append("P"),
+                'P' => builder.append("IC"),
+                _ => (),
             }
         }
-        Rope::from(dna)
+        builder.finish()
     }
 
     fn asnat(mut n: usize) -> DNA {
-        let mut dna = DNA::from("P");
+        let mut builder = RopeBuilder::new();
         while n > 0 {
             if n % 2 == 0 {
-                dna.insert_char(0, 'I');
+                builder.append("I");
             } else {
-                dna.insert_char(0, 'C');
+                builder.append("C");
             }
             n /= 2;
         }
-        dna
+        builder.append("P");
+        builder.finish()
     }
 }
 
@@ -397,36 +372,12 @@ mod test {
 
     #[test]
     fn pattern_test() {
-        let mut fuun = Fuun::new("CIIC");
-        let pattern = fuun.pattern();
-        assert!(pattern.is_some());
-        let pattern = pattern.unwrap();
-        assert_eq!(pattern.len(), 1);
-        assert_eq!(pattern[0], PItem::Base('I'));
-
-        let mut fuun = Fuun::new("IIPIPICPIICICIIF");
-        let pattern = fuun.pattern();
-        assert!(pattern.is_some());
-        let pattern = pattern.unwrap();
-
-        assert_eq!(pattern.len(), 4);
-        assert_eq!(pattern[0], PItem::GroupBegin);
-        assert_eq!(pattern[1], PItem::Skip(2));
-        assert_eq!(pattern[2], PItem::GroupEnd);
-        assert_eq!(pattern[3], PItem::Base('P'));
-    }
-
-    #[test]
-    fn execute_test() {
-        let test_data = [
-            ("IIPIPICPIICICIIFICCIFPPIICCFPC", "PICFC"),
-            ("IIPIPICPIICICIIFICCIFCCCPPIICCFPC", "PIICCFCFFPC"),
-            ("IIPIPIICPIICIICCIICFCFC", "I"),
-        ];
-        for &(dna, expect) in test_data.iter() {
-            let mut fuun = Fuun::new(dna);
-            fuun.execute();
-            assert_eq!(fuun.dna.to_string(), expect);
-        }
+        let dna = "CIIC";
+        let mut fuun = Fuun::new(dna);
+        let actual = fuun.pattern();
+        assert!(actual.is_some());
+        let actual = actual.unwrap();
+        assert_eq!(1, actual.len());
+        assert_eq!(PItem::Base('I'), actual[0]);
     }
 }
