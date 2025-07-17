@@ -112,7 +112,7 @@ impl Fuun {
             self.match_replace(p, t, &mut dna);
 
             loop_count += 1;
-            if loop_count < 20 || loop_count % 1000 == 0 {
+            if loop_count < 20 || loop_count % 10000 == 0 {
                 eprintln!(
                     "{}-th loop is done. Length = {}, #RNA = {}",
                     loop_count,
@@ -290,60 +290,55 @@ impl Fuun {
     }
 
     fn nat(&mut self, dna: &mut RichDNA) -> Option<usize> {
-        match dna.refer(0) {
-            Some('P') => {
-                dna.consume(1);
-                Some(0)
-            }
-            Some('I') | Some('F') => {
-                dna.consume(1);
-                match self.nat(dna) {
-                    Some(n) => Some(2 * n),
-                    None => None,
+        let mut n = 0usize;
+        let mut b = 1;
+        for i in 0..dna.len() {
+            match dna.refer(i) {
+                Some('P') => {
+                    dna.consume(i + 1);
+                    return Some(n);
                 }
-            }
-            Some('C') => {
-                dna.consume(1);
-                match self.nat(dna) {
-                    Some(n) => Some(2 * n + 1),
-                    None => None,
+                Some('I') | Some('F') => {}
+                Some('C') => {
+                    n += b;
                 }
+                _ => return None,
             }
-            _ => None,
+            b *= 2;
         }
+        dna.consume(dna.len());
+        None
     }
 
     fn consts(&mut self, dna: &mut RichDNA) -> DNA {
-        match dna.refer(0) {
-            Some('C') => {
-                dna.consume(1);
-                let mut s = self.consts(dna);
-                s.insert_char(0, 'I');
-                s
-            }
-            Some('F') => {
-                dna.consume(1);
-                let mut s = self.consts(dna);
-                s.insert_char(0, 'C');
-                s
-            }
-            Some('P') => {
-                dna.consume(1);
-                let mut s = self.consts(dna);
-                s.insert_char(0, 'F');
-                s
-            }
-            Some('I') => match dna.refer(1) {
+        let mut s = DNA::new();
+        let mut n = 0;
+        loop {
+            match dna.refer(0) {
                 Some('C') => {
-                    dna.consume(2);
-                    let mut s = self.consts(dna);
-                    s.insert_char(0, 'P');
-                    s
+                    dna.consume(1);
+                    s.insert_char(n, 'I');
                 }
-                _ => DNA::new(),
-            },
-            _ => DNA::new(),
+                Some('F') => {
+                    dna.consume(1);
+                    s.insert_char(n, 'C');
+                }
+                Some('P') => {
+                    dna.consume(1);
+                    s.insert_char(n, 'F');
+                }
+                Some('I') => match dna.refer(1) {
+                    Some('C') => {
+                        dna.consume(2);
+                        s.insert_char(n, 'P');
+                    }
+                    _ => break,
+                },
+                _ => break,
+            }
+            n += 1;
         }
+        s
     }
 
     fn replace(&mut self, tpl: Template, e: Environment, dna: &mut RichDNA) {
@@ -359,10 +354,14 @@ impl Fuun {
     }
 
     fn protect(l: usize, d: &DNA) -> DNA {
+        Self::rec_protect(l, d)
+    }
+
+    fn rec_protect(l: usize, d: &DNA) -> DNA {
         if l == 0 {
             d.clone()
         } else {
-            Self::protect(l - 1, &Self::quote(d))
+            Self::rec_protect(l - 1, &Self::quote(d))
         }
     }
 
