@@ -112,7 +112,7 @@ impl Fuun {
             self.match_replace(p, t, &mut dna);
 
             loop_count += 1;
-            if loop_count < 20 || loop_count % 10000 == 0 {
+            if loop_count % 10000 == 0 {
                 eprintln!(
                     "{}-th loop is done. Length = {}, #RNA = {}",
                     loop_count,
