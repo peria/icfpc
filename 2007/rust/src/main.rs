@@ -11,5 +11,12 @@ fn main() {
     let mut fuun = fuun::Fuun::new();
     fuun.execute(&mut dna);
 
-    // let mut arrow = arrow::Arrow::new();
+    let mut arrow = arrow::Arrow::new();
+    let bitmap = arrow.build(&fuun.rna);
+    let mut img = image::RgbImage::new(600, 600);
+    for (x, y, pixel) in img.enumerate_pixels_mut() {
+        let rgb = &bitmap[y as usize][x as usize].0;
+        *pixel = image::Rgb([rgb.0, rgb.1, rgb.2]);
+    }
+    img.save("result.png").unwrap();
 }
