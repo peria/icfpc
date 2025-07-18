@@ -346,8 +346,15 @@ impl Fuun {
         for t in tpl.iter() {
             match t {
                 TItem::Base(b) => r.insert_char(r.len_chars(), *b),
-                TItem::Protect(n, l) => r.append(Self::protect(*l, &e[*n])),
-                TItem::Number(n) => r.append(Self::asnat(e[*n].len_chars())),
+                TItem::Protect(n, l) => {
+                    if *n < e.len() {
+                        r.append(Self::protect(*l, &e[*n]));
+                    }
+                }
+                TItem::Number(n) => {
+                    let len = if *n < e.len() { e[*n].len_chars() } else { 0 };
+                    r.append(Self::asnat(len));
+                }
             }
         }
         dna.prepend(r);
