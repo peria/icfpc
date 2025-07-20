@@ -4,10 +4,23 @@ mod fuun;
 use sha2::Digest;
 use std::{fs::File, io::Read};
 
+const DEFAULT_ENDO_PATH: &str = "../data/endo.dna";
+
+struct Args {
+    args: Vec<String>,
+    dump_rna: bool,
+    dump_statistics: bool,
+    endo: Option<String>,
+}
+
 fn main() {
-    // TODO: Use arguments.
-    let prefix = String::from("IIPIFFCPICICIICPIICIPPPICIIC");
-    let endo_path = "../data/endo.dna";
+    let args = parse_args();
+
+    let mut prefix = String::new();
+    if args.args.len() >= 2 {
+        prefix = args.args[1].clone();
+    }
+    let endo_path = args.endo.unwrap_or(DEFAULT_ENDO_PATH.to_string());
 
     let mut dna = prefix.clone();
     let endo = load_endo(&endo_path);
@@ -36,4 +49,37 @@ fn save_bitmap(bitmap: &[[((u8, u8, u8), u8); 600]; 600], filename: &str) {
     }
     let file_path = format!("./{}", filename);
     img.save(file_path).unwrap();
+}
+
+fn parse_args() -> Args {
+    let mut args = Vec::new();
+    let mut dump_rna = false;
+    let mut dump_statistics = false;
+    let mut endo = None;
+
+    let mut read_endo = false;
+    for arg in std::env::args() {
+        if read_endo {
+            read_endo = false;
+            endo = Some(arg);
+            continue;
+        }
+
+        if arg == "-r" || arg == "--rna" {
+            dump_rna = true;
+        } else if arg == "-s" || arg == "--statistics" {
+            dump_statistics = true;
+        } else if arg == "-e" || arg == "--endo" {
+            read_endo = true;
+        } else {
+            args.push(arg);
+        }
+    }
+
+    Args {
+        args,
+        dump_rna,
+        dump_statistics,
+        endo,
+    }
 }
