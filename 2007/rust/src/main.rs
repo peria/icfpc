@@ -1,37 +1,62 @@
 mod arrow;
 mod fuun;
 
+use clap::Parser;
+use clap_derive::Parser;
+use serde::{Deserialize, Serialize};
 use sha2::Digest;
 use std::{fs::File, io::Read};
 
 const DEFAULT_ENDO_PATH: &str = "../data/endo.dna";
 
+#[derive(Parser, Debug)]
 struct Args {
-    args: Vec<String>,
-    dump_rna: bool,
-    dump_statistics: bool,
+    /// Dump statistics
+    #[arg(short, long)]
+    statistics: bool,
+
+    /// Specify a file of Endo's DNA
+    #[arg(short, long)]
     endo: Option<String>,
+
+    /// Prefix bases to prefix on Endo's DNA.
+    #[arg(short, long)]
+    prefix: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Statistics {
+    prefix_size: usize,
+    dna2rna: f64, // sec.
+    rna: usize,   // count
 }
 
 fn main() {
-    let args = parse_args();
+    let args = Args::parse();
+    let mut statistics = Statistics::new();
 
-    let mut prefix = String::new();
-    if args.args.len() >= 2 {
-        prefix = args.args[1].clone();
-    }
     let endo_path = args.endo.unwrap_or(DEFAULT_ENDO_PATH.to_string());
 
+    let prefix = args.prefix.unwrap_or_default().clone();
     let mut dna = prefix.clone();
     let endo = load_endo(&endo_path);
     dna.push_str(&endo);
+    let execute_start = std::time::Instant::now();
     let mut fuun = fuun::Fuun::new();
     fuun.execute(&dna);
+    let dna2rna_time = (std::time::Instant::now() - execute_start).as_secs_f64();
 
     let mut arrow = arrow::Arrow::new();
     let bitmap = arrow.build(&fuun.rna);
     let hash = sha2::Sha256::digest(prefix.as_bytes());
     save_bitmap(&bitmap, &format!("{:x}.png", hash));
+
+    statistics.prefix_size = prefix.len();
+    statistics.dna2rna = dna2rna_time;
+    statistics.rna = fuun.rna.len();
+    if args.statistics {
+        eprintln!("{}", serde_json::to_string(&statistics).unwrap());
+    }
 }
 
 fn load_endo(endo_path: &str) -> String {
@@ -51,35 +76,12 @@ fn save_bitmap(bitmap: &[[((u8, u8, u8), u8); 600]; 600], filename: &str) {
     img.save(file_path).unwrap();
 }
 
-fn parse_args() -> Args {
-    let mut args = Vec::new();
-    let mut dump_rna = false;
-    let mut dump_statistics = false;
-    let mut endo = None;
-
-    let mut read_endo = false;
-    for arg in std::env::args() {
-        if read_endo {
-            read_endo = false;
-            endo = Some(arg);
-            continue;
+impl Statistics {
+    fn new() -> Self {
+        Statistics {
+            prefix_size: 0,
+            dna2rna: 0.0f64,
+            rna: 0,
         }
-
-        if arg == "-r" || arg == "--rna" {
-            dump_rna = true;
-        } else if arg == "-s" || arg == "--statistics" {
-            dump_statistics = true;
-        } else if arg == "-e" || arg == "--endo" {
-            read_endo = true;
-        } else {
-            args.push(arg);
-        }
-    }
-
-    Args {
-        args,
-        dump_rna,
-        dump_statistics,
-        endo,
     }
 }
