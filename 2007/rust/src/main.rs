@@ -22,6 +22,10 @@ struct Args {
     /// Prefix bases to prefix on Endo's DNA.
     #[arg(short, long)]
     prefix: Option<String>,
+
+    /// Directory to store image files.
+    #[arg(long)]
+    image_dir: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -49,7 +53,14 @@ fn main() {
     let mut arrow = arrow::Arrow::new();
     let bitmap = arrow.build(&fuun.rna);
     let hash = sha2::Sha256::digest(prefix.as_bytes());
-    save_bitmap(&bitmap, &format!("{:x}.png", hash));
+    save_bitmap(
+        &bitmap,
+        &format!(
+            "{}/{:x}.png",
+            args.image_dir.unwrap_or(".".to_string()),
+            hash
+        ),
+    );
 
     statistics.prefix_size = prefix.len();
     statistics.dna2rna = dna2rna_time;
