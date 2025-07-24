@@ -20,6 +20,7 @@
         </div>
         <table class="table is-striped is-fullwidth">
             <thead>
+                <th></th>
                 <th>Time</th>
                 <th>Picture</th>
                 <th>Prefix</th>
@@ -30,6 +31,7 @@
             </thead>
             {% for line in data %}
             <tr>
+                <td><span class="icon"><i class="fas fa-home"></i></span></td>
                 <td>{{ line.timestamp }}</td>
                 <td><img src="/static/images/{{ line.hash }}.png" width="100"></td>
                 <td>{{ line.prefix }}</td>
