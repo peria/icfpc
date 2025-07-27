@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/static/bulma/css/bulma.min.css">
+    <script src="/static/detail.js"></script>
+</head>
+
+<body onload="get_entry()">
+    <header class="hero">
+        <div class="hero-body" style="background: #def;">
+            <h1 class="title">ICFPC 2007: Fuun Prefix and results</h1>
+        </div>
+    </header>
+
+    <section class="section">
+        <table class="table">
+            <tr>
+                <th>Prefix:
+                <td id="prefix">
+            </tr>
+            <tr>
+                <th>Pattern:
+                <td id="pattern">
+            </tr>
+        </table>
+        <div class="columns">
+            <div id="images" class="column-four-fifth">
+                <div id="picture"></div>
+                <div id="diff"></div>
+            </div>
+            <div class="column">
+                <table class="table">
+                    <tr>
+                        <th>Timestamp:</th>
+                        <td id="timestamp"></td>
+                    </tr>
+                    <tr>
+                        <th>RNA数:</th>
+                        <td id="rna"></td>
+                    </tr>
+                    <tr>
+                        <th>Diff数:</th>
+                        <td id="num_diff"></td>
+                    </tr>
+                    <tr>
+                        <th>Risk:</th>
+                        <td id="risk"></td>
+                    </tr>
+                    <tr>
+                        <th>計算時間:</th>
+                        <td id="time"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

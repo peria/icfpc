@@ -3,10 +3,10 @@
 
 <head>
     <link rel="stylesheet" href="/static/bulma/css/bulma.min.css">
-    <script src="/static/submit.js"></script>
+    <script src="/static/index.js"></script>
 </head>
 
-<body>
+<body onload="get_all()">
     <header class="hero">
         <div class="hero-body" style="background: #def;">
             <h1 class="title">ICFPC 2007: Fuun Prefix and results</h1>
@@ -20,7 +20,6 @@
         </div>
         <table class="table is-striped is-fullwidth">
             <thead>
-                <th></th>
                 <th>Time</th>
                 <th>Picture</th>
                 <th>Prefix</th>
@@ -29,18 +28,7 @@
                 <th>Risk</th>
                 <th>計算時間</th>
             </thead>
-            {% for line in data %}
-            <tr>
-                <td><span class="icon"><i class="fas fa-home"></i></span></td>
-                <td>{{ line.timestamp }}</td>
-                <td><img src="/static/images/{{ line.hash }}.png" width="100"></td>
-                <td>{{ line.prefix }}</td>
-                <td>{{ line.rna_size }}</td>
-                <td>{{ line.diff }}</td>
-                <td>{{ line.risk }}</td>
-                <td>{{ line.elapsed_time }}</td>
-            </tr>
-            {% endfor %}
+            <tbody id="table"></tbody>
         </table>
     </section>
 </body>

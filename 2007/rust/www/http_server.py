@@ -10,27 +10,42 @@ import time
 app = Flask(__name__)
 mydb = Database()
 
-def convert(entry: dict) -> dict:
-    entry = entry.copy()
-    timestamp = datetime.datetime.fromtimestamp(entry['timestamp'])
-    entry['timestamp'] = timestamp.strftime('%Y/%m/%d %H:%M:%S')
-    entry['hash'] = hashlib.sha256(entry['prefix'].encode()).hexdigest()
-    entry['risk'] = 10 * entry['diff'] + len(entry['prefix'])
-    return entry
-
 @app.route("/")
-def list_table():
-    data = map(convert, mydb.values())
-    return render_template("index.html", data=data)
+def index():
+    return render_template("index.html")
 
+@app.route("/detail")
+def detail():
+    return render_template("detail.html")
+
+@app.route("/api/get_all", methods=["POST"])
+def get_all():
+    return mydb.as_json()
+
+@app.route("/api/get_entry", methods=["POST"])
+def get_entry():
+    data = json.loads(request.get_data())
+    if 'prefix' not in data:
+        return "Entry key not found"
+
+    prefix = data['prefix']
+    return mydb.get_entry(prefix)
+    
 @app.route("/execute", methods=["POST"])
 def execute():
     data = json.loads(request.get_data())
     if 'prefix' not in data:
-        return "Key not found"
-
+        print("No prefix provided")
+        return "No prefix provided"
     prefix = data['prefix']
+    entry = mydb.get_entry(prefix)
+    if entry is not None:
+        print(f"Already exists: {prefix}")
+        return f"Already exists: {prefix}"
+
+    print(f"execute {prefix}")
     timestamp = time.time()
+    mydb.reserve(prefix)
     result = subprocess.run([
         '../target/release/icfpc2007',
         '-s',
@@ -39,7 +54,6 @@ def execute():
         '--target-path', '../../image/target.png',
         '-p', prefix], encoding='utf-8', stdout=subprocess.PIPE)
     result = result.stdout
-    print(f"STDOUT> {result}")
     result = json.loads(result)
     mydb.insert(prefix = prefix,
                 timestamp = int(timestamp),
