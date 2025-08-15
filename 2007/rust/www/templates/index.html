@@ -6,7 +6,7 @@
     <script src="/static/index.js"></script>
 </head>
 
-<body onload="get_all()">
+<body onload="setup()">
     <header class="hero">
         <div class="hero-body" style="background: #def;">
             <h1 class="title">ICFPC 2007: Fuun Prefix and results</h1>
@@ -14,22 +14,32 @@
     </header>
 
     <section class="section">
-        <div class="field is-grouped">
-            <input type="text" name="prefix" id="prefix" class="input is-medium">
+        <div class="container">
+            Prefix: <input type="text" name="prefix" id="prefix" class="input is-medium">
+            <div class="level">
+                <div class="level-left">
+                    Catalog: <input type="number" name="page" id="catalog" class="input is-medium"> page
+                </div>
+            </div>
             <button type="button" class="button" onclick="submit()">Submit</button>
         </div>
-        <table class="table is-striped is-fullwidth">
-            <thead>
-                <th>Time</th>
-                <th>Picture</th>
-                <th>Prefix</th>
-                <th>RNA数</th>
-                <th>Diff数</th>
-                <th>Risk</th>
-                <th>計算時間</th>
-            </thead>
-            <tbody id="table"></tbody>
-        </table>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <table class="table is-striped is-fullwidth">
+                <thead>
+                    <th>Time</th>
+                    <th>Picture</th>
+                    <th>Prefix</th>
+                    <th>RNA数</th>
+                    <th>Diff数</th>
+                    <th>Risk</th>
+                    <th>計算時間</th>
+                </thead>
+                <tbody id="table"></tbody>
+            </table>
+        </div>
     </section>
 </body>
 

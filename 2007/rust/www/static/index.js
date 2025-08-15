@@ -1,6 +1,16 @@
 row_keys = []
 processing_keys = new Set();
 
+function setup() {
+    document.getElementById('page').addEventListener('input', ev => {
+        let data = ev.data - 0;
+        // TODO: Update prefix to set the catalog page
+        
+    });
+
+    get_all();
+}
+
 async function submit(params) {
     const input_field = document.getElementById('prefix');
     var prefix = validate(input_field.value);
